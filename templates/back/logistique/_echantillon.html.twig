@@ -1,0 +1,31 @@
+{% for sample in samples %}
+
+    <div class="form-group row mb-3">
+        <div class="col-sm-3">
+            <label class="col-form-label " for=""> {{sample.nom}} </label>
+        </div>
+
+        <div class="col-sm-9">
+            <div class="row">
+                {% if sample.declinaison %}
+    
+                    {% for declinaison in sample.declinaison %}  
+                        {% set declinaisonReplace = declinaison | deleteSpecialChar %}
+            
+                        <div class="col-sm-4">
+                            <small>{{ declinaison }}</small>
+                            <input autocomplete="off" name="echantillon{{sample.nom}}{{declinaisonReplace}}" class="form-control complet" placeholder="Quantité" type="number"  min="0">
+                        </div>
+                    {% endfor %}
+            
+                {% else %}
+                    <div class="col-sm-4">
+                        <small>Sans déclinaison</small>
+                        <input type="number" class="form-control complet"  min="0" name = "echantillon{{sample.nom}}" />
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+   
+{% endfor %}

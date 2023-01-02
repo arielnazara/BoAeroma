@@ -1,0 +1,66 @@
+back_index:
+    path: /
+    defaults:
+        _controller: App\Controller\Back\BackController::index
+        
+back_test_email:
+    path: /test/email
+    defaults:
+        _controller: App\Controller\Back\BackController::testMail
+
+#gestion utilisateur
+back_utilisateur:
+    resource: 'route/utilisateur.yaml'
+    prefix:   /utilisateur
+
+#Gestion des commandes
+back_order_handler:
+    resource: 'route/commande.yaml'
+    prefix:   /commande
+
+#Gestion des clients
+back_client:
+    resource: 'route/client.yaml'
+    prefix:   /client
+
+#Gestion des produits
+back_produit:
+    resource: 'route/produit.yaml'
+    prefix:   /produit
+
+back_tarif:
+    resource: 'route/tarif.yaml'
+    prefix:   /tarif
+
+#gamme_client
+back_gamme_client:
+    resource: 'route/gammeClient.yaml'
+    prefix: /catalogue_client
+
+#Gestion des devis
+back_devis:
+    resource: 'route/devis.yaml'
+    prefix:   /devis
+
+#Gestion des logistiques
+back_logistique:
+    resource: 'route/logistique.yaml'
+    prefix:   /logistique
+
+#Liste des factures
+back_invoice:
+    resource: 'route/facture.yaml'
+    prefix:   /facture
+
+
+
+#Gestion des production
+back_production:
+    resource: 'route/production.yaml'
+    prefix:   /production
+
+
+#Gestion des factures de préstation
+back_prestation:
+    resource: 'route/prestation.yaml'
+    prefix:   /prestation

@@ -1,0 +1,282 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        {% if not modifier %}
+            <a href="{{path('back_capture_devis', {id: client.id})}}" class="btn btn-success mb-3"> <i class="os-icon os-icon-corner-down-left"></i> Etape précédente</a>
+        {% endif %}
+        <div class="col-sm-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% if modifier %}
+                        <h4 class="mb-3">Modification du devis du client <strong style = "font-weight: bolder;">{% if client.raisonSocial %} {{ client.raisonSocial }} {% else %} {{ client.fullName }} {% endif %} (n° {{ modifier.code }})</strong></h4>
+                    {% else %}
+                        <h6>Etape 3/3 : Choix des déclinaisons </h6>
+                    {% endif %}
+                    <form {% if modifier %} action="{{path('back_devis_edit', {id: modifier.id})}}" {% else %} action="" {% endif %} method="POST">
+                        {% if modifier %}
+                            {{ include('back/devis/_modificationDevis.html.twig') }}
+                        {% else %}
+                            {{ include('back/devis/_creation_devis.html.twig') }}
+                        {% endif %}
+                        <hr>
+                        
+                        {% if client.pays|lower != "france" %}
+                            <input type="hidden" name="noTva" id="noTva" value="1">
+                        {% endif %}
+
+                        <div class="erreur col-md-6 text-danger" style="font-weight: bolder;"></div>
+                        <div class="row text-center">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-primary btn-lg calculer">Calculer et afficher <br> le tarif</button>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="media align-items-center">
+                                    <h3 class="h6 opacity-8 mr-3">Montant</h3>
+                                    <div class="media-body text-right">
+                                        <span class="amount_ht">0</span>€ HT
+                                    </div>
+                                </div>
+                                <div class="media align-items-center">
+                                    <h3 class="h6 opacity-8 mr-3">Frais de port </h3>
+                                    <div class="media-body text-right">
+                                        <span class="fee"></span>
+                                    </div>
+                                </div>
+                                <div class="media align-items-center">
+                                    <h3 class="h6 opacity-8 mr-3">Total</h3>
+                                    <div class="media-body text-right">
+                                        <span class="total_ht">0</span>€ HT
+                                    </div>
+                                </div>
+                                <div class="media align-items-center">
+                                    <h3 class="h6 opacity-8 mr-3">TVA 20%</h3>
+                                    <div class="media-body text-right">
+                                        <span class="taxe">0</span>€ HT
+                                    </div>
+                                </div>
+                                <hr class="line-info mb-1" style="margin-top: 1px; width: 25%">
+                                <div class="media align-items-center">
+                                    <h3 class="h6">Total TTC</h3>
+                                    <div class="media-body text-right">
+                                        <span class="font-weight-semi-bold total_ttc">0</span>€
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <input type="hidden" name="quantite">
+                            <input type="hidden" name="montant">
+                            <input type="hidden" name="fraisDeTransport">
+                            <input type="hidden" name="taxe">
+                            <input type="hidden" name="totalHt">
+                            <input type="hidden" name="totalTtc">
+                            <input type="hidden" id="addToSession" data-target="{{ path('add_to_session') }}" data-type="{{ modifier ? true : false  }}">
+                        </div>
+                        <div class="form-group text-center">
+                            <input disabled class="btn btn-secondary btn-lb" type="submit" value=" {% if modifier %} Modifier Devis {% else %} Générer Devis {% endif %}">
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
+
+{% block custom_js %}
+<script type="text/javascript" src="{{ asset('assets/js/calcul.js') }}"></script>
+
+<script>
+    $(function(){
+
+        $(document).on('click', '.removeProduit', function(e){
+            e.preventDefault();
+            count -= 1;
+            $(this).closest('.add-produit').remove();
+            $('.fee').text('0€ HT').css('color', '#3e4b5b');
+            $('.amount_ht').text(0);
+            $('.total_ht').text(0);
+            $('.taxe').text(0);
+            $('.total_ttc').text(0);
+        });
+
+        $('.delete').click(function(e){
+            e.preventDefault();
+            const produit = $(this).data('id');
+            const devis = $(this).data('devis');
+            let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit du devis?');
+
+            $('.fee').text('0€ HT').css('color', '#3e4b5b');
+            $('.amount_ht').text(0);
+            $('.total_ht').text(0);
+            $('.taxe').text(0);
+            $('.total_ttc').text(0);
+            $('.btn-lb').attr('disabled', true).addClass('btn btn-secondary');
+            
+            if(confirmer){
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('href'),
+                    data: {'produitId' : produit, 'devisId': devis},
+                    dataType: 'json',
+                    success: function (data) {
+                        $(`#${data.supprimer}`).remove();
+                        $('.btn-lb').attr('disabled', true).removeClass('btn-success')
+                    }
+                });
+            }
+        });
+        
+    });
+</script>
+
+<script>
+    $(function(){
+        $('.fee').text('0€ HT').css('color', '#3e4b5b');
+
+        $('.sansDecl').change(function(){
+            $('.amount_ht').text(0);
+            $('.total_ht').text(0);
+            $('.taxe').text(0);
+            $('.total_ttc').text(0);
+            $('.fee').text('0€ HT').css('color', '#3e4b5b');
+        });
+
+
+        $(document).ready(function() {
+            $('#liste').DataTable({
+                "ordering": false,
+            });
+            let table = $('#liste').DataTable();
+
+            $('#liste').on('click', '.deleteFromListe', function () {
+                console.log()
+                let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit?');
+
+                if(confirmer){
+                    let produit = parseInt($(this).data('prod'));
+
+                    $('tr').each(function(){
+                        if( parseInt($(this).attr('id')) == produit){
+                            $(this).remove();
+                            table.rows(this).remove().draw(false);
+                        }
+                    })
+                }
+            } );
+        } );
+
+        let count = $('.ajout-produit').data('count');
+       
+        $(".ajout-produit").click(function(e){
+            
+            e.preventDefault();
+            count += 1;
+            let html = '';
+
+            html += '<div class=" row add-produit form-group">';
+            html += '<div class="col-sm-11">';
+            html += '<select class="form-control js-add produit" name="add-produit-supp-'+ count +'" required>';
+            html += '<option value=""></option>';
+            html += '{% if produitsListe %}'  
+            html += '{% for produit in produitsListe %}'  
+            html += '<option value="{{produit.id}}">{{produit.reference}} - {{produit.getNomMarqueBlanche(client)}}</option>'
+            html += '{% endfor %}'
+            html += ' {% endif %}'
+            html += '</select>';
+            html += '</div>';
+            html += '<div class="col-sm-1">';
+            html += '<a href="" class="remove btn btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+            html += '</div>';
+            html += '</div>';
+            $(".newRow").append(html);
+
+            $("select").select2( {
+                placeholder: "choisir un produit",
+                allowClear: true
+            } );
+
+        });
+
+        $(document).on('click', '.remove', function(e){
+            e.preventDefault();
+
+            let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit?');
+
+            if(confirmer){
+                count -= 1;
+                $(this).closest('.add-produit').remove();
+                $('.amount_ht').text(0);
+                $('.total_ht').text(0);
+                $('.taxe').text(0);
+                $('.total_ttc').text(0);
+            }
+        });
+
+        $("select").select2( {
+            placeholder: "choisir un produit",
+            allowClear: true
+        } );
+
+
+        let c = parseInt($('.ajout-liste').data('count'));
+        
+        $(".ajout-liste").click(function(e){
+           
+            e.preventDefault();
+            c += 1;
+            let html = '';
+
+            html += '<div class=" row add-produit-liste form-group">';
+            html += '<div class="col-sm-11">';
+            html += '<select class="form-control produit" name="produit-'+ c +'" required>';
+            html += '<option value=""></option>';
+            html += '{% if produitsListe %}'  
+            html += '{% for produit in produitsListe %}'  
+            html += '<option value="{{produit.id}}">{{produit.reference}} - {{produit.getNomMarqueBlanche(client)}}</option>'
+            html += '{% endfor %}'
+            html += ' {% endif %}'
+            html += '</select>';
+            html += '</div>';
+            html += '<div class="col-sm-1">';
+            html += '<a href="" class="removeFromListe btn btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+            html += '</div>';
+            html += '</div>';
+            $(".newListe").append(html);
+
+            $("select").select2( {
+                placeholder: "choisir un produit",
+                allowClear: true
+            } );
+
+        });
+
+        $(document).on('click', '.removeFromListe', function(e){
+            e.preventDefault();
+            
+            let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit?');
+
+            if(confirmer){
+                c -= 1;
+                $(this).closest('.add-produit-liste').remove();
+                $('.amount_ht').text(0);
+                $('.total_ht').text(0);
+                $('.taxe').text(0);
+                $('.total_ttc').text(0);
+            }
+        });
+
+       
+            
+    })
+</script>
+
+<script src="select2.min.js"></script>
+
+<script type="text/javascript" src="{{ asset('assets/js/addToSession.js') }}"></script>
+
+
+{% endblock %}

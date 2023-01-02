@@ -1,0 +1,55 @@
+{% extends 'back/produit/index.html.twig' %}
+{% block title %} Voir les gammes{% endblock %}
+
+{% block produits %}
+
+    {% for message in app.flashes('success') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+
+        {% for message in app.flashes('ajoutGamme') %}
+            <div class="alert alert-success col-md-6">
+                {{message}}
+            </div>
+        {% endfor %}
+
+        <h6 class="element-header">Liste des gamme clients</h6>
+        <div class="message alert alert-success col" style="display: none;"></div>
+        <div class="row">
+            <div class="col">
+                <a href="{{ path('back_creation_gamme_client') }}" class="btn btn-primary"><i class="os-icon os-icon-plus-circle"></i> Créer une gamme</a>
+                <table class="table table-striped table-lightfont table-hover dataTable1">
+                
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gamme in gammeListe %}
+                            <tr>
+                                <td>{{ gamme.nom}}</td>
+                                <td>
+                                    <a href="{{ path('back_modification_gamme_client', {id: gamme.id}) }}" class="btn btn-sm btn-success"><i class="os-icon os-icon-edit"></i></a>
+                                    <form method="post" class="d-inline" action="{{ path('back_supprimer_gamme_client', {'id': gamme.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet catalogue?');">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ gamme.id) }}">
+                                        <button style="padding-top: 0;" class="btn btn-sm btn-danger ml-1"><i class="os-icon os-icon-ui-15"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>  
+               
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

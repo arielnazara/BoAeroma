@@ -1,0 +1,31 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+
+{% block title %}Modification composant{% endblock %}
+
+{% block configuration %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title">Modifier un composant</h4>
+                    <div class="mt-4">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                {{form_errors(form)}}
+
+                                <div class="form-group">
+                                    {{ form_row(form.nom, {'label': 'Nom', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+                                
+                                <button class="btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+                                
+
+                                
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

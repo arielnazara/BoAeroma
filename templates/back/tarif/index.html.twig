@@ -1,0 +1,133 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="element-wrapper">
+                <div class="element-box">
+                    
+                    
+                    {% for message in app.flashes('successTarif') %}
+                        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('alertTarif') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    <h6 class="element-header">Liste des déclinaisons</h6>
+
+                    <div id="tablecontent" class="table-responsive mt-2">
+                        <div style="margin: auto; display: none" class="loader"></div>
+
+                        {% for message in app.flashes('successAjoutDeclinaison') %}
+                            <div class="alert alert-success">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                        
+                        <table class="table table-striped table-lightfont table-hover dataTable1">
+                            <thead>
+                                <tr>
+                                    <th> Nom </th>
+                                    <th class="text-center">Propriétaire</th>
+                                    <th> Contenance </th>
+                                    <th>Support</th>
+                                    <th>Catégorie</th>
+                                    <th> Décliné avec </th>
+                                    <th>Prix de référence <br> détaillant</th>
+                                    <th>Prix de référence <br> grossiste</th>
+                                    <th>Même tarif pour <br> toute les déclinaisons</th>
+                                    <th> Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if tarifs %}
+                                    {% for tarif in tarifs %}
+                                        <tr>
+                                            <td>
+                                                {{tarif.nom}}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if tarif.client %}
+                                                    {% if tarif.client.raisonSocial %}
+                                                        <span class="badge badge-pill badge-success">{{tarif.client.raisonSocial}}</span> <br>
+                                                        {{tarif.client.firstname}} {{tarif.client.lastname}}
+                                                    {% else %}
+                                                        <span class="badge badge-pill badge-success">Client</span> <br>
+                                                        {{tarif.client.firstname}} {{tarif.client.lastname}}
+                                                    {% endif %}
+                                                {% elseif tarif.marque %}
+                                                    <span class="badge badge-pill badge-primary">{{tarif.marque.nom}}</span> <br>
+                                                    Aeroma 
+                                                {% else %}
+                                                    <span class="badge badge-pill badge-warning">Aeroma</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{tarif.contenance}}
+                                            </td>
+                                            <td>
+                                                {{tarif.base}}
+                                            </td>    
+                                            
+                                            <td>
+                                                {{tarif.categorie}}
+                                            </td>
+
+                                            <td>
+                                                {% if tarif.declineAvec %}
+                                                    {{tarif.declineAvec}}
+                                                {% else %}
+                                                    Sans déclinaison
+                                                {% endif %}
+                                            </td>
+
+                                            <td>
+                                                {{tarif.prixDeReferenceDetaillant}}€    
+                                                
+                                            </td>
+
+                                            <td>
+                                                {{tarif.prixDeReferenceGrossiste}}€    
+                                                
+                                            </td>
+
+                                            <td>  
+                                                {% if tarif.memeTarif %}
+                                                    <span class="badge badge-pill badge-success">OUI</span>
+                                                {% else %}
+                                                    <span class="badge badge-pill badge-danger">NON</span>
+                                                {% endif %}
+                                                
+                                            </td>
+                                        
+                                            <td>
+                                                <form method="post" class="d-inline" action="{{ path('back_produit_supprime_tarif', {'id': tarif.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette tarif?');">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tarif.id) }}">
+                                                    <button class="btn btn-danger btn-sm mr-1"><i class="os-icon os-icon-ui-15"></i></button>
+                                                </form> 
+                                                <a href="{{path('back_tarif_modification', {id: tarif.id})}}" style="margin-right: -15px;" title="modifier le tarif" class="btn btn-success btn-sm"><i class="os-icon os-icon-edit"></i></a>
+                                                <a href="{{path('back_tarif_historique', {id:tarif.id})}}" title="Voir l'historique" class="btn btn-primary btn-sm"><i class="os-icon os-icon-eye"></i></a>
+                                                
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+                

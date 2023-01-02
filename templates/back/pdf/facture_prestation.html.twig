@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <style>
+        div, p, h3, address, body, h2, th, td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 93%;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        table { page-break-inside:auto; }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        .tr:nth-child(even) {background-color: #f2f2f2;}
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+
+        .etiquette {
+            font-weight: bolder;
+            height: 35px;
+            vertical-align: bottom;
+            background-color: #ddf0f2;
+            padding: 5px;
+            border-top: #58b6c0 2px solid;
+        }
+
+     
+    </style>
+</head>
+<body>
+<div class="body" style="overflow: hidden;">
+
+    <table style="width: 100%; border-collapse: collapse; ">
+        <tr>
+            <td style="width: 55%;">
+                <div>
+                    <p style="margin-left: -22px; margin-bottom: 0; font-size: 125%">
+                        <img  style="width: 550px;" src="{{ app.request.schemeAndHttpHost ~ asset('assets/images/logoAeroma.jpg') }}"><br>
+                    </p>
+                </div>
+            </td>
+
+            <td>
+                <div>
+                    <h1 style="float: right;">FACTURE<br>
+                        <span style="color:gray;">
+                            {{prestation.createdAt|date('d/m/Y')}}
+                            
+                            {% set increment = prestation.numero|slice(-4) %}
+                            
+                            {% set numero = prestation.numero|customInvoiceNumber %}
+                        </span> <br>
+
+                        <span style="color: gray;;">{{ numero }}-</span><span style="font-weight: bolder;font-size: 1.2em; color:black">{{ increment }}</span> <br>
+
+                        {% if prestation.estPayer == true %}
+                            <span style="color: #0d3b96">Acquittée</span>
+                        {% endif %}
+                    </h1> 
+                </div> 
+            </td>
+        </tr>
+    </table>
+
+    <br><br>
+
+    {% set client = prestation.client %}
+    
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <th>Adresse de livraison</th>
+            <th>Adresse de facturation</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+
+                    {% if client.raisonSocial %}
+                        Client: {{client.raisonSocial}} <br>
+                    {% endif %}
+                    Nom: {{client.lastName }} <br>
+                    Prénom(s): {{client.firstname }}<br>
+                    {{client.adresseServiceAchats }} <br>
+                    {{ client.codePostalServiceAchat}} <br>
+                    {{client.villeServiceAchat}} <br>
+                    {% if client.communeServiceAchat %}
+                        {{client.communeServiceAchat}} <br>
+                    {% endif %}
+                    {{client.pays}}<br>
+                    email: {{client.email }} <br>
+                    Téléphone: {{client.telephone }} <br>
+                    Numéro TVA : {{ client.noTva }}
+                    
+                </td>
+                <td>
+
+                    {% if client.raisonSocial %}
+                        Client: {{client.raisonSocial}} <br>
+                    {% endif %}
+                    
+                    Nom: {{client.lastName }} <br>
+                    Prénom(s): {{client.firstname }}<br>
+                    {{client.adresseFacturation }} <br>
+                    {{ client.codePostalFacturation}} <br>
+                    {{client.villeFacturation}} <br>
+                    {% if client.communeFacturation %}
+                        {{client.communeFacturation}} <br>
+                    {% endif %}
+                    {{client.pays}}<br>
+                    email: {{client.email }} <br>
+                    Téléphone: {{client.telephone }} <br>
+                  
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse; ">
+        <thead style="background-color: rgb(240,240,240); " >
+            <th style=" text-align: center;  padding: 7px;">Numéro de facture</th>
+            <th style=" text-align: center; padding: 7px;">Date de facturation</th>
+            <th style=" text-align: center; padding: 7px;">Réf. de commande</th>
+        </thead>
+
+        <tbody>
+            <tr  style=" border-bottom: 1pt solid #E0E0E0;">
+                <td style=" text-align: center;  padding: 5px;">
+                    {{prestation.numero}}
+                </td>
+
+                <td style=" text-align: center;">
+                    {{prestation.createdAt|date('d/m/Y')}} 
+                </td>
+
+                <td style=" text-align: center;">
+                    {{prestation.numero}}
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+    
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse;  ">
+        <thead style="background-color: rgb(240,240,240); border-top: red;" >
+            <th style=" text-align: center;  padding: 7px;">Description</th>
+            <th style=" text-align: center; padding: 7px;">Quantités</th>
+            <th style=" text-align: center; padding: 7px;">Prix unitaire <br>(HT)</th>
+            <th style=" text-align: center; padding: 7px;">Total(HT)</th>
+        </thead>
+
+        <tbody>
+
+            {% for type in prestation.typePrestations %}
+                
+                <tr style=" border-bottom: 1pt solid #E0E0E0;">
+                    <td style=" text-align: center;  padding: 5px;">
+                        {{ type.nom }}
+                    </td>
+                
+                    <td style=" text-align: center;  padding: 5px;">
+                        {{ type.quantite }}
+                    </td>
+
+                    <td style=" text-align: center;  padding: 5px;">
+                        {{ type.prixUnitaire }}
+                    </td>
+
+            
+                    <td style=" text-align: center;  padding: 5px;">
+                        {{ type.prix }}
+                    </td>
+                </tr>
+
+            {% endfor %}
+               
+        </tbody>
+    </table>
+    
+    <table style=" width: 100%; font-size: 100%;">
+        <tr>
+            <td>
+                <table style=" width: 90%; border-collapse: collapse; float: left; margin-top: -60px">
+                    <thead style="background-color: rgb(240,240,240); ">
+                        <th style="padding: 5px;">Détail des taxes</th>
+                        <th style="padding: 5px;">Taux de taxe</th>
+                        <th style="padding: 5px;">Taxe total</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Produits</td>
+                            <td>
+                                {% if prestation.tva == 0 %}
+                                    <h2>AUTOLIQUIDATION DE LA TVA</h2>
+                                {% else %}
+                                    20 % 
+                                {% endif %}
+                            </td>
+                            <td>{{prestation.tva|number_format(2, ',', ' ') }}€</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <table style="width: 90%; border-collapse: collapse; margin-top: 25px; float:right;">
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;">Montant total (HT)</td>
+                        <td style="text-align: right;">
+                            {{prestation.montant|number_format(2, ',', ' ') }}€
+                        </td>
+                    </tr>
+                    {% if prestation.tva != 0 %}
+                        <tr>
+                            <td style="background-color: rgb(240,240,240); padding: 10px;  text-align: right;"> <strong>Taxe total</strong> </td>
+                            <td style="text-align: right;"> <strong>{{prestation.tva|number_format(2, ',', ' ') }}€</strong> </td>
+                        </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Total TTC </strong>  </td>
+                        <td style="text-align: right;"> <strong>{{prestation.totalTtc|number_format(2, ',', ' ') }}€</strong> </td>
+                    </tr>
+
+                    {% if prestation.estPayer %}
+                        <tr>
+                            <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Montant réglé </strong>  </td>
+                            <td style="text-align: right;"> <strong>{{prestation.montantPayer|number_format(2, ',', ' ') }}€</strong> </td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <div style="width: 100%;">
+        {% if prestation.estPayer %}
+            <p style="width: 100%; text-align: right">
+                <strong>
+                    {% if prestation.balance != 0 %}
+                        {% if prestation.balance < 0 %}
+                            Montant à rajouter sur la prochaine facture : {{ prestation.balance|abs|number_format(2, ',', ' ') }}€
+                        {% else %}
+                            Montant à déduire sur la prochaine facture : {{ prestation.balance|number_format(2, ',', ' ') }}€
+                        {% endif %}
+                    {% else %}
+                    SOLDE : 0,00€
+                    {% endif %}
+                </strong>
+            </p>
+            <h2>
+                <strong>
+                    Paiement reçu le {{ prestation.datePaiement|date('d-m-Y') }}
+                </strong>
+            </h2>
+        {% endif %}
+    </div>
+   
+</div>
+
+</body>
+</html>

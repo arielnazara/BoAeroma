@@ -1,0 +1,35 @@
+<div class="form-group">
+    <label for="">Indiquez le numéro de devis renseigné
+        <br><span style="font-size: 80%">(Laisser vide pour une numérotation automatique)</span></label>
+    <input autocomplete="off" type="text" class="form-control" name="number">
+</div>
+
+<div class="form-group">
+    <label for="">Indiquez la date du devis renseigné
+        <br><span style="font-size: 80%">(Laisser vide pour le date d’aujourd’hui)</span></label>
+    <input autocomplete="off" type="text" class="single-daterange form-control" name="date">
+</div>
+
+<div class="form-group">
+    <label for="">Indiquez la date de signature
+        <br><span style="font-size: 80%">(Laisser vide pour le date d’aujourd’hui)</span></label>
+    <input autocomplete="off" type="text" class="single-daterange form-control" name="date_signed">
+</div>
+
+{#<div class="form-group">
+    <label>Uploader le devis signé</label>
+    <div class="custom-file mb-3">
+        <input type="file" class="custom-file-input" id="customFile" name="devis_signed">
+        <label class="custom-file-label" for="customFile">Choisir un fichier</label>
+    </div>
+</div>
+
+<div class="form-check">
+    <label class="form-check-label">
+        <input name="_invoice_complete_" class="form-check-input" type="checkbox">Facture 100%
+    </label>
+</div>#}
+
+<div class="form-buttons-w d-flex justify-content-around">
+    <button class="btn btn-primary" type="submit">Générer le bon de commande & envoyer un mail au client</button>
+</div>

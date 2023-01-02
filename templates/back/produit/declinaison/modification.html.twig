@@ -1,0 +1,94 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+
+{% block configuration %}
+    
+    <h6 class="element-header">Modification principe actif</h6>
+
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+        <div class="col-md-6">
+            {% for message in app.flashes('successAjoutDeclinaison') %}
+                <div class="alert alert-success">
+                    {{message}}
+                </div>
+            {% endfor %}
+        
+            {{form_start(form)}}
+            
+                {{form_row(form.principeActif, {'label':'Principe actif: ', 'attr':{'class': 'form-control mb-2'}})}}
+
+                {% set countDeclinaison  = 0 %}
+                {% if principeActif.declinaisons %}
+                    Déclinaisons: 
+                    {% for decli in principeActif.declinaisons  %}
+                        {% set countDeclinaison = countDeclinaison + 1 %}
+                        <div class="row">
+                            <div class="col-sm-11">
+                                <input type="text" class="form-control mt-2 {{decli.declinaison|replace({',':''})}}" name="declinaison-{{countDeclinaison}}" value="{{decli.declinaison}}" >
+                            </div>
+
+                            <div class="col-sm-1">
+                                <a href="{{path('back_produit_supprime_declinaison', {id: principeActif.id})}}" class="{{decli.declinaison|replace({',':''})}} mt-2 btn delete-declinaison btn-danger" data-id="{{principeActif.id}}" data-decli="{{decli.declinaison}}"><i class="os-icon os-icon-ui-15"></i></a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="newRow mt-2"></div>
+                <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+                <a href="" class="ajout-declinaison btn btn-secondary btn-sm mt-2" data-nbdeclin="{{countDeclinaison}}" > <i class="os-icon os-icon-plus-circle"></i> Ajouter une déclinaison</a>
+                   
+            {{form_end(form)}}
+        </div>
+    </div>
+
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            let count = parseInt($('.ajout-declinaison').attr('data-nbdeclin'));
+
+            $(".ajout-declinaison").click(function(e){
+                count += 1;
+                e.preventDefault();
+                let html = '';
+                html += '<div class=" row add-declinaison form-group">';
+                html += '<div class="col-sm-11">';
+                html += '<input type="text" class="form-control" name="declinaison-'+ count +'" value="" >'
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removedeclinaison btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".newRow").append(html);
+            });
+
+            $(document).on('click', '.removedeclinaison', function(e){
+                e.preventDefault();
+                count -= 1;
+                $(this).closest('.add-declinaison').remove();
+            });
+
+            $('.delete-declinaison').click(function(e) {
+                
+                e.preventDefault();
+                let result = confirm('êtes-vous sûr de vouloir supprimer cette déclinaison?');
+
+                if(result){
+                    $.ajax({
+                        type: 'POST',
+                        url: $(this).attr('href'),
+                        data: {id: $(this).attr('data-id'), decli: $(this).attr('data-decli')},
+                        dataType: 'json',
+                        success: function(data) { 
+                            
+                            $('.'+data.supprimer+'').remove();
+                            count -= 1;
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+{% endblock %}
+                

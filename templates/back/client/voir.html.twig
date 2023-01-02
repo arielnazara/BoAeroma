@@ -1,0 +1,160 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10 offset-2 mb-2">
+
+            {% for message in app.flashes('clientValider') %}
+                <div class="alert alert-success">
+                    {{message}}
+                </div>
+            {% endfor %}
+
+            <a class="btn btn-primary" href="{{path('back_client_list')}}"><i class="os-icon os-icon-corner-down-left"></i> Revenir à la liste</a>
+            
+            <form action="{{path('back_client_edit', {id: client.id})}}" method="post" style="display: inline;">
+                <input type="hidden" name="valider" value="true">
+                <button type="submit" class=" btn {% if client.isValid %} btn-success {% else %} btn-danger {% endif %} " {% if client.isValid %}disabled="disabled"{% endif %} >Valider</button>
+            </form>
+            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="element-box-tp">
+                <div class="el-buttons-list full-width">
+                    <a class="btn btn-white btn-sm {% if home is defined %}active{% endif %}" href="{{path('back_client_edit', {id: client.id})}}"><i class="os-icon os-icon-home"></i><span>Accueil</span></a>
+                    <a class="btn btn-white btn-sm {% if info is defined %}active{% endif %}" href="{{path('back_client_info', {id: client.id})}}"><i class="os-icon os-icon-user"></i><span>Infos clients</span></a>
+                    <a class="btn btn-white btn-sm {% if invoices is defined %}active{% endif %}" href="{{path('back_client_facture', {id: client.id})}}"><i class="os-icon os-icon-wallet-loaded"></i><span>Factures et paiements</span></a>
+                    <a class="btn btn-white btn-sm {% if commandes is defined %}active{% endif %}" href="{{path('back_commade_client', {id:client.id})}}"><i class="os-icon os-icon-command"></i><span>Commandes</span></a>
+                    <a class="btn btn-white btn-sm {% if catalogue is defined %}active{% endif %}" href="{{path('back_voir_catalogue_client', {id:client.id})}}"><i class="os-icon os-icon-book-open"></i><span>Catalogue produit</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10" >
+            <div class="order-box">
+            
+                {% block edit_order %}
+                    <div class="element-box">
+                        <div class="row">
+                            <div class="col-md-12 text-center mb-2">
+                                <h4>
+                                    {% if client.raisonSocial %}
+                                        {{client.raisonSocial}}
+                                    {% else %}
+                                        {{client.lastname}} {{client.firstname}}
+                                    {% endif %}
+                                </h4>
+                            </div>
+                          
+                            <div class="col-md-4 table-responsive">
+                                <table class="table text-center ">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th colspan="2" class="text-center" scope="col" style=" text-transform: uppercase;">Commande en cours</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                
+                                                {#% set enCours = 0 %}
+                                                
+                                                {% for commande in commande %}
+
+                                                    {% set enCours = enCours + commande.resteALivrer %}
+                                                
+                                                {% endfor %#}
+                                                <h4>{{commande|length}}</h4> 
+                                                
+                                                
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="col-md-4 table-responsive">
+                                <table class="table text-center">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th colspan="2" class="text-center" scope="col" style=" text-transform: uppercase;">CA {{"now"|date('Y')}}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                {% if facture %}
+                                                                            
+                                                    {% set payer = 0 %}
+                                                    {% for fact in facture %}
+
+                                                        {% set payer = payer + fact.montantPayer %}
+                                                    
+                                                    {% endfor %}
+
+                                                    <h4>{{payer|number_format(2, ',', ' ')}} €</h4>
+
+                                                {% else %}
+                                                    <h4>0,00%</h4>
+                                                {% endif %}
+                                               
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-4 table-responsive">
+                                <table class="table text-center">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th colspan="2" scope="col" class="text-center" style=" text-transform: uppercase;">Etat des paiements</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                {% if facture %}
+                                                                            
+                                                    {% set cent = 0 %}
+                                                    {% set payer = 0 %}
+                                                    {% for fact in facture %}
+                                                        {% set payer = payer + fact.montantPayer %}
+                                                        {% set cent = cent + fact.totalTtc %}
+                                                    {% endfor %}
+                                                    
+                                                    {% set result = (payer * 100) / cent %}
+                                                    
+                                                    <h4 class="text-success">{{result|number_format(2, ',', ' ')}}%</h4>
+
+                                                {% else %}
+                                                    <h4>0,00%</h4>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            {#
+                            <div class="col-md-2 table-responsive">
+                                <table class="table">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th colspan="2" scope="col" class="text-center" style=" text-transform: uppercase;">litiges</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    
+                                    </tbody>
+                                </table>
+                            </div>#}
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

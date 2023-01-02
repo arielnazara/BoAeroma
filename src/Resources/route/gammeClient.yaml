@@ -1,0 +1,208 @@
+back_gamme_client_creation:
+    path: /creation
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::creationGammeClient
+
+back_gamme_catalogue_client_modification:
+    path: /modification/{id}
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::creationGammeClient
+        requirements:
+            id: \d+
+            
+back_ajout_gamme_client:
+    path: /ajout
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::ajoutGammeClient
+
+back_liste_gamme_client:
+    path: /liste
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::listeCatalogueClient
+
+back_config_produit_gamme_client:
+    path: /config_marque/{id}-{modif}
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::configProduit
+        modif: null
+        requirements:
+            id: \d+
+
+back_config_list_produit_marque_client:
+    path: /liste/produit/marque/{id}/{idGC}/{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::listProduitMarque
+        requirements:
+            id: \d+
+            idGC: \d+
+            
+
+back_config_list_produit_gamme_client:
+    path: /liste/produit/gamme/{id}/{idGammeClient}/{idGamme}/{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::listProduitMarqueGamme
+        requirements:
+            id: \d+
+            idGammeClient: \d+
+            idGamme: \d+
+
+
+back_config_list_gamme_client:
+    path: /liste/gamme/{idM}-{idGC}-{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::listGammeMarque
+        requirements:
+            idM: \d+
+            idGC: \d+
+
+back_ajout_produit_gamme_client:
+    path: /ajout_produit
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::ajoutProduit
+
+back_config_ajout_gamme_client:
+    path: /ajout_gamme
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::configAjoutGamme
+
+
+back_supprime_marque_gamme_client:
+    path: /supprime_marque
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::supprimeMarqueGamme
+
+back_supprime_produit_gamme_client:
+    path: /supprime_produit
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::supprimeProduitGamme
+
+back_supprime_gamme_client:
+    path: /supprime_gamme
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::supprimeGamme
+
+back_prod_add_produit_client:
+    path: /ajout_produit/{id}/{idGammeClient}/{idGamme}/{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::produit
+        id: \d+
+        idGamme: \d+
+        idGammeClient: \d+
+        
+
+back_prod_add_gamme_client:
+    path: /ajout_gamme/{idM}-{idGC}-{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::gamme
+        idM: \d+
+        idGC: \d+
+
+back_config_gamme_client:
+    path: /config_gamme/{id}
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::configGamme
+        requirements:
+            id: \d+
+
+
+back_config_produit_terminer:
+    path: /config/terminer/{id}/{idM}/{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::configProduitTerminer
+        requirements:
+            id: \d+
+            idM: \d+
+
+back_enregistrement_produi_marque:
+    path: /enregistrement/produit/marque/{id}/{terminer}
+    defaults:
+        terminer: null
+        _controller: App\Controller\Back\GammeClientController::enregistrerMarqueEtProduit
+        id: \d+
+
+back_modification_marque_gamme_client:
+    path: /modification/marque/{id}
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::modificationMarqueClient
+        id: \d+
+
+
+back_modification_ajout_gamme_client:
+    path: /modification/ajout/gamme/{id}-{idm}-{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::modifAjoutGamme
+        id: \d+
+        idm: \d+
+        
+back_modification_ajout_produit_gamme:
+    path: /ajout/produit/gamme/supplementaire/{id}/{idM}/{idG}/{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::ajoutProduitGamme
+        requirements:
+            id: \d+
+            idM: \d+
+            idG: \d+
+
+
+back_modification_ajout_produit_supplementaire:
+    path: /ajout/produit/supplementaire/{id}/{idM}/{modif}
+    defaults:
+        modif: null
+        _controller: App\Controller\Back\GammeClientController::ajoutProduitSupplementaire
+        requirements:
+            id: \d+
+            idM: \d+
+
+
+back_supprimer_gamme_catalogue_client:
+    path: /supprimer/gamme/{id}/catalogue
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::supprimerGammeCatalogueClient
+        requirements:
+            id: \d+
+
+back_supprimer_gamme_client:
+    path: /supprimer/{id}
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::supprimerGammeClient
+        requirements:
+            id: \d+
+            
+
+back_liste_des_gamme_du_client:
+    path: /gamme/client/{id}
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::listeDesGammesDuClient
+        requirements:
+            id: \d+
+
+
+back_creation_gamme_client:
+    path: /creation/gamme/client
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::creationGammeMB
+
+back_modification_gamme_client:
+    path: /modification/gamme/client/{id}
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::creationGammeMB
+        requirements:
+            id: \d+
+
+back_list_des_gammes_clients:
+    path: /liste_des_gammes
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::listeGammeMB
+            
+back_rafraichir_gammes_clients:
+    path: /rafraichir
+    defaults:
+        _controller: App\Controller\Back\GammeClientController::refresh

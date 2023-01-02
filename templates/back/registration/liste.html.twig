@@ -1,0 +1,72 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        
+        <div class="col-12">
+            {% for message in app.flashes('userSuccess') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="element-wrapper">
+                <a class="btn btn-sm btn-primary mb-3" href="{{ path('ajout_utilisateur') }}"><i class="os-icon os-icon-plus-circle"></i> Créer un utilisateur</a>
+                <div class="element-box">
+                    
+                    <div class="table-responsive">
+                        
+                        <table width="100%" class="table table-striped table-lightfont table-hover dataTable1">
+                            <thead>
+                                <tr>
+                                    <th>Nom d'utilisateur</th>
+                                    <th>Nom</th>
+                                    <th>Prénom(s)</th>
+                                    <th>Rôles</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in utilisateurs %}
+                                    <tr>
+                                        <td>
+                                            {{ u.username }}
+                                            
+                                        </td>
+                                       
+                                        <td>
+                                            {{ u.nom }}
+                                        </td>
+
+                                        <td>
+                                            {{ u.prenom }}
+                                        </td>
+                                        <td>
+                                            {% if u.roles %}
+                                                {% if 'ROLE_ADMIN' in u.roles %}
+                                                    <span class="badge badge-success">Administrateur</span> 
+                                                {% else  %}
+                                                    <span class="badge badge-info">Utilisateur</span> 
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <form style="display: inline-block" method="post" action="{{ path('supprimer_utilisateur', {id:u.id}) }}" onsubmit="return confirm('Êtes vous sur de vouloir supprimer cet utilisateur')">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ u.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></button>
+                                            </form>
+                                            <a href="{{path('modification_utilisateur', {id: u.id})}}" class="btn btn-success btn-sm"><i class="os-icon os-icon-edit"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

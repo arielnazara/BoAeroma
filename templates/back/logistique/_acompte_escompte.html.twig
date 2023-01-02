@@ -1,0 +1,98 @@
+{% set escomptePath = 'back_escompte_commande' %}
+{% set acomptePath = 'back_commande_ajout_acompte_facture' %}
+
+{% if fact is defined %}
+
+    {% set escomptePath = 'back_escompte_facture' %}
+    {% set acomptePath =  'back_acompte_facture' %}
+
+{% endif %}
+
+{% if maitre %}
+    {% set bonDeCommandeId = invoiceOrder.bonDeCommandes[0] %}
+{% else %}
+    {% set bonDeCommandeId = invoiceOrder.bonDeCommande %}
+{% endif %}
+
+<a href="{{ path('back_modification_logistique', {id: bonDeCommandeId.id}) }}" class="btn mt-3 btn-secondary"><i class="os-icon os-icon-corner-down-left"></i> Revenir à la logistique</a>
+    
+{% if invoiceOrder.estPayer %}
+    <button class="btn mr-1 btn-outline-success mt-3" disabled>
+        <i class="os-icon os-icon-checkmark"></i> Facture payé
+    </button>
+{% else %}
+    <button type="button" class=" mr-1 mt-3 btn btn-primary" data-toggle="modal" data-target="#Escompte">
+        <i class="os-icon os-icon-plus-circle"></i> Escompte
+    </button>
+{% endif %}
+    
+
+
+<div class="modal fade" id="Escompte" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Ajouter escompte</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{{ path(escomptePath, {'id': facture.id, 'maitre': maitre}) }}" method="post">
+            
+                <div class="form-group">
+                    <label for="acompte_payer" class="col-form-label">Pourcentage escompte</label>
+                    <input type="number" name="escompte" value="" class="form-control" step="0.1" min="0" required>
+                </div>
+            
+                <button type="submit" class="btn mt-4 btn-primary" >Ajouter</button>
+                
+            </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+{% if not facture.acompte and not fact %}
+
+    {% if not facture.acompte %}
+    
+       
+            <button type="button" class="mt-3 btn btn-secondary" data-toggle="modal" data-target="#Acompte">
+                <i class="os-icon os-icon-plus-circle"></i> Acompte
+            </button>
+        
+        
+    {% endif %}
+
+    {% set acompte = facture.totalTtc * 0.3 %}
+
+    <div class="modal fade" id="Acompte" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Ajouter acompte</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ path(acomptePath, {'id': facture.id, 'number': facture.numero}) }}" method="post">
+                    <div class="form-group">
+                        <label for="acompte_payer" class="col-form-label">Montant payé</label>
+                        <input type="text" name="acompte_payer" id="acompte_payer" value=" {% if facture.acompte %} {{ facture.acompte }} {% else %} {{ acompte }} {% endif %}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="date_paiement_acompte" class="col-form-label">Date de paiement</label>
+                        <input id="date_paiement_acompte"  autocomplete="off" class="form-control single-daterange" name="date_paiement_acompte" type="text">
+                    </div>
+                    <button class="btn btn-primary" type="submit">Valider</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+

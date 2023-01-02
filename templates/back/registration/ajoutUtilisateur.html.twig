@@ -1,0 +1,66 @@
+{% extends 'back-base.html.twig' %}
+
+{% block title %}
+    {% if modif %}
+        Modification utilisateur
+    {% else %}
+        Ajouter un utilisateur        
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="element-wrapper " style="width:800px; margin:0 auto;">
+        <div class="element-box shadow rounded">
+
+            {% for flashError in app.flashes('verify_email_error') %}
+                <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+            {% endfor %}
+        
+            {% if modif %}
+                <h3>Modification utilisateur </h3> 
+            {% else %}
+                <h3>Ajouter un utilisateur</h3>
+            {% endif %}
+            
+            {{ form_start(registrationForm) }}
+                <div class="form-group">
+                    {{ form_row(registrationForm.username, {'label': "Nom d'utilisateur", 'attr':{'class': 'form-control'}}) }}
+                </div>
+        
+                <div class="form-group">
+                    {{ form_row(registrationForm.nom, {'label': "Nom", 'attr':{'class': 'form-control'}}) }}
+                </div>
+        
+                <div class="form-group">
+                    {{ form_row(registrationForm.prenom, {'label': "Prénom(s)", 'attr':{'class': 'form-control'}}) }}
+                </div>
+        
+                <div class="form-group">
+                    {{ form_row(registrationForm.plainPassword, {
+                        'label': 'Mot de passe',
+                        'attr':{'class': 'form-control'}
+                    }) }}
+                </div>
+
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <div class="form-check-inline">
+                        {{ form_row(registrationForm.roles) }}
+                    </div>
+                {% endif %}
+        
+                <div class="mt-2 text-center">
+                    <button type="submit" class="btn btn-primary">
+                        {% if modif %}
+                            Modifier
+                        {% else %}
+                            Ajouter
+                        {% endif %}
+                    </button>
+                </div>
+                
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="element-wrapper">
+                <h6 class="element-header">Créer un bon de préparation</h6>
+
+                <div class="element-box">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <select class="form-control search" required name="bon-1">
+                                    <option value=""></option>
+                                    {% for bon in bonDeCommandes %}
+                                        
+                                        {% if bon.groupeBondeCommandes|length == 0 %}
+                                            <option value="{{ bon.id }}">{{ bon.code }} ( {{ bon.client.raisonSocial }} {{ bon.devis.boutique.nomShop }} )</option>
+                                        {% endif %}
+                                    {% endfor %} 
+                                </select>
+                            </div>
+                        </div>
+                        <div class="nouveau"></div>
+                        <div class="row p-2">
+                            <div class="col-md-6">
+                                <button class="btn btn-primary" type="submit">Créer</button>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="" class="btn ajouterBon btn-secondary float-right btn-sm">Ajouter</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    $(function(){
+
+        search()
+
+        let count = 2;
+
+        $(".ajouterBon").click(function(e){
+          
+            e.preventDefault()
+            let html = ''
+            html += '<div class=" row add-bon form-group">'
+            html += '<div class="col-sm-11">'
+            html += '<select class="form-control search" required name="bon-'+ count +'">'
+            html += '<option value=""></option>'
+            html += '{% for bon in bonDeCommandes %}'
+            html += '{% if bon.groupeBondeCommandes|length == 0 %}'
+            html += '<option value="{{ bon.id }}">{{ bon.code }} ( {{ bon.client.raisonSocial }} {{ bon.devis.boutique.nomShop }} )</option>'
+            html += '{% endif %}'
+            html += '{% endfor %}'
+            html += '</select>'
+            html += '</div>'
+            html += '<div class="col-sm-1">'
+            html += '<a href="" class="remove btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>'
+            html += '</div>'
+            html += '</div>'
+
+            $(".nouveau").append(html);
+
+            search()
+
+            count++
+        });
+
+        $(document).on('click', '.remove', function(e){
+            e.preventDefault()
+            count -= 1
+            $(this).closest('.add-bon').remove()
+        })
+
+        function search()
+        {
+            $(".search").select2( {
+                allowClear: true
+            } )
+        }
+
+
+
+    })
+</script>
+{% endblock %}

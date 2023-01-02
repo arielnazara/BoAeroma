@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Aeroma{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="TanaTeam" name="author">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="" rel="shortcut icon">
+    <link href="" rel="apple-touch-icon">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+    <link href="{{ asset('back/css/main.css') }}?version=4.5.0" rel="stylesheet">
+</head>
+<body class="auth-wrapper">
+    <div class="all-wrapper menu-side with-pattern">
+        <div class="auth-box-w">
+            <div class="logo-w" style="padding: 10%">
+                <a href=""><img class="img-fluid" alt="" src="{{ asset('assets/images/logoAeroma.jpg') }}"></a>
+            </div>
+            <h4 class="auth-header">
+                Se connecter
+            </h4>
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.messageKey | trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+            {#<form method="post" action="{{ path('login_check_admin') }}" autocomplete="off">
+                <div class="form-group">
+                    <label for="">Nom d'utilisateur</label>
+                    <input value="{{ last_username }}" required name="_username" autocomplete="off" class="form-control" placeholder="Entrer votre login" type="text">
+                    <div class="pre-icon os-icon os-icon-user-male-circle"></div>
+                </div>
+                <div class="form-group">
+                    <label for="">Mot de passe</label>
+                    <input required value="{{ last_username }}" class="form-control" placeholder="Entrer votre mot de passe" name="_password" type="password">
+                    <div class="pre-icon os-icon os-icon-fingerprint"></div>
+                </div>
+                <div class="buttons-w">
+                    <button type="submit" class="btn btn-primary">Connexion</button>
+                    <div class="form-check-inline">
+                        <label class="form-check-label"><input class="form-check-input" type="checkbox">Se souvenir de moi</label>
+                    </div>
+                </div>
+            </form>#}
+
+            <form method="post">
+            
+                {% if app.user %}
+                    <div class="mb-3">
+                        Vous êtes connecter en tant que {{ app.user.username }}, <a href="{{ path('logout_admin') }}">Deconnexion</a>
+                    </div>
+                {% endif %}
+            
+                <div class="form-group">
+                    <label for="inputUsername">Nom d'utilisateur</label>
+                    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" required autofocus>
+                    <div class="pre-icon os-icon os-icon-user-male-circle"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword">Mot de passe</label>
+                    <input type="password" name="password" id="inputPassword" class="form-control" required>
+                    <div class="pre-icon os-icon os-icon-fingerprint"></div>
+                </div>
+            
+                <input type="hidden" name="_csrf_token"
+                       value="{{ csrf_token('authenticate') }}"
+                >
+            
+                <div class="buttons-w">
+                    <button class="btn btn-primary" type="submit">
+                        Connexion
+                    </button>
+                    <div class="form-check-inline">
+                        <label>
+                            <input type="checkbox" name="_remember_me"> 
+                            <label for="">Se souvenir de moi</label> 
+                        </label>
+                    </div>
+                </div>
+               
+            
+                
+            </form>
+            
+            
+        </div>
+    </div>
+</div>
+<script src="{{ asset('back/bower_components/jquery/dist/jquery.min.js') }}"></script>
+</body>
+</html>

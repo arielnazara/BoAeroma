@@ -1,0 +1,121 @@
+back_commande:
+    path: /
+    defaults:
+        _controller: App\Controller\Back\CommandeController::liste
+
+back_modification_commande:
+    path: /bc/{number}/{id}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::modification
+        requirements:
+            id: \d+
+
+back_commande_edit_client:
+    path: /bc/client/{number}/{id}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::modificationClient
+        requirements:
+            id: \d+
+
+back_order_create_delivery_priority:
+    path: /bc/livraison/prioritaire/{number}/{id}
+    defaults:
+        _controller: App\Controller\Back\OrderController::deliveryPriority
+        requirements:
+            id: \d+
+
+back_creation_commande:
+    path: /creation-{id}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::creationCommande
+        requirements:
+            id: \d+
+
+back_order_transform_to_paid:
+    path: /transform/paid/all
+    defaults:
+        _controller: App\Controller\Back\OrderController::setIsPaid
+
+back_order_delete:
+    path: /delete/{id}
+    defaults:
+        _controller: App\Controller\Back\OrderController::delete
+        requirements:
+            id: \d+
+
+back_commande_modification_facture:
+    path: /bc/facture/{number}/{id}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::facture
+        requirements:
+            id: \d+
+
+
+back_commande_ajout_acompte_facture:
+    path: /bc/acompte/facture/{number}/{id}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::ajoutAcompte
+        requirements:
+            id: \d+
+
+
+back_commande_code_interne:
+    path: /bc/ajout_code_interne/{number}/{id}/{preparation}
+    defaults:
+        preparation: null
+        _controller: App\Controller\Back\CommandeController::ajoutCodeInterne
+        requirements:
+            id: \d+
+
+back_telecharger_bdc:
+    path: /bc_signe/telecharger/{id}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::telechargerBdc
+        requirements:
+            id: \d+
+
+back_modification_tarif_commande:
+    path: /modification/tarif/{id}/{logistique}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::modificationTarif
+        logistique: null
+        requirements:
+            id: \d+
+      
+back_reactualiser_commande:
+    path: /reactualiser/commande/{id}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::actualiser
+        requirements:
+            id: \d+
+
+
+back_escompte_commande:
+    path: /modification/escompte/{id}
+    methods: POST
+    defaults:
+        _controller: App\Controller\Back\CommandeController::escompteCommande
+        requirements:
+            id: \d+
+
+back_code_interne_commande:
+    path: /ajout/code_client/{id}
+    methods: POST
+    defaults:
+        _controller: App\Controller\Back\CommandeController::ajoutCodeInterneClient
+        requirements:
+            id: \d+
+
+
+back_paiement_facture:
+    path: /facture/paiement
+    defaults:
+        _controller: App\Controller\Back\CommandeController::paiementFacture
+
+back_annuler_commande:
+    path: /annuler/commande/{id}
+    methods: POST
+    defaults:
+        _controller: App\Controller\Back\CommandeController::cancelOrder
+        requirements:
+            id: \d+

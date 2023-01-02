@@ -1,0 +1,103 @@
+#produit
+back_tarif_list:
+    path: /liste/tarif
+    defaults:
+        _controller: App\Controller\Back\TarifController::index
+
+back_tarif_historique:
+    path: /historique/tarifs/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::historique
+        requirements:
+            id: \d+
+
+back_produit_supprime_tarif:
+    path: /supprimer/tarif/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::supprimerTarif
+        requirements:
+            id: \d+
+
+back_tarif_creation:
+    path: /creation/tarif
+    defaults:
+        _controller: App\Controller\Back\TarifController::creationTarif
+
+back_produit_supprime:
+    path: /supprimer/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerProduit
+        requirements:
+            id: \d+
+
+back_tarif_modification:
+    path: /modification/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::modificationTarif
+        requirements:
+            id: \d+
+
+back_produit_affichage:
+    path: /fiche/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::ficheProduit
+        requirements:
+            id: \d+
+
+back_ajout_tarif:
+    path: /ajout/tarif/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::ajoutTarif
+        requirements:
+            id: \d+
+
+back_tarif_marque_info:
+    path: /info/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::infoTarif
+        requirements:
+            id: \d+
+
+back_tarif_marque_creation:
+    path: /creation/tarif/marque/{id}
+    defaults:
+        id: null
+        _controller: App\Controller\Back\TarifController::tarifParMarque
+        requirements:
+            id: \d+
+
+
+back_tarif_client_creation:
+    path: /creation_tarif_client/{id}
+    defaults:
+        id: null
+        _controller: App\Controller\Back\TarifController::tarifParClient
+        requirements:
+            id: \d+
+
+back_tarif_client_list:
+    path: /liste/tarif/client
+    defaults:
+        _controller: App\Controller\Back\TarifController::listeTarifClient
+
+
+back_modification_tarif_client:
+    path: /client/modification/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::modificationTarifClient
+        requirements:
+            id: \d+
+
+back_ajout_tarif_client:
+    path: /ajout_tarif_client/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::ajoutTarifClient
+        requirements:
+            id: \d+
+
+back_prix_modification:
+    path: /modification/prix/{id}
+    defaults:
+        _controller: App\Controller\Back\TarifController::modificationPrix
+        requirements:
+            id: \d+

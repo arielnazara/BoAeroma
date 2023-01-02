@@ -1,0 +1,34 @@
+{% extends 'back/client/voir.html.twig' %}
+
+{% block edit_order %}
+    <div class="element-box">
+        <div class="col-md-6">
+            {% for message in app.flashes('successContact') %}
+            <div class="alert alert-success">{{message}}</div>
+            {% endfor %}
+            
+            <h4>Modification contact</h4>
+            {{ form_start(form) }}
+            {{form_errors(form)}}
+    
+            <div class="form-group">
+                {{ form_row(form.fonction, {'label': 'Fonction', 'attr':{'class': 'form-control'}}) }}
+            </div>
+    
+            <div class="form-group">
+                {{ form_row(form.nom, {'label': 'Nom', 'attr':{'class': 'form-control'}}) }}
+            </div>
+    
+            <div class="form-group">
+                {{ form_row(form.prenoms, {'label': 'Prenom(s)', 'attr':{'class': 'form-control'}}) }}
+            </div>
+    
+            <div class="form-group">
+                {{ form_row(form.email, {'label': 'Email', 'attr':{'class': 'form-control'}}) }}
+            </div>
+    
+            <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

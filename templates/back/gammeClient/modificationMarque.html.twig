@@ -1,0 +1,145 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Création catalogue client{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title">Modification marque catalogue client</h4>
+                   
+                    <div class="my-2">
+                        Client: {{gammeClient.client.lastname}} {{gammeClient.client.firstname}}
+                    </div>
+    
+                    <form action="{{path('back_modification_marque_gamme_client', {id: gammeClient.id})}}" method="POST">
+                        <label for="">Accès à tout les produits</label>
+                        <div class="form-check form-check-inline radio">
+                            <input class="form-check-input" type="radio" name="tousleproduit" id="Radios1" value="1" {% if gammeClient.toutLesProduits %}checked{% endif %}>
+                            <label class="form-check-label" for="Radios1" >
+                                Oui
+                            </label>
+                        </div>
+                            <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tousleproduit" id="Radios2" value="0" {% if not gammeClient.toutLesProduits %}checked{% endif %}>
+                            <label class="form-check-label" for="Radios2">
+                                Non
+                            </label>
+                        </div>
+                        
+                        <div class="marque" {% if gammeClient.toutLesProduits %} style="display: none;" {% endif %}>
+                            <label for="">Marque:</label>
+
+                            {% set comptMarque = 0 %}
+                            {% for marqueGamme in gammeClient.unitGameClientMarques %}
+
+                                <div class="row mt-2" id="{{marqueGamme.marque.id}}">
+                                    <div class="col-md-11">
+                                        {% set comptMarque = comptMarque + 1 %}
+                                        <select class="form-control" name="marque-{{comptMarque}}" >        
+                                            {% for marque in listeMarque %}
+                                                {% if marqueGamme.marque.id == marque.id %}
+                                                    <option value="{{marque.id}}" selected>{{marque.nom}}</option>
+                                                {% else %}
+                                                    <option value="{{marque.id}}">{{marque.nom}}</option>
+                                                {% endif %}
+                                            {% endfor %}  
+                                        </select>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <a href="{{path('back_supprime_marque_gamme_client')}}" class="btn removeMarque mt-1 btn-sm btn-danger" data-id="{{marqueGamme.marque.id}}" data-idgc="{{gammeClient.id}}" ><i class="os-icon os-icon-ui-15"></i></a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="plus-marque"></div>
+                            <a href="" class="ajout-marque btn btn-secondary btn-sm mt-2" data-nbmarque="{{comptMarque}}"><i class="os-icon os-icon-plus-circle"></i> Ajouter une marque</a><br>
+                        </div>
+                        <div class="">
+                            <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+                            <a href="{{path('back_modification_gamme_client', {id: gammeClient.id})}}" class="btn btn-success ml-1 mt-3 etapeSuivant" {% if gammeClient.toutLesProduits %} style="display: none;" {% endif %}>Suivant <i class="os-icon os-icon-arrow-right-circle"></i></a>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+
+            $('input[type=radio]').click(function(){
+                if($(this).val() == true ){
+                    if($('.marque').is(':visible')){
+                        $('.marque').hide('slow');
+                        $('.etapeSuivant').hide('slow');
+                    }
+                }else{
+                    $('.marque').show('slow');
+
+                    if($('.add-marque').is(':visible') || $('.marque').is(':visible')){
+                        console.log('ok');
+                        $('.etapeSuivant').show('slow');
+                    }
+                }
+            })
+
+            let count = parseInt($('.ajout-marque').attr('data-nbmarque'));
+            $(".ajout-marque").click(function(e){
+                e.preventDefault();
+                
+                count += 1;
+                
+                let html = '';
+                html += '<div class=" row add-marque form-group mt-2">';
+                html += '<div class="col-sm-11">';
+                html += '<select class="form-control" name="marque-'+ count +'">';
+                html += '{% for marque in listeMarque %}';
+                html += '<option value="{{marque.id}}">{{ marque.nom }}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removeMarque btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".plus-marque").append(html);
+                $('.etapeSuivant').show('slow');
+            });
+
+            $(document).on('click', '.removeMarque', function(e){
+                count -= 1;
+                e.preventDefault();
+                $(this).closest('.add-marque').remove();
+
+            });
+
+            $('.removeMarque').click(function(e){
+                
+                e.preventDefault();
+                let id = $(this).attr('data-id');
+                let idGC = $(this).attr('data-idgc');
+
+                let result = confirm('êtes-vous sûr de vouloir supprimer cette marque?');
+
+                if(result){
+                    $.ajax({
+                        url: $(this).attr('href'),
+                        type: 'POST',
+                        data: {id : id, idGC: idGC},
+                        success: function(data) {
+                            $('#'+ data.supprimer +'').remove();
+                            
+                        },
+                        error: function (data) {
+                            alert(data);
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

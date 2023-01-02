@@ -1,0 +1,300 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Modification marque{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title">Modifier une marque</h4>
+                    <div class="mt-4">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                {{form_errors(form)}}
+                            
+                                <div class="form-group">
+                                    {{ form_row(form.nom, {'label': 'Nom ', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.proprietaire, {'label': 'Propriétaire: ', 'attr':{'class': 'form-check form-check-inline'}}) }}
+                                </div>
+
+                                <div class="form-group client" >
+                                    {{ form_row(form.client, {'label': 'Client', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group fournisseur " >
+                                    {{ form_row(form.fournisseur, {'label': 'Fournisseur', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+                               
+                                <div class="form-group">
+                                    {{ form_row(form.avecGamme, {'label': 'Ajouter une gamme: ', 'attr':{'class': 'form-check form-check-inline'}}) }}
+                                </div>
+
+                                <div class="form-group gamme row">
+                                    <div class="col-md-12">
+                                        <label for="gamme">Gamme</label>
+                                    </div>
+                                    
+                                    {% set countGamme = 0 %}
+
+                                    {% if listeGammeMarque %}
+                                        {% for GM in listeGammeMarque %}
+                                            <div class="col-md-11 {{GM.numGamme}}">
+                                                {% set countGamme = countGamme + 1 %}
+                                                <select class="form-control mt-2" name="gamme-{{countGamme}}">
+                                                    {% for gamme in listeGamme %}
+                                                        {% if gamme.id == GM.Gamme.id %}
+                                                            <option value="{{gamme.id}}" selected>{{ gamme.nom }} </option>
+                                                        {% else %}
+                                                            <option value="{{gamme.id}}">{{ gamme.nom }} </option>
+                                                        {% endif %}
+                                                        
+                                                    {% endfor %}
+                                                </select>
+                                                
+                                            </div>
+                                            <div class="col-md-1 mt-2 {{GM.numGamme}}">
+                                                <a href="{{path('back_produit_supprime_gamme_marque')}}" data-idgamme="{{GM.Gamme.id}}" data-idmarque="{{GM.marque.id}}" data-numgamme="{{GM.numGamme}}" class="delete-gamme btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>
+                                            </div>
+                                            
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="form-group col-md-12">
+                                            <select class="form-control " name="gamme-1">
+                                                    <option value=""></option>
+                                                {% for gamme in listeGamme %}
+                                                    <option value="{{gamme.id}}">{{ gamme.nom }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="gamme-supp mt-2 col-md-12"></div>
+                                    <a href="" class="btn btn-secondary btn-sm mt-2 ajout-gamme ml-2" data-countgamme=" {% if countGamme %} {{countGamme}} {% else %} 1 {% endif %}"><i class="os-icon os-icon-plus-circle"></i>Ajouter une gamme</a>
+                                </div>
+                                
+                                
+                                <div class="form-group">
+                                    {{ form_row(form.exclusivite, {'label': 'Exclusivité: ', 'attr':{'class': 'form-check form-check-inline'}}) }}
+                                </div>
+
+                                <div class="form-group client-exclusif row" style="display: none;">
+                                    {% set countCli = 0 %}
+
+                                    {% if clientExclusif %}
+                                        {% for cli in clientExclusif %}
+                                            <div class="col-md-11 {{cli.numClient}}">
+                                                {% set countCli = countCli + 1 %}
+                                                <select class="form-control mt-2" name="client-{{countCli}}">
+                                                    {% for client in listeClient %}
+                                                        {% if client.id == cli.client.id %}
+                                                            <option value="{{client.id}}" selected>{{ client.firstname }}  {{client.lastname}}</option>
+                                                        {% else %}
+                                                            <option value="{{client.id}}">{{ client.firstname }}  {{client.lastname}}</option>
+                                                        {% endif %}
+                                                        
+                                                    {% endfor %}
+                                                </select>
+                                                
+                                            </div>
+                                            <div class="col-md-1 mt-2 {{cli.numClient}}">
+                                                <a href="{{path('back_produit_supprime_client_exclusif')}}" data-id="{{cli.client.id}}" data-numclient="{{cli.numClient}}" data-idmarque="{{cli.marque.id}}" class="delete-client btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>
+                                            </div>
+                                            
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="form-group col-md-12">
+                                            <select class="form-control " name="client-1">
+                                                    <option value=""></option>
+                                                {% for client in listeClient %}
+                                                    <option value="{{client.id}}">{{ client.firstname }}  {{client.lastname}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %}
+                                   
+                                    <div class="client-supp col-md-12 mt-2"></div>
+                                    <a href="" class="btn btn-secondary btn-sm ml-2 mt-2 ajout-client" data-count=" {% if countCli %} {{countCli}} {% else %} 1 {% endif %}"><i class="os-icon os-icon-plus-circle"></i>Ajouter un client</a>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.description, {'label': 'Description', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <button class="btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+                                {% if pr %}
+                                    <a href="{{path('back_produit_affichage', {id: pr})}}" class="btn btn-secondary btn-sm"> <i class="os-icon os-icon-corner-down-left"></i> Revenir à la fiche produit</a>
+                                {% endif %}
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            //$('.client').hide();
+            //$('.fournisseur').hide();
+            //$('.client-exclusif').hide();
+
+            $('#marque_avecGamme_0').click(function(){
+                $('.gamme').show('slow');
+            });
+
+            $('#marque_avecGamme_1').click(function(){
+                $('.gamme').hide('slow');
+            });
+
+            if($('#marque_avecGamme_0').is(':checked')){
+                $('.gamme').show();
+            }
+
+            if($('#marque_avecGamme_1').is(':checked')){
+                $('.gamme').hide();
+            }
+
+            if($('#marque_proprietaire_0').is(':checked')){
+                $('.client').hide();
+                $('.fournisseur').hide();
+            }
+            
+            if($('#marque_proprietaire_1').is(':checked')){
+                
+                $('.client').show();
+                $('.fournisseur').hide();
+            }
+
+            if($('#marque_proprietaire_2').is(':checked')){
+                
+                $('.client').hide();
+                $('.fournisseur').show();
+            }
+
+            if($('#marque_exclusivite_0').is(':checked')){
+                $('.client-exclusif').hide();   
+            }
+            
+            if($('#marque_exclusivite_1').is(':checked')){
+                $('.client-exclusif').show();    
+            }
+
+            $('#marque_exclusivite_0').click(function(){
+                $('.client-exclusif').hide('slow');
+            });
+
+            $('#marque_exclusivite_1').click(function(){
+                $('.client-exclusif').show('slow');
+            });
+
+            $('#marque_proprietaire_0').click(function(){
+                $('.client').hide('slow');
+                $('.fournisseur').hide('slow');
+            });
+
+            $('#marque_proprietaire_1').click(function(){
+                $('.client').show('slow');
+                $('.fournisseur').hide('slow');
+            });
+   
+            $('#marque_proprietaire_2').click(function(){
+                $('.client').hide('slow');
+                $('.fournisseur').show('slow');
+            });
+
+
+            let count = parseInt($('.ajout-client').attr('data-count'));
+            $(".ajout-client").click(function(e){
+                count += 1;
+                e.preventDefault();
+                let html = '';
+                html += '<div class=" row add-client form-group">';
+                html += '<div class="col-sm-11">';
+                html += '<select class="form-control" name="client-'+ count +'">';
+                html += '<option value=""></option>';
+                html += '{% for client in listeClient %}';
+                html += '<option value="{{client.id}}">{{ client.firstname }}  {{client.lastname}}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removeClient btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".client-supp").append(html);
+            });
+
+            $(document).on('click', '.removeClient', function(e){
+                count -= 1;
+                e.preventDefault();
+                $(this).closest('.add-client').remove();
+            });
+
+            $('.delete-client').click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('href'),
+                    data: {id: $(this).attr('data-id'), numClient: $(this).attr('data-numclient'), idMarque: $(this).attr('data-idmarque')},
+                    dataType: 'json',
+                    success: function(data) { 
+                        count -= 1;
+                        $('.'+data.supprimer+'').remove();
+                        
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(function(){
+            let countGamme = parseInt($('.ajout-gamme').attr('data-countgamme'));
+            $(".ajout-gamme").click(function(e){
+                countGamme += 1;
+                e.preventDefault();
+                let html = '';
+                html += '<div class=" row add-gamme form-group">';
+                html += '<div class="col-sm-11">';
+                html += '<select class="form-control" name="gamme-'+ countGamme +'">';
+                html += '<option value=""></option>';
+                html += '{% for gamme in listeGamme %}';
+                html += '<option value="{{gamme.id}}">{{ gamme.nom }}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removeGamme btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".gamme-supp").append(html);
+            });
+
+            $(document).on('click', '.removeGamme', function(e){
+                countGamme -= 1;
+                e.preventDefault();
+                $(this).closest('.add-gamme').remove();
+            });
+
+            $('.delete-gamme').click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('href'),
+                    data: {idGamme: $(this).attr('data-idgamme'), idMarque: $(this).attr('data-idmarque'), numGamme: $(this).attr('data-numgamme')},
+                    dataType: 'json',
+                    success: function(data) { 
+                        countGamme -= 1;
+                        $('.'+data.supprimer+'').remove();
+                        
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

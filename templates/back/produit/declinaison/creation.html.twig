@@ -1,0 +1,58 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+
+{% block configuration %}
+    
+    <h6 class="element-header">Création principe actif</h6>
+
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+        <div class="col-md-6">
+            {% for message in app.flashes('successAjoutDeclinaison') %}
+                <div class="alert alert-success">
+                    {{message}}
+                </div>
+            {% endfor %}
+        
+            {{form_start(form)}}
+            
+                {{form_row(form.principeActif, {'label':'Principe actif', 'attr':{'class': 'form-control'}})}}
+
+                <div class="newRow mt-2"></div>
+                <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+                <a href="" class="ajout-declinaison btn btn-secondary btn-sm mt-2"> <i class="os-icon os-icon-plus-circle"></i> Ajouter une déclinaison</a>
+                   
+            {{form_end(form)}}
+        </div>
+    </div>
+
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            let count = 1;
+            $(".ajout-declinaison").click(function(e){
+                
+                e.preventDefault();
+                let html = '';
+                html += '<div class=" row add-declinaison form-group">';
+                html += '<div class="col-sm-11">';
+                html += '<input type="text" class="form-control" name="declinaison-'+ count +'" value="" >'
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removedeclinaison btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".newRow").append(html);
+
+                count += 1;
+            });
+
+            $(document).on('click', '.removedeclinaison', function(e){
+                e.preventDefault();
+                count -= 1;
+                $(this).closest('.add-declinaison').remove();
+            });
+        });
+    </script>
+{% endblock %}
+                

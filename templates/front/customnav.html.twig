@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col-md-8 haut">
+        <div class="customnav" >
+            
+            {% if (status is defined and status ) or (game is defined and game) %}
+                <a class=" custom {% if gamme is defined %} activenav {% endif %} " href="{{path('front_gamme_client')}}" >Votre gamme client</a>
+                
+            {% endif %}
+            
+            {% if (status is defined and status ) or (game is defined and game) or (status is defined and status) or (commande is defined and commande) %}
+                <a class=" custom {% if all is defined %} activenav {% endif %} " href="{{path('front_generate_devis')}}">Ajouter des références</a>
+            {% endif %}
+            
+            {% if (status is defined and status) or (commande is defined and commande) %}
+                <a class="custom mb-2 {% if commander is defined %} activenav {% endif %}" href="{{path('front_liste_categorie')}}">Suggestion produit</a>
+                
+            {% endif %}
+                
+            
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-2">
+        <a href="{{path('front_detail_panier', {id: client.id})}}" class="mr-5 btn panier btn-info float-right"  title="Votre panier"><i class="fa fa-shopping-cart" style="font-size: 1.5em;" aria-hidden="true"></i><span id="shoppingCart" class="badge badge-danger countpanier">{{total}}</span></a>
+    </div>
+</div>

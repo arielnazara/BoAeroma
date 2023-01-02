@@ -1,0 +1,119 @@
+<table class="table table-padded animate-bottom">
+    <thead>
+        <tr>
+            <th>Expédié</th>
+            <th> Objet </th>
+            <th> Etat </th>
+            <th class=""> Quantités <br>livrées/ Commandées</th>
+            <th>Traitement</th>
+            <th> Statut </th>
+            <th>bon de préparation</th>
+            <th>Date expédition prévue</th>
+            <th> Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    
+    {% for po in logistiques %}
+    {% set tlivred = po.nombreProduit - po.resteALivrer %}
+    
+    <tr id="tr-{{ po.id }}">
+        <td class="nowrap ship-{{ po.id }}" data-source="{{ po.client.raisonSocial}} {{ po.code }} {{ po.client.lastname }} {{ po.client.firstname }}">
+            {% if tlivred >= po.nombreProduit %}
+                <span class="status-pill smaller green"></span><span class="text-success">OUI</span>
+            {% else %}
+                {% if  po.devis.abandonner == false %}
+                    <button data-source="{{ po.id }}" class="btn btn-danger shipped">A expédier <span class="load" style="display: none ;">...</span></button>
+                {% endif %}
+            {% endif %}
+            
+        </td>
+
+        <td>
+
+            {% if po.devis.shop == "grossiste_greendot" %}
+                <a href="" class="btn btn-white">
+                    {{ po.devis.client.raisonSocial }}
+                    
+                </a>
+            {% else %}
+                {% if po.devis.boutique %}
+                    <a href="" class="btn btn-white">
+                            
+                        {{ po.devis.boutique.nomShop }}
+                        
+                    </a>
+                {% else %}
+                    
+                    <a href="" class="btn btn-white">
+                        
+                        {{ po.client.raisonSocial }}
+                        
+                    </a>
+                {% endif %}
+            {% endif %}
+            
+            
+            <br>
+            <a href="" class="btn btn-white">{{ po.code }}</a>
+        </td>
+
+        <td>
+            <div class="smaller lighter">
+                Créé le
+                {{ po.date|date('d.m.Y')}}
+            </div>
+        </td>
+
+        <td  class="text-uppercase text-center">
+            
+            <div>
+                <h6 style="font-weight: bolder;"> 
+                    <span class="totalShiped-{{ po.id }}">
+                        {{ tlivred }}/{{ po.nombreProduit}} 
+                    </span>
+                    <span class="totalShiped-js-{{ po.id }}"></span>
+                </h6>
+            </div>
+        </td>
+
+        <td class="">
+            {% if po.prioriter %}
+                <a class="badge badge-danger-inverted text-left" href="javascript:void(0)">PRIORITAIRE</a>
+            {% else %}
+                <a class="badge badge-primary-inverted text-left" href="javascript:void(0)">Normal</a>
+            {% endif %}
+        </td>
+
+        <td class="nowrap">
+           {{ po.statusLogistique }}
+        </td>
+
+        <td>
+            
+            <a href="{{ path('back_logistique_generation_xl', {id:po.id}) }}" class="btn btn-link"><i class="os-icon os-icon-download"></i> Bon de préparation </a>
+            
+        </td>
+
+        <td class="text-uppercase">
+            {{ po.dateLivraison|date('d/m/Y') }}
+        </td>
+
+
+        <td class="">
+            {% if po.devis.abandonner %}
+            
+                <span class="badge badge-pill badge-danger text-uppercase">annulé</span>
+
+            {% else %}
+
+                <a class="btn btn-success" data-placement="top" data-toggle="tooltip" title="Editer cette commande" href="{{ path('back_modification_logistique', {id:po.id}) }}"><i class="os-icon os-icon-edit"></i> Editer</a>
+
+            {% endif %}
+            
+        </td>
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

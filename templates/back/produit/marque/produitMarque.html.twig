@@ -1,0 +1,80 @@
+{% extends 'back/produit/index.html.twig' %}
+{% block title %} Voir les produits{% endblock %}
+
+{% block produits %}
+
+    {% for message in app.flashes('successProduit') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h6 class="element-header">Liste des produits de la marque {{marques.nom}}</h6>
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+  
+        <table class="table table-striped table-lightfont table-hover dataTable1">
+            <thead>
+                <tr>
+                    <th> Nom </th>
+                    <th>Référence</th>
+                    <th>Gamme</th>
+                    <th>Catégorie</th>
+                    <th>Montant</th>
+                    <th>Quantité</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if listeProduit %}
+                    {% for produit in listeProduit %}
+                        <tr>
+                            <td>
+                                {{produit.nom}}
+                            </td>
+                            <td>
+                                {{produit.reference}}
+                            </td>
+                            {#<td class="text-center">
+                                {% if produit.marqueBlanche %}
+        
+                                    <button type="button" class="btn badge badge-info-inverted text-left">OUI</button>
+
+                                {% else %}
+                                    <button type="button" class="btn badge badge-danger-inverted text-left">NON</button>
+                                {% endif %}
+                            </td>#}
+
+                            <td>
+                                {{produit.gamme}}
+                            </td>
+
+                            <td>
+                                {{produit.categorie}}
+                            </td>
+
+                            <td>
+                                {% if produit.tarif %}
+                                    {{produit.tarif.prixDeReference}}€
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{produit.quantite}}
+                            </td>
+
+                            {#<td>
+                                <form method="post" class="d-inline" action="{{ path('back_produit_supprime', {'id': produit.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet produit?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ produit.id) }}">
+                                    <button style="padding-top: 0;" class="btn text-danger"><i class="os-icon os-icon-ui-15"></i></button>
+                                </form> 
+                                <a href="{{path('back_produit_affichage', {id: produit.id})}}"><i class="os-icon os-icon-eye"></i>Voir</a>  
+                            </td>#}
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        
+    </div>
+{% endblock %}
+                

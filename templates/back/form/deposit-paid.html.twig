@@ -1,0 +1,27 @@
+<div class="form-group">
+    <label for="">Indiquez le numéro de bon de commande renseigné
+        <br><span style="font-size: 80%">(Laisser vide pour une numérotation automatique)</span></label>
+    <input autocomplete="off" type="text" class="form-control" name="number">
+</div>
+
+<div class="form-group">
+    <label>Uploader le bon de commande envoyé</label>
+    <div class="custom-file mb-3">
+        <input type="file" class="custom-file-input" id="customFile" name="bc">
+        <label class="custom-file-label" for="customFile">Choisir un fichier</label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="">Indiquez la date de reception du paiement</label>
+    <input autocomplete="off" type="text" class="single-daterange form-control" name="date_deposit_paid">
+</div>
+
+<div class="form-group">
+    <label for="">Indiquez le montant si différent de {{ deposit|number_format(2, ',', ' ') }}€</label>
+    <input autocomplete="off" placeholder="0" type="number" step="0.01" class="form-control" name="remaining_amount">
+</div>
+
+<div class="form-buttons-w d-flex justify-content-around">
+    <button class="btn btn-primary" type="submit">Générer le compte, la facture d'acompte et envoyer un mail</button>
+</div>

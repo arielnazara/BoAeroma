@@ -1,0 +1,61 @@
+{% extends 'back/commande/modificationCommande.html.twig' %}
+
+{% block modification_commande %}
+    <div class="order-items-table">
+        <div class="table-responsive">
+            <table class="table table-lightborder">
+                <thead>
+                <tr>
+                    <th>Entreprise</th>
+                    <th>Client</th>
+                    <th>Adresse de facturation</th>
+                    <th>Adresse de livraison</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {% if client.raisonSocial|split('-')[0] == 'n' %}
+                                NA
+                            {% else %}
+                                {{ client.raisonSocial }} <br>
+                                siren : {{ client.siren }} <br>
+                                TVA : {{ client.noTva }}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if boutique %}
+                                {{ boutique.prenom ~ ' ' ~ boutique.nom }} <br>
+                                {{ boutique.email }} <br>
+                                Téléphone: {{boutique.telephone}}
+                            {% else %}    
+                                {{ client.firstname ~ ' ' ~ client.lastname }} <br>
+                                {{ client.email }} <br>
+                                Téléphone: {{client.telephone}}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ client.adresseFacturation }} <br>
+                            {{ client.codePostalFacturation }}, {{ client.villeFacturation }}, {{client.communeFacturation}}<br>
+                            
+                        </td>
+                        <td>
+                            {% if client.nomDestinataire %}
+                                Nom destinataire :  {{client.nomDestinataire}} <br>
+                            {% endif %}
+                            {% if boutique %}
+                                {{boutique.adresse}} <br>
+                                {{boutique.codePostal}}, {{boutique.ville}}, {{boutique.commune}}
+                            {% else %}
+                                {{client.adresseServiceAchats}} <br>
+                                {{client.codePostalServiceAchat}}, {{client.villeServiceAchat}}, {{client.communeServiceAchat}}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

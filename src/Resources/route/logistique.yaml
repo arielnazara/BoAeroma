@@ -1,0 +1,131 @@
+back_logistique_index:
+    path: /
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::index
+
+back_modification_logistique:
+    path: /modification/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::modification
+        requirements:
+            id: \d+
+
+back_logistique_expedier:
+    path: /expedier/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::expedier
+        requirements:
+            id: \d+
+
+back_logistique_email:
+    path: /email/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::btnEmail
+        requirements:
+            id: \d+
+
+
+back_logistique_bon_livraison_download:
+    path: /download/bl/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::downloadBl
+        requirements:
+            id: \d+
+
+#back_logistique_generation_bl:
+#    path: /bon-de-livraison/{id}
+#    defaults:
+#        _controller: App\Controller\Back\LogistiqueController::generationBl
+#        requirements:
+#            id: \d+
+
+back_logistique_generation_xl:
+    path: /bon-de-livraison_xl/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::bdcExcel
+        requirements:
+            id: \d+
+
+back_logistique_modification_numero_suivi:
+    path: /modification/numero/suivi/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::modifNumeroSuivi
+        requirements:
+            id: \d+
+
+
+back_logistique_bonPreparation:
+    path: /liste/bon_de_preparation
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::bonDePreparation
+       
+
+back_logistique_get_samples:
+    path: /bon_de_preparation/echantillon
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::getSamples
+       
+back_logistique_dernier_lot:
+    path: /dernier/log/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::dernierLot
+        requirements:
+            id: \d+
+
+
+back_logistique_new_addresse:
+    path: /bon_de_preparation/adresse_de_livraison
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::addAddress
+
+
+back_logistique_select_addresse:
+    path: /bon_de_preparation/choix_adresse_de_livraison
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::selectAddress
+
+
+back_logistique_generate_invoice:
+    path: /generate/invoice/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::generateInvoice
+        requirements:
+            id: \d+
+
+back_logistique_show_invoice:
+    path: /show/invoice/{idB}/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::showInvoice
+        requirements:
+            id: \d+
+            idB: \d+
+
+back_logistique_show_invoice_master:
+    path: /show/invoice_master/{id}/{maitre}
+    defaults:
+        maitre: false
+        _controller: App\Controller\Back\LogistiqueController::showInvoiceMaster
+        requirements:
+            id: \d+
+            
+
+back_logistique_send_invoice:
+    path: /send/invoice/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::sendInvoice
+        requirements:
+            id: \d+
+
+back_logistique_send_invoice_master:
+    path: /send/invoice_master/{id}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::sendInvoiceMaster
+        requirements:
+            id: \d+
+
+
+back_logistique_ajax_create_invoice:
+    path: /ajax_create/invoice
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::ajaxCreateInvoice
+           

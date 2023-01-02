@@ -1,0 +1,65 @@
+{% extends 'back/commande/modificationCommande.html.twig' %}
+
+{% block modification_commande %}
+<div class="row">
+   
+    <div class="table-responsive">
+        {% for message in app.flashes('success') %}
+            <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th>No</th>
+                <!--<th>Nom</th>-->
+                <th class="text-right">Montant à regler</th>
+                <th class="text-right">Montant payé</th>
+                <th class="text-center">Balance</th>
+                <th>Etat</th>
+                <th class="text-center">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in invoices %}
+            
+                <tr>
+                    <td>{{ i.numero }}</td>
+                    <td class="text-right">{{ i.montantAPayer|number_format(2, ',', ' ')  }}€</td>
+                    <td class="text-right">
+                        {{ i.montantPayer|number_format(2, ',', ' ')  }}€
+                    </td>
+                    <td class="text-center">
+                        <span class="{% if i.balance < 0 %}text-danger{% else %}text-success{% endif %}">
+                            {{ i.balance|number_format(2, ',', ' ') }}€
+                        </span>
+                    </td>
+                    <td>
+                        {% if i.estPayer %}
+                            <a class="badge badge-success-inverted" href="">Payé le {{ i.datePaiement|date('d/m/Y') }}</a>
+                        {% else %}
+                            <a class="badge badge-danger-inverted" href="">Non Payé</a>
+                        {% endif %}
+                    </td>
+                    <td>
+
+                        {% include "back/commande/_paiement.html.twig" %}
+
+                        {% set filename = "Facture-" %}
+                        <a target="_blank" href="{{ asset('pdf/order/' ~ filename ~  i.numero ~ '.pdf' ) }}" class="btn btn-link"><i class="os-icon os-icon-eye"></i> Voir</a>
+
+                        {% if devi.payerParCarte %}
+                            <a href="{{ path('back_prestashop_invoice_regenerate_invoice', {id:i.id}) }}" class="btn btn-link"><i class="os-icon os-icon-refresh-cw"></i>  Régénérer </a>
+                        {% else %}
+                            <a href="{{ path('back_invoice_regenerate_invoice', {id:i.id}) }}" class="btn btn-link"><i class="os-icon os-icon-refresh-cw"></i>  Régénérer </a>
+                        {% endif %}
+                    
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

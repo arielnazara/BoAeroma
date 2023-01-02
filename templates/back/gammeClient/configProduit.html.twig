@@ -1,0 +1,118 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Création gamme client{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title">{% if modifConfig %} Modification de la configuration du {% else %} Configuration {% endif %} catalogue client</h4>
+                    
+                    {% for message in app.flashes('configProduit') %}
+                        <div class="alert alert-success">
+                            {{message}}
+                        </div>
+                    {% endfor %}
+                    <div class="mt-8">
+                        client: {{gammeClient.client.lastname}} {{gammeClient.client.firstname}} <br>
+
+                        {% set modif = null %}
+                        {% if modifConfig %}
+                            {% set modif = true %}
+                        {% endif %}
+                        
+                        {% for marque in gammeClient.unitGameClientMarques %}
+                            
+                            <div class="mt-3 row" id="{{marque.id}}">
+                                <div class="col-md-3">
+                                    <h6 class="d-inline">{{marque.marque.nom}}</h6> 
+                                </div>
+                                <div class="col-md-4">
+                                    {% set gammeExist = false %}
+
+                                    {% for unit in marque.marque.unitMarqueGammes %}
+                                        {% if unit %}
+                                            {% set gammeExist = true %}
+                                        {% endif %}   
+                                    {% endfor %}
+                                    
+                                    {% if gammeExist %}
+                                        <a  href="{{path('back_config_list_gamme_client', {idM: marque.marque.id, idGC: gammeClient.id, modif: modif})}}" class="btn btn-secondary mt-1 btn-sm " >Configurer</a>     
+                                    {% else %}
+                                        <a href="{{ path('back_config_list_produit_marque_client', {idGC: gammeClient.id, id: marque.marque.id, modif: modif}) }}" class="btn btn-secondary mt-1 btn-sm ">Configurer</a> 
+                                    {% endif %} 
+                                        
+                                    <a href="{{path('back_supprime_marque_gamme_client')}}" class="btn removeMarque mt-1 btn-sm btn-danger" data-id="{{marque.id}}" data-idmarque="{{marque.marque.id}}" data-idgc="{{gammeClient.id}}" ><i class="os-icon os-icon-ui-15"></i></a>
+                                </div>
+                            </div>
+                            <hr>
+                        {% endfor %}
+                        <a href="{{path('back_enregistrement_produi_marque', {id: gammeClient.id, modif: modif})}}" class="mt-3 btn btn-primary">Enregistrer</a>
+                        
+                        {% if modifConfig %}
+                            <a href="{{path('back_modification_marque_gamme_client', {id: gammeClient.id, modif: modif})}}" class="btn btn-secondary mt-3 ">Annuller</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            
+            $('.removeMarque').click(function(e){
+                
+                e.preventDefault();
+                let id = $(this).data('id');
+                let idGC = $(this).data('idgc');
+                let idM = $(this).data('idmarque')
+                let result = confirm('êtes-vous sûr de vouloir supprimer cette marque?');
+
+                if(result){
+                    $.ajax({
+                        url: $(this).attr('href'),
+                        type: 'POST',
+                        data: {id : id, idGC: idGC, idM: idM},
+                        success: function(data) {
+                            $('#'+ data.supprimer +'').remove();
+                            
+                        },
+                        error: function (data) {
+                            alert(data);
+                        }
+                    });
+                }
+            });
+
+
+            $('.show-gamme').click(function(e){
+                e.preventDefault();
+                
+                let cla = $(this).attr('data-id');
+                $('.'+ cla + '').toggle('slow');
+            });
+
+            $('.ajouter').click(function(e){
+                e.preventDefault();
+            
+                $.ajax({
+                    url: $(this).attr('href'),
+                    type: 'POST',
+                    data: {idGC : $(this).attr('data-idgc'), idGM: $(this).attr('data-idgm'), },
+                    success: function(data) {
+                        console.log(data.reponse);
+                        
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
+

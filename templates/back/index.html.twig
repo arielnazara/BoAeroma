@@ -1,0 +1,112 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="element-wrapper compact pt-4" style="margin-top: -30px;;">
+        <div class="element-box-tp">
+            <div class="row">
+                <div class="col-lg-12 col-xxl-12 col-md-12 col-sm-6">
+                    <!--START - BALANCES-->
+                    <div class="element-balances " >
+                        <div class="balance text-center">
+                            <div class="balance-title">
+                                Devis en attente
+                            </div>
+                            <div class="balance-value">
+                                <span>{{ enAttente|length }}</span>
+                            </div>
+                            <div class="balance-link">
+                                <a class="btn btn-link btn-underlined" href="{{ path('back_devis_list') }}"><span>Voir les devis</span><i class="os-icon os-icon-arrow-right4"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="balance text-center">
+                            <div class="balance-title">
+                                Devis signés
+                            </div>
+                            <div class="balance-value">
+                                <span>{{ signer|length }}</span>
+                            </div>
+                            <div class="balance-link">
+                                <a class="btn btn-link btn-underlined" href="{{ path('back_devis_list') }}"><span>Voir les devis</span><i class="os-icon os-icon-arrow-right4"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="balance">
+                            <div class="balance-title">
+                                Chiffre d’Affaires encaissé
+                            </div>
+                            <div class="balance-value">
+                                <span>{{ ca|number_format(2, ',', ' ') }}€</span>
+                            </div>
+                            <div class="balance-link">
+                                <a class="btn btn-link btn-underlined" href="{{ path('back_liste_facture') }}"><span>Voir les factures</span><i class="os-icon os-icon-arrow-right4"></i></a>
+                            </div>
+                        </div>
+                        <div class="balance">
+                            <div class="balance-title">
+                                Chiffre d'affaire en attente
+                            </div>
+                            <div class="balance-value danger">
+                                {{ unpaid|number_format(2, ',', ' ') }}€
+                            </div>
+                            <div class="balance-link">
+                                <a class="btn btn-link btn-underlined btn-gold" href="{{ path('back_liste_facture') }}"><span>Voir les factures</span><i class="os-icon os-icon-arrow-right4"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--END - BALANCES-->
+                </div>
+            </div>
+        </div>
+
+        <div class="element-box-tp" >
+            <div class="row">
+                <div class="col-lg-12 col-xxl-12 col-md-12 col-sm-6">
+                    <!--START - BALANCES-->
+                    <div class="element-balances " >
+                       
+                        <div class="balance">
+                            <div class="balance-title">
+                                Quantité commandés
+                            </div>
+                            <div class="balance-value text-center">
+                                {{ tOrder|number_format(2, ',', ' ') }}
+                            </div>
+                            <div class="balance-link text-center">
+                                <a class="btn btn-link btn-underlined" href="{{ path('back_logistique_index') }}"><span>Voir logistique</span><i class="os-icon os-icon-arrow-right4"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="balance">
+                            <div class="balance-title">
+                                Reste à livrer
+                            </div>
+                            <div class="balance-value text-center">
+                                {{ trest|number_format(0, ',', ' ') }}
+                            </div>
+                            <div class="balance-link text-center">
+                                <a class="btn btn-link btn-underlined" href="{{ path('back_logistique_index') }}"><span>Voir logistique</span><i class="os-icon os-icon-arrow-right4"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="balance">
+                            <div class="balance-title">
+                                Nombre de clients
+                            </div>
+                            <div class="balance-value text-center">
+                                {{ tclt|number_format(0, ',', ' ') }}
+                            </div>
+                            <div class="balance-link text-center">
+                                <a class="btn btn-link btn-underlined" href="{{ path('back_client_list') }}"><span>Voir liste client</span><i class="os-icon os-icon-arrow-right4"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--END - BALANCES-->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

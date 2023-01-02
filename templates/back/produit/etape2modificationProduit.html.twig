@@ -1,0 +1,461 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Modifier un produit{% endblock %}
+
+{% form_theme form "back/produit/_produit_template_form.html.twig" %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% for message in app.flashes('errorModifProduit') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('erreurMB') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    
+                    {% set creation = false %}
+                    {% if app.request.get('create') %}
+                        {% set creation = true %}
+                    {% endif %}
+
+                    <h4 class="title"> {% if creation %} Créer {% else %} Modifier {% endif %}  un produit (étape 2/2)</h4>
+                    <div class="mt-4">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                
+                                
+                                <div class="row">
+                                    {% if produit.declinaison|length > 0 and produit.principeActif %}
+                                        <div class="col-md-3">
+                                            <label for="">Code Ean13 {{produit.principeActif.principeActif}}</label>
+                                        </div>
+                                        <div class="col-md-8 mb-2 ml-1">
+                                    
+                                            {% for decl in produit.declinaison %}
+                                                {% if produit.codeEAN13 %}
+                                                    {% for ean, code in produit.codeEAN13 %}
+                                                        {% if ean == decl %}
+                                                            <div class="form-group row">
+                                                                <div class="col-md-6">
+                                                                    <label>Code Ean13 {{decl}}</label>
+                                                                    <input type="text" class="form-control" name="{{decl}}" value="{{code}}" >
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <label>Référence {{decl}}</label>
+                                                                    <input type="text" class="form-control" name="reference_{{decl}}" value="{% if produit.referenceDeclinaison and decl in produit.referenceDeclinaison|keys %}{{produit.referenceDeclinaison[decl]}}{% endif %}" required>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                        
+                                                    <div class="form-group row">
+                                                        <div class="col-md-6">
+                                                            <label>Code Ean13 {{decl}}</label>
+                                                            <input type="text" class="form-control" name="{{decl}}" value="" >
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            
+                                                            <label>Référence {{decl}}</label>
+                                                            <input type="text" class="form-control" name="reference_{{decl}}" value="{% if produit.referenceDeclinaison and decl in produit.referenceDeclinaison|keys %}{{produit.referenceDeclinaison[decl]}}{% endif %}" required>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row">
+                                    <label for="nom" class="col-md-3">Nom commercial interne</label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.nom, {'attr': {'class': 'form-control'}})}}
+                                    </div>
+                                </div>
+                               
+                                <div class="row">
+                                    <label for="marque" class="col-md-3">Marque</label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.marque, {'attr': {'class': 'form-control search'}})}}
+                                    </div>
+                                   
+                                </div> 
+
+                                <a href="{{path('back_produit_suggestion_tarif')}}" id="suggestionTarif" class="d-none"></a>
+
+                                <div class="row ">
+                                    <div class="col-md-3">
+                                        <label for="faitParAeroma">Produit fabriqué par Aeroma </label>
+                                        <label class="fournisseur mt-2" for="fournisseur" style="display: none;">Choisir un fournisseur</label>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-8 ml-1">
+                                        {{form_row(form.faitParAeroma, {'attr':{'class' : 'form-check form-check-inline' }})}}
+                                        <div class="fournisseur" style="display: none;">
+                                            {{form_row(form.fournisseur, { 'attr': {'class' : 'form-control my-2'}})}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="faitParAeroma">Produit en marque blanche</label>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-8 ml-1">
+                                        {{form_row(form.marqueBlanche, {'attr':{'class' : 'form-check form-check-inline' }})}}
+
+                                        <div class="marqueblanche">
+                                            {{ form_row(form.marqueBlanches)}}
+                                            {#<a href="" id="marqueBlanche" class=" my-2 btn btn-secondary btn-sm" data-nummb="{{produit.marqueBlanches|length}}" ><i class="os-icon os-icon-plus-circle"></i>Ajouter une marque blanche</a>#}
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <label for="prix" class=" col-md-3">Poids</label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.poids, {'attr': {'class': 'form-control modifier'}})}}
+                                    </div>
+                                
+                                </div>
+                              
+                                <div class="row">
+                                    <label for="prix" class=" col-md-3">Quantité de semi-fini</label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.quantite, {'attr': {'class': 'form-control'}})}}
+                                    </div>
+                                
+                                </div>
+                                
+                               
+                                <div class="row">
+                                    <label for="prix" class=" col-md-3">Tarif de référence</label>
+                                    <div class="form-group col-md-8">
+
+                                        {% if tarifProposer %}
+                                            <div class="proposer">
+                                                <p class="text-success">
+                                                    Suggestion tarif: {{tarifProposer.nom}} <br>
+                                                    créer le: {{tarifProposer.dateAjout|date('d-m-Y')}}
+                                                </p>
+                                            </div>
+                                        {% endif %}
+
+                                        <div class="suggestion mb-2" style="display: none;">
+                                            <div class="suggestionTarif"></div>
+                                        </div>
+
+                                        {{form_row(form.tarif , {'attr': {'class': 'form-control search'}}) }}
+                                    </div>
+                                
+                                </div>
+                                <div class="text-center">
+                                    <button class="submit btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+                                </div>
+                                
+                            {{ form_end(form) }}
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script>
+        $(function(){
+
+            $(".search").select2( {
+                allowClear: true
+            } );
+
+            $('.modifier').attr('type', 'number');
+            
+            $('.CBD').hide();
+            $('.nicotine').hide();
+            
+            $('#produit_faitParAeroma_placeholder').hide();
+            $('#produit_marqueBlanche_placeholder').hide();
+
+            if($('#produit_declineAvec_0').is(':checked')){
+                $('.CBD').hide();
+                $('.nicotine').show();
+                $('.creationEanNicotine').hide();
+
+                $('#produit_declinaisonNicotine_0, #produit_declinaisonNicotine_1, #produit_declinaisonNicotine_2, #produit_declinaisonNicotine_3, #produit_declinaisonNicotine_4, #produit_declinaisonNicotine_5, #produit_declinaisonNicotine_6, #produit_declinaisonNicotine_7 ').click(function(){
+                    $('.creationEanNicotine').show();
+                    creationEanNicotine();
+                });
+                
+            }else if($('#produit_declineAvec_1').is(':checked')){
+                $('.CBD').show();
+                $('.nicotine').hide();
+                $('.creationEanCBD').hide(); 
+
+                $('#produit_declinaisonCBD_0, #produit_declinaisonCBD_1, #produit_declinaisonCBD_2, #produit_declinaisonCBD_3, #produit_declinaisonCBD_4, #produit_declinaisonCBD_5, #produit_declinaisonCBD_6, #produit_declinaisonCBD_7 ').click(function(){
+                    $('.creationEanCBD').show();
+                    creationEanCBD();
+                });
+
+            }else if($('#produit_declineAvec_2').is(':checked')){
+                $('.CBD').hide();
+                $('.nicotine').hide();
+                
+            }
+            
+            if($('#produit_faitParAeroma_1').is(':checked')){
+                $('.fournisseur').show();
+            }else if($('#produit_faitParAeroma_0').is(':checked')){
+                $('.fournisseur').hide();
+            }
+            
+            $('input:radio[name="etape2_produit[faitParAeroma]"]').change(function(){
+
+                if ($(this).is(':checked') && $(this).val() == true) {
+                    $('.fournisseur').hide();
+                    
+                } else if($(this).is(':checked') && $(this).val() == false){
+                    $('.fournisseur').show();
+                    
+                }
+            });
+
+
+            
+            $('input:radio[name="etape2_produit[marqueBlanche]"]').change(function(e){
+                
+                if($(this).is(':checked') && $(this).val() == true ){
+                    $('.marqueBlanche, .marqueblanche').show();
+                   
+                }else{
+                    $('.marqueBlanche, .marqueblanche').hide();
+                    
+                }
+                
+            });
+
+            if($('#etape2_produit_marqueBlanche_0').is(':checked') ){
+                    $('.marqueBlanche, .marqueblanche').show();
+                    
+            }else{
+                $('.marqueBlanche, .marqueblanche').hide();
+            }
+            let countMB = parseInt($('.marqueBlanche').attr('data-nummb'));
+            $('.marqueBlanche').click(function(e){
+                
+                e.preventDefault();
+                let htmlMBlanche = '';
+                htmlMBlanche += '<div class="add-MB mt-4 border" style=" padding: 30px">'
+                htmlMBlanche += '<div class="row">';
+                htmlMBlanche += '<div class="col-md-11 mb-2">';
+                htmlMBlanche += '<input type="text" name="marque_marque_blanche_'+ countMB +'" class="form-control" placeholder="Raison sociale..." required="required">'
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '<div class="col-md-6">';
+                htmlMBlanche += '<input type="hidden" name="marque_blanche_'+ countMB +'" value="marque_blanche_'+ countMB +'">'
+                htmlMBlanche += '<input type="text" name="nom_marque_blanche_'+ countMB +'" class="form-control" placeholder="Nom du produit..." required="required">';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '<div class="col-md-5">'
+                htmlMBlanche += '<input type="text" name="reference_marque_blanche_'+ countMB +'" class="form-control" placeholder="Référence..."   required="required">';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '<div class="col-md-1">'
+                htmlMBlanche += '<a href="" class="removeMB btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '<div class="row mt-2">';
+                htmlMBlanche += '<div class="col-md-6">';
+                htmlMBlanche += '<select class="form-control search mt-2" name="nom_client_marque_blanche_'+ countMB +'">';
+                htmlMBlanche += '<option value=""></option>';
+                htmlMBlanche += '{% for client in clientListe %}';
+                htmlMBlanche += '<option value="{{client.id}}">{{client.lastname}} {{client.firstname}}</option>';
+                htmlMBlanche += '{% endfor %}';
+                htmlMBlanche += '</select>';
+                htmlMBlanche += '</div>'
+                htmlMBlanche += '<div class="col-md-5">';
+                htmlMBlanche += '<select class="form-control search mt-2" name="tarif_marque_blanche_'+ countMB +'">';
+                htmlMBlanche += '<option value=""></option>';
+                htmlMBlanche += '{% for tarif in tarifListe %}';
+                htmlMBlanche += '<option value="{{tarif.id}}">{{tarif.nom}}';
+                htmlMBlanche += '{% if tarif.client.raisonSocial %}' ;
+                htmlMBlanche += '( {{tarif.client.raisonSocial}} )' ;                                                         
+                htmlMBlanche += '{% else %}';                                                                    
+                htmlMBlanche += "( {{tarif.client.firstName ~ ' ' ~ tarif.client.lastName}} )" ;                                                               
+                htmlMBlanche += '{% endif %}' 
+                htmlMBlanche += '</option>';                                                         
+                htmlMBlanche += '{% endfor %}';
+                htmlMBlanche += '</select>';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '</div>';
+                $('.info_marque_blanche').append(htmlMBlanche);
+
+                
+                $(".search").select2( {
+                    allowClear: true
+                } );
+
+                countMB += 1;
+            });
+            
+            $(document).on('click', '.removeMB', function(e){
+                e.preventDefault();
+                countMB -= 1
+                $(this).closest('.add-MB').remove();
+            });
+            
+            $('.delete-mb').click(function(e) {
+            
+                e.preventDefault();
+                let result = confirm('êtes-vous sûr de vouloir supprimer cette marque blanche?');
+
+                if(result){
+                    $.ajax({
+                        type: 'POST',
+                        url: $(this).attr('href'),
+                        data: {id: $(this).attr('data-mbid')},
+                        dataType: 'json',
+                        success: function(data) { 
+                            countMB -= 1;
+                            $('.marque_blanche_'+data.supprimer+'').remove();
+                            
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+
+    <script>
+        $(function(){
+            $('.appliquer').click(function(e){
+
+                e.preventDefault();
+                let declinaison = $(this).attr('data-mg');
+                let reference = $('#produit_reference').val();
+
+                if(declinaison == "19mg"){
+                    $('#19mg').val(reference+'19,9mg');
+                }else{
+                    
+                    $('#'+ declinaison +'').val(reference+declinaison);
+                }
+            });
+
+            $('.appliquerCBD').click(function(e){
+
+                e.preventDefault();
+                let declinaison = $(this).attr('data-mg');
+                let decli = declinaison.replace('cbd', '');
+                
+                let reference = $('#produit_reference').val();
+ 
+                $('#'+ declinaison +'').val(reference+decli);
+            
+            });
+
+            $('#produit_marque').change(function(){
+                let marque = parseInt($(this).val());
+
+                if(isNaN(marque)){
+                    marque = null;
+                }
+
+                let produit = parseInt("{{produit.id}}");
+                
+                $.ajax({
+                    type: 'POST',
+                    url: $("#suggestionTarif").attr('href'),
+                    data: {idProduit: produit , idMarque: marque },
+                    dataType: 'json',
+                    success: function(data) { 
+                        if(data.nomTarif == null ){
+                            
+                            $('.suggestion').show('slow');
+                            $('.suggestionTarif').html('Suggestion tarif : Aucun tarif trouver').css('color', 'red');
+
+                        }else{
+                            
+                            $('.suggestion').show('slow');
+                            $('.proposer').hide();
+                            if(data.marque){
+                                $('.suggestionTarif').html(' <p> Suggestion tarif: ' + data.nomTarif +'('+ data.marque +') <br> créer le: '+ data.dateTarif + '</p>').css('color', 'green');
+                            }else if(data.client){
+                                $('.suggestionTarif').html(' <p> Suggestion tarif: ' + data.nomTarif +'('+ data.client +')<br> créer le: '+ data.dateTarif + '</p>').css('color', 'green');
+                            }else{
+                                $('.suggestionTarif').html(' <p> Suggestion tarif: ' + data.nomTarif +' <br> créer le: '+ data.dateTarif + '</p>').css('color', 'green');
+                            }
+                            
+                            
+                        }
+                        
+                    }
+                });
+                
+            });
+        });
+    </script>
+
+    <script>
+        
+        $(function(){
+            let count = $('#marqueBlanche').data('nummb') + 1;
+           
+
+            deleteBlock()
+
+            $('#marqueBlanche').click(function (e) {
+
+                e.preventDefault()
+
+                const template = $('#etape2_produit_marqueBlanches').data('prototype').replace(/__name__/g, `type${count}`)
+
+                $('#etape2_produit_marqueBlanches').append(template)
+               
+                count++
+
+                deleteBlock()
+
+                $(".search").select2( {
+                    allowClear: true
+                } );
+            })
+
+            
+
+            function deleteBlock()
+            {
+                $('[data-action="delete"]').click(function(e){
+                    e.preventDefault()
+                    e.stopImmediatePropagation()
+                   
+                    const ok = confirm('Voulez vous vraiment éfféctué cette action?')
+                    
+                    if(ok)
+                    {
+
+                        const div = $(this).data('target')
+    
+                        $(div).remove()
+                    }
+                })
+            }
+
+        })
+    
+    </script>
+{% endblock %}

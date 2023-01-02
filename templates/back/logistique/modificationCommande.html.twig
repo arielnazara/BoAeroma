@@ -1,0 +1,737 @@
+{% extends 'back-base.html.twig' %}
+
+{% block custom_css %}
+
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10 mb-2">
+            <a href="{{ path('back_logistique_index') }}" class="btn btn-primary"><i class="os-icon os-icon-corner-down-left"></i> Revenir a la logistique</a>
+        </div>
+    </div>
+    {% for message in app.flashes('success') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('factureEnvoyer') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    {% for message in app.flashes('aucunProduit') %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('modificationTarifOk') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('invoiceCreate') %}
+        <div class="alert alert-success" style="background-color: #d4edda">
+            {{message}}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('invoiceError') %}
+        <div class="alert alert-success">
+            {{message}}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('groupExtravapeSuccess') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    <div class="row">
+        <div class="col-md-10">
+            <div class="order-box">
+                {% include "back/commande/_recap_price.html.twig" with {'commande': bonDeCommande }  %}
+                
+                {% include "back/commande/_order_list.html.twig"  with {'commande': bonDeCommande, 'commandes' : listCommande, 'show': true } %}
+              
+
+                <div class="row">
+                    {#<div class="col-md-12 mb-3">
+                        <label for="">Est-ce une commande avec transcription de lot ?</label>
+                        <br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ceres" id="inlineRadioYes" value="1">
+                            <label class="form-check-label" for="inlineRadioYes">Oui</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ceres" id="inlineRadioNo" value="0">
+                            <label class="form-check-label" for="inlineRadioNo">Non</label>
+                        </div>
+                    </div>#}
+                    
+                    <div class="col-md-3">
+                        <button data-url="{{ path('back_modification_logistique', {id:bonDeCommande.id}) }}" type="button" class="btn btn-primary btn-lg {% if bonDeCommande.codeInterne %}prepare-order{% else %} err {% endif %}">Préparer une livraison</button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-warning" role="alert" style="display: none;">
+                            <strong>Warning! </strong> Préparation impossible sans le numéro de commande interne, aller sur la fiche commande  du client.
+                            <a href="{{path('back_modification_commande', {number: bonDeCommande.code, id: bonDeCommande.id})}}"  class="btn btn-link"><i class="os-icon os-icon-plus-circle"></i> Ajouter le numéro</a>
+                        </div>
+                    </div>
+
+                </div>
+                <hr>
+                <div id="form_container"></div>
+                {{ include('back/logistique/tab_list_preparation.html.twig') }}
+                <hr>
+                {#{ include('back/logistique/tab_list_priority.html.twig') }#}
+
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="user-profile compact">
+                <div class="up-controls">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="value-pair">
+                                <div class="label">
+                                    {% if bonDeCommande.devis.boutique %}
+                                        {{ bonDeCommande.devis.boutique.nomShop }} <br>
+                                        {{ bonDeCommande.devis.boutique.prenom }} {{ bonDeCommande.devis.boutique.nom }} <br>
+                                        {{ bonDeCommande.devis.boutique.email }} <br>
+                                        {{ bonDeCommande.devis.boutique.telephone }}
+                                    {% else %}    
+                                        {{ bonDeCommande.client.raisonSocial }} <br>
+                                        {{ bonDeCommande.client.firstname }} {{ bonDeCommande.client.lastname }} <br>
+                                        {{ bonDeCommande.client.email }} <br>
+                                        {{ bonDeCommande.client.telephone }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="up-contents">
+                    <div class="m-b">
+                        <div class="row m-b">
+                        </div>
+                        <div class="">
+                            {% if bonDeCommande.devis.boutique %}
+                                {{ bonDeCommande.devis.boutique.adresse }} <br>
+                                {{ bonDeCommande.devis.boutique.ville }}, {{ bonDeCommande.devis.boutique.codePostal }} <br>
+                            {% else %}
+                                {{ bonDeCommande.client.adresseFacturation }} <br>
+                                {{ bonDeCommande.client.villeFacturation }}, {{ bonDeCommande.client.codePostalFacturation }} <br>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="bonDeCommande" value="{{ bonDeCommande.id }}">
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script>
+        $(function () {
+
+            $('input[name="inlineRadioOptions"]').prop('checked', false);
+
+            $('.checkbox').prop('checked', false);
+
+
+            $('input[name="inlineRadioOptions"]').change(function(){
+                if($(this).val() == 1)
+                {
+                    
+                    $('.lot').show()
+
+                    $("html, body").animate({ scrollTop: $(document).height() }, 1500);
+                    
+                }
+                else
+                {
+                    $('.lot').hide()
+                }
+            })
+
+
+            $('.generer').click(function(e){
+                e.preventDefault();
+
+                const url = $(this).data('path')
+
+                let data = [];
+
+                $('.checkbox').each(function(index, element){
+                    if(element.checked)
+                    {
+                        data.push(element.value)
+                    }
+                })
+                
+                if(data.length > 0)
+                {
+
+                    $(this).prop('disabled', true);
+
+                    const bon = $('#bonDeCommande').val();
+                    
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: {data, bon},
+                        dataType: 'json',
+                        success: function (data) {
+                            if(data.success)
+                            {
+                                location.reload()
+                            }
+                        },
+                        error: function(data){
+                            alert(data)
+                        }
+
+                    })
+
+                }
+                else
+                {
+                    $('.error-message').append('<p class ="text-danger"> Veuillez choisir les lots </p>')
+                }
+
+            })
+
+
+            function filtre()
+            {
+                $(".sample").select2( {
+                    placeholder: "choisir un produit",
+                    allowClear: true
+                } );
+            }
+
+            $(function(){
+                $('.sendmail').prop('checked', false);
+                $('.envoyer').click(function(e){
+                    e.preventDefault();
+                    let ok = false;
+                    
+                    ok = confirm('Renvoyer le bon de commande modifié au client ?');
+
+                    if(ok){
+                        $(this).closest('form').find('.sendmail').prop('checked', true);
+                    }else{
+                        $(this).closest('form').find('.sendmail').prop('checked', false);
+                    }
+                    $(this).next(".edit").click();
+                    
+                    
+                });
+            });
+
+            $('.check').click(function(e){
+                e.preventDefault();
+                let ok = false;
+
+                let value = $(this).parent().parent().find('input[name = "track_number"]').val();
+                
+                if(value.length === 0){
+                    ok = confirm('Est-ce que vous confirmer ne pas indiquer de numéro de suivi pour l’instant ');
+
+                    if(ok){
+                        $(this).next('.envoyeNumSuivi').removeAttr('disabled').click();
+                    }
+                }else{
+                    $(this).next('.envoyeNumSuivi').removeAttr('disabled').click();
+                }
+               
+            });
+
+            $('.err').click(function(e){
+                e.preventDefault();
+                $('.alert-warning').show('slow');
+            })
+
+            $('.prepare-order').on('click', function () {
+                
+                let ceres = $('input[name="ceres"]:checked').val()
+            
+                $.ajax({
+                    type: 'GET',
+                    url: $(this).attr('data-url'),
+                    data: {'form' : true, 'ceres': ceres},
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#form_container').html(data.content);
+
+                        $("input[name='echantillons']").change(function(e){
+                            if(e.currentTarget.value == 1)
+                            {
+                                $('.samples_choices').show()
+                                if( $('.samples-list').text() == "")
+                                {
+                                    $('.valid').prop("disabled", true)
+                                   
+                                }
+                                else
+                                {
+                                    $('.valid').prop("disabled", false)
+                                }
+                            }
+                            else
+                            {
+                                $('.samples_choices').hide()
+                                $('.valid').prop("disabled", false)
+                            }
+                        })
+
+                        $("input[name='dernier']").change(function(e){
+                            if(e.currentTarget.value == 1)
+                            {
+                                $('.warning').show()
+                            }
+                            else
+                            {
+                                $('.warning').hide()
+                            }
+                        })
+
+                        $("input[name='adresseFacturation']").change(function(e){
+                            if(e.currentTarget.value == 0)
+                            {
+                                $('.autreAdresse').show()
+                                $('.listeAdresse').show()
+                            }
+                            else
+                            {
+                                $('.autreAdresse').hide()
+                                $('.listeAdresse').hide()
+                                $('.default').hide()
+
+                            }
+                        })
+                        
+                        confirmSample()
+                        addSample()
+                        addAddress()
+                        selectAddress()
+
+                        changeAdresse()
+
+                        $('.livraison').click(function(e){
+                            e.preventDefault();
+                            let id = $(this).data('info');
+                            $('#'+ id +'').toggle('slow', function(){
+                                if($('#'+ id +'').is(":hidden")){
+                                    $(this).val(0);
+                                }else{
+                                    $(this).val('');
+                                }
+                            });
+                            $(this).find('i').toggleClass('os-icon-arrow-left6 os-icon-arrow-right7')
+                        });
+
+                        $('.commandeComplet').click(function(e){
+                            e.preventDefault()
+                            $('.complet').each(function(index, element){
+                                const val = element.dataset.max
+                                $(this).val(val)
+                            })
+                        })
+
+                        
+                        filtre()
+
+
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+
+            function changementChoixAdresse()
+            {
+                $('.modifierChoix').show()
+
+                $('.modifierChoix').click(function(e){
+                    e.preventDefault()
+                    $(".choixAdresse").show()
+                    $('.modifierChoix').hide()
+
+                })
+
+                changeAdresse()
+               
+            }
+
+            function changeAdresse()
+            {
+                $("input[name='adresseFacturation']").change(function(e){
+                    
+                    if(e.currentTarget.value == 0)
+                    {
+                        $('.autreAdresse').show()
+                        $('.listeAdresse').show()
+                        $('.choixAdresse').show()
+
+                    }
+                    else
+                    {
+                        $('.autreAdresse').hide()
+                        $('.listeAdresse').hide()
+                        $('.choixAdresse').hide()
+
+                        $('.default').hide()
+
+                    }
+                })
+            }
+
+            function confirmSample()
+            {
+                $('#confirm-sample').click(function(e){
+                    e.preventDefault()
+                    
+                    let sampleId = []
+
+                    $('.sample').each(function(index, val){
+
+                        if(val.value != "")
+                        {
+                            sampleId.push(val.value)
+                        }
+
+                    })
+
+                    const url = $('.sample_route').val()
+
+                    if(sampleId.length > 0)
+                    {
+                        $('.spinLoader').show()
+                        $('.samples-list').html('')
+                        $('#samples_products').val(sampleId)
+                        
+                        $.ajax({
+                            type: 'post',
+                            url: url,
+                            data: {'sampleId' : sampleId},
+                            dataType: 'json',
+                            success: function (data) {
+
+                                /*$.each(data, function(index, sample){
+                                    let decl = ''
+
+                                    if(sample.declinaison.length > 0)
+                                    {
+                                        decl = sample.declinaison.map(function(declinaison){
+                                            return `
+                                                <div class="col-sm-4">
+                                                    <small>${ declinaison }</small>
+                                                    <input autocomplete="off" name="echantillon${sample.nom}${declinaison}" class="form-control complet" placeholder="Quantité" type="number"  min="0">
+                                                </div>
+                                            `
+                                        })
+
+                                        decl =  decl.join('')
+                                    }
+                                    else
+                                    {
+                                        decl += `
+                                            <div class="col-sm-4">
+                                                <small>Sans déclinaison</small>
+                                                <input type="number" class="form-control complet"  min="0" name = "echantillon${sample.nom}" />
+                                            </div>
+                                        `
+                                    }
+
+                                   
+
+                                    html += `
+                                    <div class="form-group row">
+                                        <div class="col-sm-3">
+                                            <label class="col-form-label " for=""> ${sample.nom} </label>
+                                        </div>
+
+                                        <div class="col-sm-9">
+                                            <div class="row">
+                                                ${decl}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `
+
+                                })*/
+                                $('.valid').prop("disabled", false)
+                                
+                                $('.spinLoader').hide()
+                              
+                                $('.samples-list').append(data.content)
+                            
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                        });
+                        
+                    }
+                    
+                })
+            }
+           
+            function addSample()
+            {
+                let count = 1
+
+                $('#add-sample').click(function(e){
+                    e.preventDefault()
+                    
+                    let html = ""
+
+                    html += `
+                        <div class="mt-2 row">
+                            <div class="col-md-6">
+                                <select class=" sample form-control" id="">
+                                    <option value=""></option>
+                                    {% for product in products %}
+                                        <option value="{{product.id}}">{{product.nom}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <a href="" class="btn delete-sample btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></a>
+                            </div>
+                        </div>
+                    `
+
+                    count++
+
+                    $('.add-sample').append(html)
+
+                    filtre()
+
+                    $(document).on('click', '.delete-sample', function(e){
+                        e.preventDefault();
+                        count -= 1;
+                        $(this).closest('.row').remove();
+                    });
+                })
+
+            }
+
+            
+            function addAddress()
+            {
+                
+                $('.addAddress').click(function(e){
+                    e.preventDefault()
+
+                    $('.autreAdresse').show()
+
+                    const client = $(this).data('client')
+
+                    $('.confirmAddress').hide()
+
+                    html = `
+
+                        <div class="border row rounded shadow adresse p-3 my-2">
+                            <div class="col-md-12 mb-2">
+                                <a href="" class="deleteAdresse btn btn-danger btn-sm float-right" data-id="1"><i class="os-icon os-icon-ui-15"></i></a>
+                            </div>
+                            
+                            <div class="col-md-12 ">
+                                <form class="newAddress">
+                                    <input type="hidden" name="client" value="${client}">
+                                    <div class=" row form-group">
+                                        <div class="col-md-6">
+                                            <label for="">Adresse</label>
+                                            <input type="text" class="form-control" required name = "newAdresse">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="">Code postal</label>
+                                            <input type="text" class="form-control" required name = "newPostCode">
+                                        </div>
+                                    </div>
+                                    <div class=" row form-group">
+                                        <div class="col-md-6">
+                                            <label for="">Ville</label>
+                                            <input type="text" class="form-control" required name = "newCity">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                    `
+
+                    $('.ajoutAdresse').append(html)
+
+                    $(document).on('click', '.deleteAdresse', function(e){
+                        e.preventDefault();
+                        $(this).closest('.row').remove();
+                        $('.confirmAddress ').hide()
+
+                        countAdresse()
+                       
+                    });
+
+                    newAddress()
+                    
+                })
+            }
+
+            function countAdresse()
+            {
+                let count = null
+
+                $('.adresse').each(() => count += 1)
+
+                if(count == null)
+                {
+                    $('.confirmAddress ').show()
+                }
+                else
+                {
+                    $('.confirmAddress ').hide()
+                }
+
+            }
+
+            function newAddress()
+            {
+                $('.newAddress').unbind('submit').bind('submit',function(e){
+                    e.preventDefault()
+                    const form = $(this)
+
+                    const data = form.serialize()
+                    
+                    const url = $('.addAddress').prop("href")
+
+                    const div = form.closest('.adresse')
+
+                    const button = form.find('button')
+
+                    button.prop("disabled", true)
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: data,
+                        dataType: 'json',
+                        success: function (retour) {
+                            if(retour)
+                            {
+                                div.remove()
+                                $('.default').show()
+                                $('.old').html('')
+                                const value = `
+                                    ${retour.adresse} <br>
+                                    ${retour.codePostal} <br>
+                                    ${retour.ville} <br>
+                                `
+
+                                $('select[name="choixAdresse"]').val('')
+
+                                $htmlOption = `
+                                    <option value="${retour.id}">${retour.adresse}</option>
+                                `
+
+                                $('select[name="choixAdresse"]').append($htmlOption)
+
+                                countAdresse()
+                                changementChoixAdresse()
+                                changeAdresse()
+
+                                $('.choixAdresse').hide()
+                                $('.modifierChoix').show()
+
+                                $('.default-add').html('')
+                                $('.default-add').append(value)
+                            }
+                        },
+                        error: function(retour){
+                            alert(retour)
+                        }
+                    })
+                })
+            }
+
+            function selectAddress()
+            {
+                
+
+                $('.confirmAddress').click(function(e){
+                    e.preventDefault()
+                    
+                    const address = $('select[name="choixAdresse"]').val()
+                    const url = $('select[name="choixAdresse"]').data("route")
+                    const client = $(this).data('client')
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: {'address': address, 'client': client},
+                        dataType: 'json',
+                        success: function (retour) {
+                            let adresse = null
+                            let codePostal = null
+                            let ville = null
+                            
+                            if(retour.adresseServiceAchats)
+                            {
+                                adresse = retour.adresseServiceAchats
+                                codePostal = retour.codePostalServiceAchat
+                                ville = retour.villeServiceAchat
+
+                            }
+                            else
+                            {
+                                adresse = retour.adresse
+                                codePostal = retour.codePostal
+                                ville = retour.ville
+
+                            }
+
+                            changementChoixAdresse()
+                            changeAdresse()
+
+                            $('.choixAdresse').hide()
+                            $('.modifierChoix').show()
+
+                            
+                            $('.default').show()
+                            $('.old').html('')
+                            const value = `
+                                ${adresse} <br>
+                                ${codePostal} <br>
+                                ${ville} <br>
+                            `
+                            $('.default-add').html('')
+                            $('.default-add').append(value)
+
+                        },
+                        error: function(retour){
+                            alert(retour)
+                        }
+                    })
+
+                })
+            }
+        });
+    </script>
+{% endblock %}

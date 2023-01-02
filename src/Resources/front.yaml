@@ -1,0 +1,127 @@
+#front_index:
+#    path: /
+#    defaults:
+#        #_controller: App\Controller\Front\FrontController::index
+#        _controller: FrameworkBundle:Redirect:urlRedirect
+#        path: /pharmacie
+#        permanent: true
+
+front_index:
+    path: /
+    defaults:
+        _controller: App\Controller\Front\FrontController::index
+
+front_checkPswd:
+    path: /check_pass
+    defaults:
+        _controller: App\Controller\Front\FrontController::checkPswd
+
+front_liste_categorie:
+    path: /suggestions/produits/
+    defaults:
+        _controller: App\Controller\Front\FrontController::productList
+
+front_ajax_list_produit:
+    path: /liste/produits/
+    defaults:
+        _controller: App\Controller\Front\FrontController::recuperationProduit
+
+front_filtre_produit:
+    path: /filtre/produits/
+    defaults:
+        _controller: App\Controller\Front\FrontController::filtre
+
+front_search_produit:
+    path: /chercher/produits/
+    defaults:
+        _controller: App\Controller\Front\FrontController::chercher
+
+front_produit_trouver:
+    path: /produits/trouver/
+    defaults:
+        _controller: App\Controller\Front\FrontController::trouver
+
+front_gamme_client:
+    path: /gamme/client/
+    defaults:
+        _controller: App\Controller\Front\FrontController::gammeClient
+
+front_generate_devis:
+    path: /generation-de-devis/{all}
+    defaults:
+        all: null
+        _controller: App\Controller\Front\FrontController::quoteGeneration
+
+front_signature_devis:
+    path: /signature-de-devis
+    defaults:
+        _controller: App\Controller\Front\FrontController::signature
+
+front_signature_devis_mail_sending:
+    path: /signature-de-devis/envoyer
+    defaults:
+        _controller: App\Controller\Front\FrontController::signatureMailSend
+
+front_request_signature:
+    path: /signature/{token}
+    defaults:
+        _controller: App\Controller\Front\FrontController::requestSignature
+
+front_signature_devis_online:
+    path: /signature-de-devis-en-ligne/{token}
+    defaults:
+        token: null
+        _controller: App\Controller\Front\FrontController::signatureOnline
+
+front_signature_devis_online_made:
+    path: /signature-de-devis-en-ligne-effectuee/{token}
+    defaults:
+        token: null
+        _controller: App\Controller\Front\FrontController::signatureOnlineMade
+
+front_send_code:
+    path: /code-de-validation/{token}
+    defaults:
+        token: null
+        _controller: App\Controller\Front\FrontController::code
+
+front_paiement:
+    path: /paiement/cb/{id}/{token}
+    defaults:
+        _controller: App\Controller\Front\FrontController::paiementStripe
+        requirements:
+            id: \d+
+
+front_remove_panier:
+    path: /supprimer/produit/{id}-{decl}-{idC}
+    defaults:
+        _controller: App\Controller\Front\FrontController::removePanier
+        requirements:
+            id: \d+
+            idC: \d+
+    
+front_ajout_panier:
+    path: /ajout/produit
+    defaults:
+        all: null
+        _controller: App\Controller\Front\FrontController::add
+       
+
+front_detail_panier:
+    path: /detail/panier/{id}/{all}
+    defaults:
+        all: null
+        _controller: App\Controller\Front\FrontController::detail
+        requirements:
+            id: \d+
+
+ajax_cart_add:
+    path: ajout/panier/
+    defaults:
+        _controller: App\Controller\Front\FrontController::ajaxAddCart
+      
+
+front_fetch_order:
+    path: /H4wCz5PADIE/_6-4Mb15Ytl1MUS12e/7AUVcKTOT3cVi0
+    defaults:
+        _controller: App\Controller\Front\FrontController::fetchPrestashopOrders

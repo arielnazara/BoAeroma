@@ -1,0 +1,18 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+
+{% block title %}Laboratoires Aeroma – code de validation bon de Commande n°{{devis.code}} {% endblock %}
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        Nous vous remercions pour votre commande n°{{ devis.code }}. Votre code de validation est le <strong>{{ code }}</strong> <br><br>
+
+        Nous sommes à votre disposition au 0970704707 pour tout renseignement complémentaire<br>
+        Bien cordialement, <br>
+        Océane<br>
+        Laboratoire Aeroma<br>
+
+
+    </div>
+{% endblock %}

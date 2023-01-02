@@ -1,0 +1,104 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-2">
+            <div class="element-box-tp">
+                <div class="el-buttons-list full-width">
+                    <a class="btn btn-white btn-sm {% if nicotines is defined %}active{% endif %}" href="{{path('back_production_index')}}"> Lot de nicotine</a>
+                    <a class="btn btn-white btn-sm {% if lotGlycerines is defined %}active{% endif %}" href="{{path('back_production_liste_glycerine')}}"> Lot d'olivéine</a>
+                    <a class="btn btn-white btn-sm {% if lotIsolats is defined %}active{% endif %}" href="{{path('back_production_liste_isolat')}}"> Lot d’isolat</a>
+                    <a class="btn btn-white btn-sm {% if lotVegetol is defined %}active{% endif %}" href="{{path('back_production_liste_vegetol')}}"> Lot végétol PDO</a>
+                    <a class="btn btn-white btn-sm {% if lotArome is defined %}active{% endif %}" href="{{path('back_production_liste_arome')}}"> Lot Arôme </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+           
+            <div class="element-wrapper">
+                <div class="element-box">
+
+                    {% block configuration %}
+                        <a href="{{path('back_production_create_nicotine')}}" class="btn btn-primary"><i class="os-icon os-icon-plus-circle"></i> Ajouter un lot de nicotine</a>
+                        <a href="{{path('back_production_liste_archives_nicotine')}}" class="btn float-right btn-outline-danger">Archives lot nicotine</a>
+
+                        {% for message in app.flashes('successArchive') %}
+                            <div class="alert mt-2 alert-success">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('lotCréer') %}
+                            <div class="alert mt-2 alert-success">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('successDelete') %}
+                            <div class="alert mt-2 alert-success">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+
+                        
+                        <h5 class="mt-4">LISTE DES LOTS ACTIFS</h5>
+                        
+                        <table class="table mt-5 table-striped table-lightfont table-hover dataTable1">
+                            <thead>
+                                <tr>
+                                    <th> Numéro du lot </th>
+                                    <th>Date de réception</th>
+                                    <th>Date debut d'utilisation</th>
+                                    <th> Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if lotActives %}
+                                
+                                    {% for lotActive in lotActives %}
+                                        <tr>
+                                            <td>
+                                                {{lotActive.numero}}
+                                            </td>
+                                            <td>
+                                                {% if lotActive.dateReception %}
+                                                    {{lotActive.dateReception|date('d-m-Y')}}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if lotActive.dateDebutUtilisation %}
+                                                    {{lotActive.dateDebutUtilisation|date('d-m-Y')}}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{{path('back_production_edit_nicotine', {id: lotActive.id})}}" class="btn btn-success btn-sm"><i class="os-icon os-icon-edit"></i></a>  
+                                                
+                                                <form method="post" class="d-inline" action="{{ path('back_production_delete_nicotine', {'id': lotActive.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette lot?');">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ lotActive.id) }}">
+                                                    <button class="btn btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></button>
+                                                </form>
+                                                <form method="post" class="d-inline" action="{{ path('back_production_archiver_nicotine', {'id': lotActive.id}) }}" >
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('archiver' ~ lotActive.id) }}">
+                                                    <button class="btn btn-primary btn-sm">Archiver</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                    
+                            </tbody>
+                        </table>
+
+                    {% endblock %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+                

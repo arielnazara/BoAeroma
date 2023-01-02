@@ -1,0 +1,39 @@
+{% extends 'back/produit/arome/listeArome.html.twig' %}
+
+{% block title %}Modification EAN 13{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% for message in app.flashes('errorModifProduit') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <h4 class="title">Modification EAN 13</h4>
+                    <div class="mt-4">
+                        <div class="col-md-8"> 
+                            <form action="{{path('back_produit_modification_ean', {id: produit.id})}}" method="POST">
+                                {% set compt = 0 %}
+
+                                {% for input in produit.codeEan13 %}
+                                    <div class="form-group">
+                                        <label for="{{compt}}">Code EAN n°{{compt + 1}}</label>
+                                        
+                                        <input type="number" name="{{compt}}" class="form-control" value="{{input}}" required>
+                                        
+                                        {% set compt = compt + 1 %}
+                                    </div>
+                                {% endfor %}
+
+                                <button class="btn btn-primary" type="submit">Modifier</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

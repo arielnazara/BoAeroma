@@ -1,0 +1,41 @@
+prestation_index:
+    path: /
+    defaults:
+        _controller: App\Controller\Back\PrestationController::index
+
+
+prestation_new:
+    path: /creation
+    defaults:
+        _controller: App\Controller\Back\PrestationController::prestation
+
+
+prestation_payement:
+    path: /payement/{id}
+    defaults:
+        _controller: App\Controller\Back\PrestationController::payer
+        requirements:
+          id: \d+
+
+
+prestation_delete:
+    path: /suppression/{id}
+    defaults:
+        _controller: App\Controller\Back\PrestationController::delete
+        requirements:
+          id: \d+
+
+prestation_show_invoice:
+    path: /voir_facture/{id}
+    defaults:
+        _controller: App\Controller\Back\PrestationController::showInvoice
+        requirements:
+          id: \d+
+
+          
+prestation_send_invoice:
+    path: /envoie/facture_prestation/{id}
+    defaults:
+        _controller: App\Controller\Back\PrestationController::sendInvoice
+        requirements:
+            id: \d+

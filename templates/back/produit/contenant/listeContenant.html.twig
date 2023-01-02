@@ -1,0 +1,60 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+
+{% block configuration %}
+    {% for message in app.flashes('successContenant') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h6 class="element-header">Liste des contenants</h6>
+
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+        <a href="{{path('back_produit_creation_contenant')}}" class="btn btn-primary btn-sm mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer un contenant</a>
+        
+        <table class="table table-striped table-lightfont table-hover dataTable1">
+            <thead>
+                <tr>
+                    <th> Nom </th>
+                    <th>Référence</th>
+                    <th>Taille du contenant</th>
+                    <th>Description</th>
+                    <th> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if contenants %}
+                    {% for contenant in contenants %}
+                        <tr>
+                            <td>
+                                {{contenant.nom}}
+                            </td>
+                            <td>
+                                {{contenant.reference}}
+                            </td>
+                            <td>
+                                {{contenant.taille}}
+                            </td>
+                            <td>
+                                {% if contenant.description %}
+                                    {{contenant.description}}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{path('back_produit_modification_contenant', {id: contenant.id})}}" class="btn btn-success btn-sm"><i class="os-icon os-icon-edit"></i></a>  
+                                <form method="post" class="d-inline" action="{{ path('back_produit_supprime_contenant', {'id': contenant.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet contenant?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contenant.id) }}">
+                                    <button style="padding-top: 0;" class="btn btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></button>
+                                </form> 
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        
+    </div>
+
+{% endblock %}
+                

@@ -1,0 +1,24 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+{% block title %}Laboratoires Aeroma {% endblock %}
+
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        {% if objet %}
+        
+            Nous venons d'enregistrer le paiement de votre facture {{prestation.numero}} et nous vous remercions de votre confiance.
+            Vous trouverez ci-joint la facture mise à jour de la mention acquittée.
+
+        {% else %}
+        
+            Veuillez trouvez si joint la facture de préstation numéro {{prestation.numero}}
+            
+        {% endif %}
+
+        <br><br>
+        Nous sommes à votre disposition pour toute information complémentaire.<br><br>
+        Bien cordialement,
+    </div>
+{% endblock %}

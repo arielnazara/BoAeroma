@@ -1,0 +1,249 @@
+{% set client = commande.client %}
+<div class="row">
+    <div class="col-6 table-responsive">
+        {% set total = 0 %}
+        {% set prix = 0 %}
+        {% set quantite = 0 %}
+        {% set tarifDecl = false %}
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th colspan="" scope="col" width="50%">
+                    Commandé
+                    <a style="display: none ;" href="{{ path('back_reactualiser_commande', {id: commande.devis.id}) }}">actualiser</a>
+                </th>
+                <th colspan="" scope="col" width="20%">Prix</th>
+                <th colspan="" scope="col" width="10%">Quantités</th>
+                <th colspan="" scope="col" width="20%">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set t = null %}
+            {% set pasDePrix = [] %}
+            {% for c in commandes %}
+            
+                {% set offert = false %}
+                {% if c.offert %}
+                    {% set offert = true %}
+                {% endif %}                
+                <tr>
+                    <td>
+                        
+                        {% set nomProduit = c.produit.getNomMarqueBlanche(client) %}
+
+                        {% set prixSpecifique = false %}
+                        {% if c.produit.marqueBlanches %}
+                            {% for mb in c.produit.marqueBlanches %}
+                                {% if mb.client and c.devis.client.id == mb.client.id %}
+                                    {% set prixSpecifique = true %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {{ nomProduit }} 
+                        {% if c.declineAvec %}
+                            {{c.declineAvec.principeActif}} {{c.declinaison}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if offert %}
+                            <span style="color: green;">Offert</span>
+                            {% set prix = 0 %}
+                        {% else %}
+                            
+                            {% if c.prixSpecial %}
+                            
+                                <button type="button" class="btn btn-sm btn-success" {% if commande.toutEstExpedier %} disabled {% endif %} title="Modifier prix"  data-toggle="modal" data-target="#modal{{c.produit.id}}{{c.id}}{{c.declinaison|replace({',': ''})}}">
+                                    {{c.prixSpecial}}€
+                                </button>
+                                {% set prix = c.prixSpecial %}
+
+                            {% else %}
+        
+                                <button type="button" class="btn btn-sm btn-success" {% if commande.toutEstExpedier %} disabled {% endif %} title="Modifier prix"  data-toggle="modal" data-target="#modal{{c.produit.id}}{{c.id}}{{c.declinaison|replace({',': ''})}}">
+                                    {{c.prix}}€
+                                </button>
+                                {% set prix = c.prix %}
+                                   
+                            {% endif %}
+                        {% endif %}
+                        
+
+                        {% if not c.offert %}
+                            <div class="modal fade" id="modal{{c.produit.id}}{{c.id}}{{c.declinaison|replace({',': ''})}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">Prix {{c.produit.nom}} {{c.declinaison}}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{path('back_modification_tarif_commande', {id: commande.id})}}" method="POST">
+                                                <input type="hidden" name="bonDeCommande" value="{{c.id}}">
+                                                <input type="hidden" name="produit" value="{{c.produit.id}}">
+                                                <input type="hidden" name="declinaison" value="{{c.declinaison}}">
+                                                <div class="form-group">
+
+                                                    
+
+                                                    <label for="recipient-name" class="col-form-label">Prix {% if prixSpecifique %} de référence client {% else %} de référence {% endif %} :</label>
+                                                   
+                                                    <input type="text" name="prix" class="form-control" value="{{prix}}" id="recipient-name">
+                                                        
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="message-text" class="col-form-label">Chosir l'opération à éffectuer:</label>
+                                                    <select class="form-control" name="operation" required>
+                                                        <option value=""></option>
+                                                        <option value="1">Modifier le prix pour cette commande uniquement</option>
+                                                        <option value="2">Modifier le prix {% if prixSpecifique %} de référence client {% else %} de référence {% endif %} </option>
+                                                    </select>
+                                                </div>
+                                                <input type="checkbox" class="d-none sendmail"  name="sendmail">
+                                                <div class="text-center">
+                                                    <button type="submit" class="btn envoyer btn-success btn-sm "> <i class="os-icon os-icon-edit"></i> editer</button>
+                                                    <button type="submit" class="btn edit btn-success btn-sm d-none"> </button>
+                                                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Annuler</button>
+                                                </div>
+                                            </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                    </td>
+                    <td>
+                        {{ c.quantite }}
+                        {% set quantite = c.quantite %}
+                        {% set t = t + quantite %}
+                    </td>
+                    <td>
+                        {% set total = prix * quantite %}
+                        {{total}}€
+                    </td>
+                </tr>
+            
+                {% if not prix and not c.offert %}
+                    {% set pasDePrix = pasDePrix|merge([nomProduit]) %}
+                {% endif %}
+            {% endfor %}
+            </tbody>
+            {#{ dump(t) }#}
+        </table>
+    </div>
+    <div class="col-3 table-responsive">
+        <table class="table">
+            <thead>
+            <tr class="bg-success" style="color: white">
+                <th colspan="2" scope="col">Expédié</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for c in commandes %}
+                <tr>
+                    <td>
+                        {% set nomProduit = c.produit.nom %}
+
+                        {% set prixSpecifique = false %}
+                        {% if c.produit.marqueBlanches %}
+                            {% for mb in c.produit.marqueBlanches %}
+                                {% if mb.client and c.devis.client.id == mb.client.id %}
+                                    {% set prixSpecifique = true %}
+                                    {% set nomProduit = mb.nom %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {{ nomProduit }} 
+
+                        {% if c.declineAvec %}
+                            {{c.declineAvec.principeActif}} {{c.declinaison}}
+                        {% endif %}
+                    </td>
+                    
+                    <td>{{ c.expedier }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-3 table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th colspan="2" scope="col">Reste à expédier</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set norm = [] %}
+            {% set duplicate = [] %}
+            {% for c in commandes %}
+                <tr>
+                    <td>
+                        
+                   
+
+                        
+
+                        {% set nomProduit = c.produit.nom %}
+
+                        {% set prixSpecifique = false %}
+                        {% if c.produit.marqueBlanches %}
+                            {% for mb in c.produit.marqueBlanches %}
+                                {% if mb.client and c.devis.client.id == mb.client.id %}
+                                    {% set prixSpecifique = true %}
+                                    {% set nomProduit = mb.nom %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {{ nomProduit }} 
+                        
+                        {% if c.declineAvec %}
+                            {% set val = nomProduit ~ c.declineAvec.principeActif ~ c.declinaison %}
+                            {{c.declineAvec.principeActif}} {{c.declinaison}}
+                        {% else %}
+                            {% set val = nomProduit %}
+                        {% endif %}
+
+
+                        
+                        {#% if val not in norm %}
+                        
+                            {% set norm = norm|merge([val]) %}
+
+                        {% else %}
+                            {{dump(c.id)}}
+                            {% set duplicate = duplicate|merge([val]) %}
+                            
+                        {% endif %#}
+                    </td>
+                    
+                    <td>{{ c.resteAExpedier }}</td>
+                </tr>
+            {% endfor %}
+            {#{dump(duplicate)}#}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% if show is defined and pasDePrix|length > 0 and commande.resteAlivrer > 0 %}
+
+    <div class="alert alert-warning">
+
+        <h5 class="alert-heading">Vous pouvez modifier en cliquant sur les boutons vert</h5>
+        <ul>
+            {% for pas in pasDePrix %}
+                <li> {{ pas }} n'a pas de prix </li>    
+            {% endfor %}
+        </ul>
+
+    </div>
+
+{% endif %}

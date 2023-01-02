@@ -1,0 +1,348 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Créer un produit{% endblock %}
+
+{% form_theme form "back/produit/_produit_arome_template.html.twig" %}
+
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% for message in app.flashes('errorModifProduit') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <h4 class="title">Créer un produit (étape 1/2)</h4>
+                    <div class="mt-4">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                
+                                
+                                <div class="row">
+                                  
+                                    <label for="reference" class="col-md-3">Référence interne</label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.reference, { 'attr': {'class': 'form-control', 'required': 'required'}})}}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <label for="reference" class="col-md-3">Type de produit <br> (Laissez vide si il s'agit d'un produit simple)</label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.Type, { 'attr': {'class': 'form-control'}})}}
+                                    </div>
+                                </div>
+                                
+                               
+                                
+                                <div class="row">
+                                    <label for="categorie" class="col-md-3">Catégorie </label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.categorie, {'attr':{'class': 'form-control search'}})}}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <label for="contenant" class="col-md-3">Contenant utilisé</label>
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.contenant, {'attr': {'class': 'form-control search' , 'required': 'required'}})}}
+                                    </div>
+                                </div>
+
+                                
+                                <div class="row">
+                                    
+                                    <label class="col-md-3" for="gamme">Gamme </label>
+                                    
+                                    <div class="form-group col-md-8">
+                                        {{form_row(form.gamme, {'attr':{'class' : 'form-control search', 'required': 'required' }})}}
+                                    </div>
+    
+                                </div>
+                                
+                                <div class="row">
+                                    <label for="arome" class=" col-md-3">Support</label>
+                                    <div class=" col-md-8">
+                                        {{form_row(form.base, {'attr': {'class': 'form-control search', 'required': 'required'}})}}
+                                    </div>
+                                    
+                                </div>
+
+
+                                <div class="row mt-3 ">
+                                    <label for="declineAvec" class=" col-md-3">Produit décliné avec de la </label>
+                                    <div class="form-group col-md-8 ml-3 ">
+                                        <div class="principe row">
+                                            
+                                            {{ form_row(form.principeActif) }}
+                                            
+                                        </div>
+                                       
+                                        <div class="decl row mt-3">
+                                            {% for principe in principeActif %}
+                                            
+                                                <div class=" mb-2 {{principe.principeActif|replace({' ': '', ',': '_', '%': '_'}) }}" style="display: none;">
+                                                    {% for decl in principe.declinaisons %}
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="declinaison[]" id="{{decl.declinaison}}" value="{{decl.declinaison}}">
+                                                            <label class="form-check-label" for="{{decl.declinaison}}" class="{{decl.declinaison}}">{{decl.declinaison}}</label>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                                
+                                            {% endfor %}
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                               
+                                <div class="row">
+                                    <label for="arome" class=" col-md-3">Arome</label>
+                                    <div class=" col-md-8">
+                                        {{form_row(form.produitAromes)}}
+                                        <a href="" id="ajoutArome" class=" my-2 btn btn-secondary btn-sm" data-nombre = "0" ><i class="os-icon os-icon-plus-circle"></i>Ajouter arome</a>
+                                    </div>
+                                    
+                                </div>
+
+                              
+                                <div class="row mt-3">
+                                    
+                                    <label class="col-md-3" for="gamme">Image </label>
+                                
+                                    <div class="form-group col-md-4">
+                                        {{form_row(form.imageFile, {'attr':{'class' : 'form-control' }})}}
+                                    </div>
+                                  
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="submit btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+                                </div>
+                                
+                            {{ form_end(form) }}
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+  <script>
+        
+        $(function(){
+
+            let count = $('#ajoutArome').data('nombre') + 1;
+
+
+            deleteBlock()
+
+            $('#ajoutArome').click(function (e) {
+
+                e.preventDefault()
+
+                console.log(count)
+
+                const template = $('#produit_produitAromes').data('prototype').replace(/__name__/g, `${count}`)
+
+                $('#produit_produitAromes').append(template)
+               
+                count++
+
+                deleteBlock()
+
+                $(".search").select2( {
+                    allowClear: true
+                } );
+            })
+
+            
+
+            function deleteBlock()
+            {
+                $('[data-action="delete"]').click(function(e){
+                    e.preventDefault()
+                   
+                    const ok = confirm('Voulez vous vraiment éfféctué cette action?')
+                    
+                    if(ok)
+                    {
+
+                        const div = $(this).data('target')
+    
+                        $(div).remove()
+                    }
+                })
+            }
+
+        })
+    
+    </script>
+    <script>
+        $(function(){
+            $('.marqueBlanche').hide();
+            
+            $('input[name="produit[principeActif]"]').change(function(){
+                let valeur = $(this).data('val');
+
+                $('.'+ valeur +'').show();
+
+                $('.decl').children().each(function(){
+                    if(!$(this).hasClass(valeur)){
+                        $(this).hide();
+
+                        $(this).find(':input').each(function(index, val){
+                            val.checked = false
+                        })
+                    }
+                });
+            });
+            
+            $('.fournisseur').hide();
+            let countBase = 1;
+            let count = 1;
+  //arome
+            $(".ajout-arome").click(function(e){
+                count += 1;
+                e.preventDefault();
+                let html = '';
+                html += '<div class=" row add-arome form-group">';
+                html += '<div class="col-sm-11">';
+                html += '<select class="form-control search" name="arome-'+ count +'">';
+                html += '<option value=""></option>';
+                html += '{% for arome in arome %}';
+                html += '<option value="{{arome.id}}">{{arome.nom}}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removeArome btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".newRow").append(html);
+
+                $(".search").select2( {
+                    allowClear: true
+                } );
+            });
+
+            $(document).on('click', '.removeArome', function(e){
+                e.preventDefault();
+                count -= 1;
+                $(this).closest('.add-arome').remove();
+            });
+
+//base
+            
+            
+            $('input:radio[name="produit[faitParAeroma]"]').change(function(){
+
+                if ($(this).is(':checked') && $(this).val() == true) {
+                    $('.fournisseur').hide();
+                    
+                } else if($(this).is(':checked') && $(this).val() == false){
+                    $('.fournisseur').show();
+                    
+                }
+            });
+
+            
+            $('input:radio[name="produit[marqueBlanche]"]').change(function(e){
+                
+                if($(this).is(':checked') && $(this).val() == true ){
+                    $('.marqueBlanche').show();
+                }else{
+                    $('.marqueBlanche').hide();
+                }
+                
+            });
+
+            if($('#produit_marqueBlanche_0').is(':checked') ){
+                    $('.marqueBlanche').show();
+                
+            }else{
+                $('.marqueBlanche').hide();
+            }
+            let countMB = 0;
+            $('.marqueBlanche').click(function(e){
+                countMB += 1;
+                e.preventDefault();
+                let htmlMBlanche = '';
+                htmlMBlanche += '<div class="add-MB mt-4 border" style=" padding: 30px">'
+                htmlMBlanche += '<div class="row">';
+                htmlMBlanche += '<div class="col-md-6">';
+                htmlMBlanche += '<input type="hidden" name="marque_blanche_'+ countMB +'" value="marque_blanche_'+ countMB +'">'
+                htmlMBlanche += '<input type="text" name="nom_marque_blanche_'+ countMB +'" class="form-control" placeholder="Nom du produit..." required="required">';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '<div class="col-md-5">'
+                htmlMBlanche += '<input type="text" name="reference_marque_blanche_'+ countMB +'" class="form-control" placeholder="Référence..."   required="required">';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '<div class="col-md-1">'
+                htmlMBlanche += '<a href="" class="removeMB btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '<div class="row">';
+                htmlMBlanche += '<div class="col-md-6">';
+                htmlMBlanche += '<select class="form-control mt-2" name="nom_client_marque_blanche_'+ countMB +'">';
+                htmlMBlanche += '{% for client in clientListe %}';
+                htmlMBlanche += '<option value="{{client.id}}">{{client.lastname}} {{client.firstname}}</option>';
+                htmlMBlanche += '{% endfor %}';
+                htmlMBlanche += '</select>';
+                htmlMBlanche += '</div>'
+                htmlMBlanche += '<div class="col-md-5">';
+                htmlMBlanche += '<input type="text" name="prix_marque_blanche_'+ countMB +'" class="form-control mt-2" placeholder="Tarif marque blanche..."  required="required">';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '</div>';
+                htmlMBlanche += '</div>';
+                $('.info_marque_blanche').append(htmlMBlanche);
+            });
+            
+            $(document).on('click', '.removeMB', function(e){
+                e.preventDefault();
+                countMB -= 1;
+                $(this).closest('.add-MB').remove();
+            });
+
+        });
+    </script>
+
+    <script>
+        $(function(){
+            
+            $(".search").select2( {
+                allowClear: true
+            } );
+    
+
+            $('.appliquer').click(function(e){
+
+                e.preventDefault();
+                let declinaison = $(this).attr('data-mg');
+                let reference = $('#produit_reference').val();
+
+                if(declinaison == "19mg"){
+                    $('#19mg').val(reference+'19,9mg');
+                }else{
+                    
+                    $('#'+ declinaison +'').val(reference+declinaison);
+                }
+            });
+
+            $('.appliquerCBD').click(function(e){
+
+                e.preventDefault();
+                let declinaison = $(this).attr('data-mg');
+                let reference = $('#produit_reference').val();
+ 
+                $('#'+ declinaison +'').val(reference+declinaison);
+            
+            });
+        });
+    </script>
+{% endblock %}

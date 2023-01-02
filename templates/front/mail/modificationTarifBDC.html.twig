@@ -1,0 +1,20 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+
+{% block title %}Laboratoire Aeroma – Bon de Commande n°{{devis.code}} {% endblock %}
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        Nous vous remercions pour votre commande n°<strong>{{ devis.code }}</strong> Vous trouverez ci-joint une copie de votre bon de commande.
+
+        Nous allons traiter votre demande dans les plus brefs délais. <br>
+        Vous recevrez une facture lors de l’expédition de la commande <br>
+        Nous sommes à votre disposition au 0970704707 pour tout renseignement complémentaire<br>
+        Bien cordialement, <br>
+        Océane<br>
+        Laboratoire Aeroma<br>
+
+
+    </div>
+{% endblock %}

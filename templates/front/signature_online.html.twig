@@ -1,0 +1,315 @@
+{% extends 'front-base.html.twig' %}
+
+{% block classBody %}bg-light{% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div class="row card pb-5">
+            <div class="col-12">
+                {{ include('front/header.html.twig') }}
+            </div>
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <p style="color: black" class="text-left">
+                            <strong>Visualisation et signature de votre bon de commande {{ devis.code }}. <!--<a href="" style="text-decoration: underline">Modifier le devis</a> --></strong> <br>
+                            Nous venons de vous adresser votre devis à l’adresse : <strong>{{ devis.client.email }}</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div class="col-12">
+                <h1 class="display-4">Veuillez valider les conditions du contrat & signer en bas du bon de commande</h1>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="table-responsive">
+                            <table class="table" style="width: 100%; margin: auto; border: dashed grey thin">
+                                <tr>
+                                    <td>Raison sociale/ organisation</td>
+                                    <td>{{ devis.client.raisonSocial }}</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td><span class="text-underline">SIREN</span></td>
+                                    <td>{{ devis.client.siren }}</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="text-underline">Numéro TVA</span></td>
+                                    <td>{{ devis.client.noTva }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Identité</td>
+                                    <td>
+                                         <span class="firstname">{{ devis.client.firstName }}</span><br> <span class="name">{{ devis.client.lastName }}</span>
+                                    </td>
+                                </tr>
+                        
+                                <tr>
+                                    <td> Adresse</td>
+                                    <td>
+                                        {{ devis.client.adresseFacturation }} <br>
+                                        {{ devis.client.villeFacturation }} {{ devis.client.codePostalFacturation }} <br>
+                                        {{ devis.client.pays }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td> Email</td>
+                                    <td class="email"> {{ devis.client.email }}</td>
+                                </tr>
+                                <tr>
+                                    <td> Téléphone</td>
+                                    <td>{{ devis.client.telephone }}</td>
+                                </tr>
+                                {#% if devis.client.deliveryAddresses() is not empty %}
+                                    {% for da in devis.client.deliveryAddresses %}
+                                        <tr>
+                                            <td>{{ da.name }} <br> {{ da.denomination }}</td>
+                                            <td>
+                                                A l'attention de {{ da.toTheAttentionOf }} <br>
+                                                {{ da.tel }} {{ da.email }} <br>
+                                                {{ da.address }} <br>
+                                                {{ da.city }} {{ da.postalCode }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %#}
+                            </table>
+
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-7">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                
+                                {% for produit in devis.devisProduits %}
+                                    
+                                    {% set tarif = produit.produit.tarif %}
+                                    {% for mb in marqueBlanches %}
+                                        {% if produit.produit == mb.produit %}
+                                            {% set tarif = mb.tarif %}
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <tr>
+                                        <td>
+                                            <strong>{{produit.quantite}} </strong> {{produit.produit.nom}} {% if produit.offert %} <span class="text-success">(Offert)</span>{% endif %}<br> 
+                                            
+                                            {% if produit.declinaison == null or produit.declinaison == "sans" %}
+                                                Sans déclinaison
+                                            {% else %}
+                                                {{produit.declineAvec}} {{produit.declinaison}} 
+                                            {% endif %}
+                                            
+                                        </td>
+                                        
+                                        {% set total = 0 %}
+
+                                        {% if not produit.offert %}
+                                       
+                                            {% if tarif %}
+                                                {% for type in types %}
+                                                    {% if devis.client.typeDeClient == type %}
+                                                    
+                                                        {% if tarif.memeTarif %}
+
+                                                            {% if devis.client.typeDeClient.nom|lower == "grossiste" %}
+                                                                {% set total = tarif.prixDeReferenceGrossiste * produit.quantite %}  
+                                                            {% else %}
+                                                                {% set total = tarif.prixDeReferenceDetaillant * produit.quantite %}  
+                                                                
+                                                            {% endif %}
+
+                                                        {% else %}
+
+                                                            {% if devis.client.typeDeClient.nom|lower == "grossiste" %}
+                                                            
+                                                                {% for prixDecl in tarif.prixDeclinaisons %}
+                                                                    {% if prixDecl.actif  %}
+                                                                        {% if prixDecl.typeDeClient == type %}
+                                
+                                                                            {% if prixDecl.declinaison == produit.declinaison %}
+                                                                                {% set total = prixDecl.prix * produit.quantite %}
+                                                                            {% endif %}
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                {% endfor %} 
+                                                            
+                                                            {% else %}
+                                                                
+                                                                {% for prixDecl in tarif.prixDeclinaisons %}
+                                                                    {% if prixDecl.actif  %}
+                                                                        {% if prixDecl.typeDeClient == type %}
+                                
+                                                                            {% if prixDecl.declinaison == produit.declinaison %}
+                                                                                {% set total = prixDecl.prix * produit.quantite %}
+                                                                            {% endif %}
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                {% endfor %} 
+                                                            
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}    
+                                                {% endfor %}
+                                                
+                                                
+                                            {% endif %}
+                                        
+                                        {% endif %}
+                                        <td>{{ total|number_format(2, ',', ' ') }}€</td>
+                                    </tr>
+                                    
+                                {% endfor %}
+                                <tr>
+                                    <td>Montant</td>
+                                    <td>{{ devis.montant|number_format(2, ',', ' ') }}€</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Frais de <br>port HT</td>
+                                    <td>
+                                        {% if devis.fraisExpedition and devis.fraisExpedition > 0 %}
+                                            {{ devis.fraisExpedition|number_format(2, ',', ' ') }}€
+                                        {% else %}
+                                            <span class="text-success">Gratuit</span>
+                                        {% endif %}
+                                        
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Total ht</td>
+                                    <td>{{ devis.totalHt|number_format(2, ',', ' ') }}€</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Tva 20%</td>
+                                    <td>
+                                        
+                                        {{ devis.taxe|number_format(2, ',', ' ') }}€
+                                        
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <strong style="font-weight: bold;">Total ttc</strong>
+                                    </td>
+                                    <td>
+                                        <strong style="font-weight: bold;">{{ devis.totalTtc|number_format(2, ',', ' ') }}€</strong>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                        {% if not token %}
+                            <a href="{{path('front_generate_devis')}}" class="ml-5">Modifier les quantités </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-12 text-center mt-3">
+                    {% for message in app.flashes('alert') %}
+                        <div class="alert alert-danger danger">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+    
+                <div class="col-md-12 text-center mt-3">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success success">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+    
+                <form class="mt-3" method="post" action="" autocomplete="off">
+                    <div class="custom-control custom-checkbox mb-3">
+                        <input required name="valid_c" class="custom-control-input" id="valid_c" type="checkbox">
+                        <label class="custom-control-label" for="valid_c">Je valide ce devis et accepte les <a target="_blank" href="{#{ asset('pdf/CGV_elican_Biotech_Aeroma.pdf') }#}">conditions générales de vente</a> .</label>
+                    </div>
+                    <div class="row">
+                        <!--<div class="col-md-6">
+                            <div class="form-group">
+                                <input name="name" required autocomplete="off" type="text" class="form-control" id="" placeholder="Entrer votre nom">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input name="firstname" required autocomplete="off" type="text" placeholder="Entrer votre prénom" class="form-control" />
+                            </div>
+                        </div>-->
+                        
+                        {% if code %}
+
+                            <div class="col-md-5 text-center">
+                                
+                                <p class="font-weight-bold">Indiquez le code à 6 chiffres que vous venez de recevoir</p>
+                            
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <input name="number" required autocomplete="off" type="text" class="form-control" placeholder="code à 6 chiffes" />
+                                </div>
+                            </div>
+
+                        {% else %}
+
+                            <div class="col-md-5 text-center">
+                            
+                                <p class="font-weight-bold">Indiquez votre mail pour recevoir le code de signature </p>
+                            
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    
+                                    <input name="email" required autocomplete="off" type="email" placeholder="Indiquez votre e-mail
+                                    " class="form-control emailValidation" />
+                                </div>
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <div style="display: none" class="alert error alert-warning" role="alert">
+                                <strong>Attention!</strong> votre addresse Email ne correspond pas à celui indiqué dans le devis
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg submit">
+                                {% if code %}
+                                    Je confirme et signe ma commande
+                                {% else %}
+                                    Je récupère mon code de signature
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    $(function(){
+
+        if($('.success').is(":visible") || $('.danger').is(":visible")){
+            
+            $("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 2000);
+            
+        }
+        
+    });
+</script>    
+
+{% endblock %}

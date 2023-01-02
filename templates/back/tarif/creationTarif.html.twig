@@ -1,0 +1,210 @@
+
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        
+        <div class="col-md-2">
+            <div class="element-box-tp">
+                <div class="el-buttons-list full-width">
+                    {% set tarifClient = false %}
+                    {% if app.request.get('client') %}
+                        {% set tarifClient = true %}
+                    {% endif %}
+                    <a class="btn btn-white btn-sm {% if tarifRef is defined and not tarifClient %}active{% endif %}" href="{{path('back_tarif_creation')}}"><i class="os-icon os-icon-plus-circle"></i>Tarif de référence</a>
+                    <a class="btn btn-white btn-sm {% if tarifMarque is defined %}active{% endif %}" href="{{path('back_tarif_marque_creation')}}"><i class="os-icon os-icon-plus-circle"></i> Tarif par marque</a>
+                    <a class="btn btn-white btn-sm {% if tarifClient %}active{% endif %}" href="{{path('back_tarif_client_creation')}}"><i class="os-icon os-icon-plus-circle"></i>Tarif client</a>
+                </div>
+            </div>
+           
+        </div>
+        <div class="col-md-10">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% block tarifs %}
+                        <div class="row ">
+                            <div class="col-lg-12">
+                                <div class="element-wrapper">
+                                    <div class="element-box">
+
+                                        {% for message in app.flashes('errorTarif') %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ message }}
+                                            </div>
+                                        {% endfor %}
+
+                                        <h4 class="title">Création tarif  {% if tarifClient %} par client {% else %} de référence {% endif %} </h4>
+                                        <div class="mt-4">
+                                            <div class="col-md-12"> 
+                                                {{ form_start(form) }}
+                                                    {{form_errors(form)}}
+
+                                                    <div class="form-group row">
+                                                        {% if tarifClient %}
+                                                            <div class="col-md-6">
+                                                                <label for="">Veuillez choisir un client</label>
+                                                                {{ form_row(form.client, {'attr':{'class': 'form-control search'}}) }}
+                                                            </div>
+
+                                                        {% else %}
+                                                            {{ form_row(form.client, {'attr':{'class': 'form-control d-none'}}) }}
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group col-md-6">
+                                                            {{ form_row(form.nom, {'label': 'Nom tarif ', 'attr':{'class': 'form-control', 'required': true }}) }}
+                                                        </div>
+
+                                                        <div class="form-group col-md-6">
+                                                            {{ form_row(form.categorie, {'label': 'Categorie', 'attr':{'class': 'form-control search', 'required': true }}) }}
+                                                        </div>
+                                                    </div>
+                                                
+                                                    <div class="row">
+                                                        <div class="form-group col-md-6">
+                                                            {{ form_row(form.contenance, {'label': 'Contenant', 'attr':{'class': 'form-control search', 'required': true}}) }}
+                                                        </div>
+
+                                                        <div class="form-group col-md-6">
+                                                            {{ form_row(form.base, {'label': 'Support', 'attr':{'class': 'form-control search', 'required': true}}) }}
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="">Meme tarif toute déclinaison :</label>
+                                                            {{ form_row(form.memeTarif, { 'attr':{'class': 'form-check form-check-inline ', 'required': true}}) }}
+                                                        </div>
+
+                                                        <div class="form-group col-md-6">
+                                                            {{ form_row(form.declineAvec, {'label': 'Choisir un additif', 'attr':{'class': 'form-control'}}) }}
+                                                        </div>
+                                                    </div>
+
+                                                   
+
+                                                    <div class="form-group">
+                                                        {{ form_row(form.marque, { 'attr':{'class': 'form-control d-none'}}) }}
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group col-md-6">
+                                                            {{ form_row(form.prixDeReferenceDetaillant, {'label': 'Prix de référence détaillant', 'attr':{'class': 'form-control modifier', 'required' : true}}) }}
+                                                        </div>
+                    
+                                                        <div class="form-group col-md-6">
+                                                            {{ form_row(form.prixDeReferenceGrossiste, {'label': 'Prix de référence grossiste', 'attr':{'class': 'form-control modifier', 'required' : true}}) }}
+                                                        </div>
+                                                    
+                                                    </div>
+                                                    
+                                                    <div class="row">
+                                                        {% for type in types %}
+                                                            
+                                                            {% for principe in principes %}
+                                                        
+                                                                <div class="declinaison col-md-6 p-4 " data-principe="{{principe.principeActif}}" style="display: none;">
+                                                                    <h4 class="text-center text-primary">{{type.nom}}</h4>
+                                                                    {% for decl in principe.declinaisons %}
+                                                                        <div class="row mt-2">
+                                                                            <div class="col-md-5">
+                                                                                <label for="{{decl.declinaison}}">Prix pour {{decl.declinaison}}</label>
+                                                                            </div>
+                                                                            <div class="col-md-7">
+                                                                                <input class="form-control" required type="number" min="0" step=".01" name="{{principe.principeActif|replace({' ': '', ',': '_', '%': '_'})}}{{decl.declinaison|replace({' ': '', ',': '_', '%': '_'})}}{{type.nom}}" value="">
+                                                                            </div>
+                                                                        </div>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% endfor %}
+
+                                                        {% endfor %}
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6 mt-3 mb-5">
+                                                        <button class="btn btn-{{ info|default('primary') }} float-right">{{ button_label|default('Enregistrer') }}</button>
+                                                    </div>
+                                                    
+                                                    
+                                                {{ form_end(form) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}   
+{% block custom_js %}
+    <script>
+            $(function(){
+                $('.modifier').attr('type', 'number');
+        
+                if($('#tarif_memeTarif_0:checked')){
+                    $('.declinaison').hide();
+                }
+
+                if($('#tarif_memeTarif_1').prop('checked')){
+                
+                    $('.declinaison').each(function(){
+                        if($('#tarif_declineAvec option:selected').text() == $(this).attr('data-principe')){
+                            $(this).show('slow');
+                        }else{
+                            $(this).hide();
+                        }
+                    })
+                        
+                }
+
+                $('input[type=radio]').change(function() {
+                    let val = $(this);
+                    let resultat =  parseInt (val.val());
+                    if( resultat == 0 ){
+                        
+                        $('.declinaison').each(function(){
+                            if($('#tarif_declineAvec option:selected').text() == $(this).attr('data-principe')){
+                                $(this).show('slow');
+                            }else{
+                                $(this).hide();
+                                $(this).find('input[type=number]').prop('required', false);
+                            }
+                        })
+                        
+                    }else{
+                        
+                        $('.declinaison').hide('slow');
+                        $('.declinaison').find('input[type=number]').prop('required', false);
+
+                    }
+                });
+
+                $('#tarif_declineAvec').change(function(){
+                    if($('#tarif_memeTarif_1').is(':checked')){
+                        $('.declinaison').each(function(){
+                            if($('#tarif_declineAvec option:selected').text() == $(this).attr('data-principe')){
+                                $(this).show('slow');
+                            }else{
+                                $(this).hide('slow');
+                                $(this).find('input[type=number]').prop('required', false);
+                            }
+                        })
+                    }  
+                });
+
+                $(".search").select2( {
+                    allowClear: true
+                } );
+               
+                
+            });
+
+    </script>
+
+{% endblock %}

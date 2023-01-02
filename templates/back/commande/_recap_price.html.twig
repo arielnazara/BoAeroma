@@ -1,0 +1,229 @@
+<div class="order-details-box">
+                    
+    <div class="order-main-info">
+        <div class="order-sub-info mb-2">
+            <span>Créé le</span><strong>{{ commande.date|date('d/m/Y') }}</strong>
+        </div>
+
+        <span>Numéro de commande client #</span><strong>{{ commande.code }}</strong>
+        {% if commande.codeInterne %}
+            <span class="mt-3">Numéro de commande interne #</span><strong>{{ commande.codeInterne }}</strong>
+        {% endif %}
+
+        
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn mt-3 btn-primary btn-sm" data-toggle="modal" data-target="#numeroClient">
+            <i class="os-icon os-icon-plus-circle"></i> Numéro de commande interne client
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="numeroClient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Ajouter numero de commande interne client</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ path('back_code_interne_commande', {id: commande.id}) }}" method="post">
+                            <div class="form-group">
+                                <label for="code_client">Code interne client</label>
+                                <input type="text" class="form-control" id="code_client" name="code_client" value="{{ commande.codeInterneClient }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Valider</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-sub-info">
+        <span>Montant </span>
+        <strong>
+            {% if commande.devis.montantFinal and commande.devis.montantFinal.montant != commande.devis.montant  %}
+                {{ commande.devis.montantFinal.montant|number_format(2, ',', ' ') }}€
+            {% else %}
+                {{ commande.devis.montant|number_format(2, ',', ' ') }}€
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="order-sub-info">
+        <span>Frais de port</span>
+        
+        {% if commande.devis.fraisExpedition %}
+            {% if commande.devis.fraisExpedition == 0.0 %}
+                <strong class="text-success" style="display: inline;"> <small>GRATUITE</small></strong>
+            {% else %}
+                <strong style="display: inline;">{{ commande.devis.fraisExpedition|number_format(2, ',', ' ') }}€</strong>
+            {% endif %}
+        {% endif %}
+
+         <!-- Button trigger modal -->
+        
+        <button type="button" class="btn btn-link text-success" style="margin-top: -10px;" data-toggle="modal" data-target="#exampleModalCenter">
+            <i class="os-icon os-icon-edit"></i>
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modifier le frais de port</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{path('back_devis_change_shipping_fee', {id: commande.devis.id})}}" method="POST">
+                            <div class="form-group">
+                                <input class="form-control" required value="{{commande.devis.fraisExpedition}}"  min="0" step=".01" type="number" name="fraisDeLivraison">
+                            </div>
+                            <button class="btn btn-primary">Valider</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="order-sub-info">
+        <span>Prix HT</span>
+        <strong>
+            {% if commande.devis.montantFinal and commande.devis.montantFinal.totalHT != commande.devis.totalHT %}
+                {{ commande.devis.montantFinal.totalHT|number_format(2, ',', ' ') }}€ 
+            {% else %}
+                {{ commande.devis.totalHT|number_format(2, ',', ' ') }}€
+            {% endif %}
+        </strong>
+        
+    </div>
+
+    {% if commande.escompte and commande.pourcentageEscompte > 0 %}
+        <div class="order-sub-info">
+            <span>Escompte {{ commande.pourcentageEscompte|round(2) }} %</span>
+            <strong>
+                {{commande.escompte|number_format(2, ',', ' ') }}€
+            </strong>
+        </div>
+
+        <div class="order-sub-info">
+            <span>Net financier</span>
+            <strong>
+                {{commande.netFinancier|number_format(2, ',', ' ') }}€
+            </strong>
+        </div>
+
+    {% endif %}
+        
+            
+    <div class="order-sub-info">
+        <span>Taxe</span>
+        <strong  style="display: inline;">
+            {% if commande.devis.montantFinal and commande.devis.montantFinal.taxe != commande.devis.taxe  %}
+                {{ commande.devis.montantFinal.taxe|number_format(2, ',', ' ') }}€ 
+            {% else %}
+                {{ commande.devis.taxe|number_format(2, ',', ' ') }}€
+            {% endif %}
+        </strong>
+
+        <button type="button" class="btn btn-link text-success" style="margin-top: -10px;" data-toggle="modal" data-target="#modalTva">
+            <i class="os-icon os-icon-edit"></i>
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="modalTva" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modifier TVA</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{path('back_devis_change_taxe', {id: commande.devis.id})}}" method="POST">
+                            <div class="form-group">
+                                <input class="form-control" required value="{{commande.devis.taxe}}"  min="0" step=".01" type="number" name="taxe">
+                            </div>
+                            <button class="btn btn-primary">Valider</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="order-sub-info">
+        <span>
+            {{ commande.acompte ? 'Rèste' : 'Montant' }}  à payer (en TTC)
+        </span>
+        <strong>     
+            {% if commande.devis.montantFinal and commande.devis.montantFinal.totalTtc != commande.devis.totalTtc  %}
+                {{ commande.devis.montantFinal.totalTtc|number_format(2, ',', ' ') }}€ 
+            {% else %}
+                {{ commande.devis.totalTtc|number_format(2, ',', ' ') }}€
+            {% endif %}
+        </strong>
+    </div>
+</div>
+
+{% for message in app.flashes('modificationFraisEffectuer') %}
+    <div class="alert alert-success">
+        {{message}}
+    </div>
+{% endfor %}
+
+{% set acompte = commande.totalTtc * 0.3 %}
+
+<div class="modal fade" id="Acompte" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Ajouter acompte</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{{ path('back_commande_ajout_acompte_facture', {'id': commande.id, 'number': commande.code}) }}" method="post">
+                <div class="form-group">
+                    <label for="acompte_payer" class="col-form-label">Montant payé</label>
+                    
+                    <input type="number" name="acompte_payer" min="0" step=".01" id="acompte_payer" value="{% if commande.acompte %}{{commande.acompte|number_format(2, ',', ' ')}}{% else %}{{acompte|number_format(2, ',', ' ')}}{% endif %}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="date_paiement_acompte" class="col-form-label">Date de paiement</label>
+                    <input id="date_paiement_acompte"  autocomplete="off" class="form-control single-daterange" name="date_paiement_acompte" type="text">
+                </div>
+                <button class="btn btn-primary" type="submit">Valider</button>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    {#% if commande.acompte %}
+        <div class="alert col text-center alert-info mr-2">
+            <h6 class="alert-heading">Acompte payé : {{ commande.acompte|number_format(2, ',', ' ') }}€</h6>
+            <p>Date de paiement: {{ commande.datePaiementAcompte|date('d/m/Y') }} </p>
+        </div>
+    {% endif %#}
+
+    {#% if commande.avoir %}
+        <div class="alert col text-center alert-warning">
+            <h6 class="alert-heading">Avoir : {{ commande.avoir|number_format(2, ',', ' ') }}€</h6>
+            
+        </div>
+    {% endif %#}
+
+</div>

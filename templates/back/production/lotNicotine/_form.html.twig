@@ -1,0 +1,25 @@
+{{form_start(form)}}
+
+    <div class="col-md-6">
+        <div class="form-group">
+            {{form_row(form.numero,{'label': 'Numero du lot','attr':{'class': 'form-control'}})}}
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-6 form-group">
+                {{form_row(form.dateReception,{'label': 'Date de récéption','attr':{'class': 'form-control'}})}}
+            </div>
+            <div class="col-md-6 form-group">
+                {{form_row(form.dateDebutUtilisation,{'label': "Date debut d'utilisation",'attr':{'class': 'form-control'}})}}
+            </div>
+        </div>
+
+        {{form_row(form.active)}}
+        
+        <div class="text-right">
+            <button type="submit" class="btn  btn-primary">Valider</button>
+        </div>
+        
+    </div>
+
+{{form_end(form)}}

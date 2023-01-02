@@ -1,0 +1,24 @@
+<div class="form-group">
+    <label for="">Indiquez le numéro de bon de commande renseigné
+        <br><span style="font-size: 80%">(Laisser vide pour une numérotation automatique)</span></label>
+    <input autocomplete="off" type="text" class="form-control" name="number">
+</div>
+
+<div class="form-group">
+    <label for="">Indiquez la date du bon de commande
+        <br><span style="font-size: 80%">(Laisser vide pour le date d’aujourd’hui)</span></label>
+    <input autocomplete="off" type="text" class="single-daterange form-control" name="date">
+</div>
+
+
+{#<div class="form-group">
+    <label>Uploader le bon de commande envoyé</label>
+    <div class="custom-file mb-3">
+        <input type="file" class="custom-file-input" id="customFile" name="bc">
+        <label class="custom-file-label" for="customFile">Choisir un fichier</label>
+    </div>
+</div>#}
+
+<div class="form-buttons-w d-flex justify-content-around">
+    <button class="btn btn-primary" type="submit">Générer le compte</button>
+</div>

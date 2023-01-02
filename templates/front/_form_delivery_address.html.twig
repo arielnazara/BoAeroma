@@ -1,0 +1,80 @@
+<div class="__index">
+    {% if delivery is defined %}
+    <input type="hidden" name="idd__index" value="{{ delivery.id }}">
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="js-form-message">
+                <label class="labels">
+                    Donner un nom à cette adresse <span class="text-danger">*</span>
+                </label>
+                <input value="{% if delivery is defined %}{{ delivery.name }}{% endif %}" required name="_name__index" type="text" class="form-control form-control-sm" autocomplete="off" placeholder="Nom de cette adresse">
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="js-form-message">
+                <label class="labels">
+                    Raison sociale/ organisation  <span class="text-danger">*</span>
+                </label>
+                <input value="{% if delivery is defined %}{{ delivery.denomination }}{% endif %}" required name="_raison_social__index" type="text" class="form-control form-control-sm" autocomplete="off" placeholder="Raison sociale">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="js-form-message">
+                <label class="labels">
+                    A l'attention de <span class="text-danger">*</span>
+                </label>
+                <input value="{% if delivery is defined %}{{ delivery.toTheAttentionOf }}{% endif %}" required name="_for__index" type="text" class="form-control form-control-sm" autocomplete="off" placeholder="">
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="js-form-message">
+                <label class="labels">
+                    Adresse <span class="text-danger">*</span>
+                </label>
+                <input value="{% if delivery is defined %}{{ delivery.address }}{% endif %}" required name="_adr__index" type="text" class="form-control form-control-sm" autocomplete="off" placeholder="Adresse">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="js-form-message">
+                <label class="labels">
+                    Code postal <span class="text-danger">*</span>
+                </label>
+                <input required value="{% if delivery is defined %}{{ delivery.postalCode }}{% endif %}" name="_cp__index" type="number" class="form-control form-control-sm" autocomplete="off" placeholder="0000">
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="js-form-message">
+                <label class="labels">
+                    Ville  <span class="text-danger">*</span>
+                </label>
+                <input value="{% if delivery is defined %}{{ delivery.city }}{% endif %}" required name="_city__index" type="text" class="form-control form-control-sm" autocomplete="off" placeholder="Ville">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="js-form-message">
+                <label class="labels">
+                    Téléphone <span class="text-danger">*</span>
+                </label>
+                <input value="{% if delivery is defined %}{{ delivery.tel }}{% endif %}" required name="_tel__index" type="text" class="form-control form-control-sm" autocomplete="off" placeholder="Téléphone">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="js-form-message">
+                <label class="labels">
+                    Email <span class="text-danger">*</span>
+                </label>
+                <input value="{% if delivery is defined %}{{ delivery.email }}{% endif %}" required name="_email__index" type="email" class="form-control form-control-sm" autocomplete="off" placeholder="Email">
+            </div>
+        </div>
+    </div>
+</div>

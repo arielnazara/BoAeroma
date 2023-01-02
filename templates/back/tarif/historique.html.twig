@@ -1,0 +1,224 @@
+{% extends 'back/tarif/index.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="element-wrapper">
+                <div class="element-box">
+                
+                    {% for message in app.flashes('successTarif') %}
+                        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <h6 class="element-header">Historique des prix</h6>
+
+                    
+                    <div id="tablecontent" class="table-responsive">
+                        <div style="margin: auto; display: none" class="loader"></div>
+
+                        {% for message in app.flashes('successAjoutDeclinaison') %}
+                            <div class="alert alert-success">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                        
+                        <div class="d-flex justify-content-center p-2 ">
+                            <div class="question text-center border rounded col-md-6 p-3 bg-light shadow ">
+                                
+                                <h4>{{tarif.categorie}} - {{tarif.base}} - {{tarif.contenance}} - {{tarif.declineAvec}} </h4>
+                                Prix de référence Detaillant: {{tarif.prixDeReferenceDetaillant}}€ du {{tarif.dateAjout|date('d M Y')}} <br>
+                                Prix de référence grossiste: {{tarif.prixDeReferenceGrossiste}}€ du {{tarif.dateAjout|date('d M Y')}} <br>
+                                
+                            </div>
+
+                        </div>
+                        <table class="table table-striped table-lightfont table-hover dataTable1">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Statut</th>
+                                    <th class="text-center"> Date de création </th>
+                                    <th class="text-center">Tarif de refenence <br> Détaillant</th>
+                                    <th class="text-center">Tarif de refenence <br> Grossiste</th>
+                                    <th class="text-center">Même tarif pour <br> toute les déclinaisons</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            
+                                {% for histo in tarifHistorique %}
+                                    <tr>
+                                        <td class="text-center">
+                                            {% if histo.actif %} 
+                                                <span class="status-pill smaller green font-weight-bold"></span><span class="text-success font-weight-bold">Actif</span>
+                                            {% else %}
+                                                <span class="status-pill smaller red"></span><span class="text-danger">Inactif</span>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-light">{{histo.date|date('d M Y')}}</span> 
+                                    
+                                        </td>
+
+                                        <td class="text-center">
+                                            {% if histo.actif %}
+                                                <span class="badge badge-light">
+                                                    <h5 class="font-weight-bold text-success ">{{histo.prixDetaillant}}€</h5>
+                                                </span>
+                                            {% else %}
+                                                <span class="badge badge-light">{{histo.prixDetaillant}}€</span> 
+                                            {% endif %}
+                                            <br>
+
+                                            {% if not histo.tarif.memeTarif %}
+                                                <button type="button" class="btn btn-link btn-sm mt-2" data-toggle="modal" data-target="#modal{{histo.id}}Detaillan">
+                                                    Tarifs pro détaillant
+                                                </button>
+
+                                                  <!-- Modal -->
+                                                <div class="modal fade" id="modal{{histo.id}}Detaillan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                            <h5 style="text-align: center; text-transform: uppercase; color: black">Prix des déclinasons du tarif {{histo.tarif.nom}}</h5> <br>
+                                                            
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <table class="table table-striped">
+                                                                    
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th scope="col">Declinaison {{tarif.declineAvec}}</th>
+                                                                            <th scope="col">Prix</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for type in types %}
+                                                                        
+                                                                        {% if type.nom|lower == 'détaillant' %}
+                                                                       
+                                                                            {% for prixDecl in histo.prixDeclinaisons %}
+                                                                                {% if prixDecl.typeDeClient == type %}
+                                                                                    
+                                                                                    <tr>
+                                                                                        <th scope="row">{{prixDecl.declinaison}}</th>
+                                                                                        <td>
+                                                                                            {{prixDecl.prix}}€ 
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    
+                                                                                {% endif %}
+                                                                
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            
+                                        </td>
+
+                                        <td class="text-center">
+                                            {% if histo.actif %}
+                                                <span class="badge badge-light">
+                                                    <h5 class="font-weight-bold text-success ">{{histo.prixGrossiste}}€</h5>
+                                                </span>
+                                            {% else %}
+                                                <span class="badge badge-light">{{histo.prixGrossiste}}€</span> 
+                                            {% endif %}
+                                            <br>
+
+                                            {% if not histo.tarif.memeTarif %}
+                                                <button type="button" class="btn btn-link btn-sm mt-2" data-toggle="modal" data-target="#modal{{histo.id}}Grossiste">
+                                                    Tarifs pro grossiste
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="modal{{histo.id}}Grossiste" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                            <h5 style="text-align: center; text-transform: uppercase; color: black">Prix des déclinasons du tarif {{histo.tarif.nom}}</h5> <br>
+                                                            
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <table class="table table-striped">
+                                                                    
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th scope="col">Declinaison {{tarif.declineAvec}}</th>
+                                                                            <th scope="col">Prix</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        
+                                                                        {% for type in types %}
+                                                                        
+                                                                            {% if type.nom|lower == 'grossiste' %}
+                                                                           
+                                                                                {% for prixDecl in histo.prixDeclinaisons %}
+                                                                                    {% if prixDecl.typeDeClient == type %}
+                                                                                        
+                                                                                        <tr>
+                                                                                            <th scope="row">{{prixDecl.declinaison}}</th>
+                                                                                            <td>
+                                                                                                {{prixDecl.prix}}€ 
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        
+                                                                                    {% endif %}
+                                                                    
+                                                                                {% endfor %}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                          
+                                        </td>
+
+                                        <td class="text-center">
+                                            {% if histo.tarif.memeTarif %}
+                                                <span class="badge badge-pill badge-success">OUI</span> <br>
+                                            {% else %}
+                                                <span class="badge badge-pill badge-danger">NON</span> <br>
+                                            
+                                            {% endif %}
+                                            
+                                        </td>
+                                    
+                                    </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'back/produit/index.html.twig' %}
+{% block title %} Liste des gammes{% endblock %}
+{% block produits %}
+    {% for message in app.flashes('successGamme') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h6 class="element-header">Liste des gammes disponibles</h6>
+
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+        <a href="{{path('back_produit_creation_gamme')}}" class="btn btn-sm btn-primary mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer une gamme</a>
+        <table class="table table-striped table-lightfont table-hover dataTable1">
+            <thead>
+                <tr>
+                    <th> Nom </th>
+                    <th>Gamme par defaut</th>
+                    <th>Description</th>
+                    <th> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if gammes %}
+                    {% for gamme in gammes %}
+                        <tr>
+                            <td>
+                                {{gamme.nom}}
+                            </td>
+                            <td>
+                                {% if gamme.parDefaut %}
+                                    <span class="badge badge-pill badge-success">OUI</span> 
+                                {% else %}
+                                    <span class="badge badge-pill badge-danger">NON</span> 
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{gamme.description}}
+                            </td>
+                            <td>
+                                <a href="{{path('back_produit_modification_gamme', {id: gamme.id})}}" class="btn btn-success btn-sm"><i class="os-icon os-icon-edit"></i></a>  
+                                <form method="post" class="d-inline" action="{{ path('back_produit_supprime_gamme', {'id': gamme.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette gamme?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ gamme.id) }}">
+                                    <button style="padding-top: 0;" class="btn btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></button>
+                                </form> 
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        
+    </div>
+
+{% endblock %}
+                

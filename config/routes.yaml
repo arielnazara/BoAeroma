@@ -1,0 +1,41 @@
+front:
+   resource: '../../src/Resources/front.yaml'
+   prefix: /
+
+#pharmacie:
+ #   resource: '../../src/Resources/pharmacie.yaml'
+ #   prefix: /pharmacie
+
+#Admin
+app_login:
+    path: /manager/login
+    defaults:
+        _controller: App\Controller\SecurityController::login
+
+app_logout:
+    path: /manager/login
+    defaults:
+        _controller: App\Controller\SecurityController::logout
+
+#login_check_admin:
+ #   path: /manager/login_check
+
+#login_success_admin:
+#    path: /manager
+
+#logout_admin:
+#    path: /manager/logout
+
+back:
+    resource: '../../src/Resources/back.yaml'
+    prefix: /manager
+
+
+login_check_admin:
+    path: /manager/login_check
+
+login_success_admin:
+    path: /manager
+
+logout_admin:
+    path: /manager/logout

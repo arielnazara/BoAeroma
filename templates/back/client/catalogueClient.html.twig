@@ -1,0 +1,173 @@
+{% extends 'back/client/voir.html.twig' %}
+
+{% block edit_order %}
+    <div class="order-items-table">
+        <div class="table-responsive">
+            <table class="table table-striped table-lightfont table-hover dataTable1">
+                <thead>
+                    <tr>
+                        <th> Client </th>
+                        <th>Accès à tout les produits</th>
+                        <th> Marques et gammes</th>
+                        <th>Produits</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if catalogue %}
+                        
+                        <tr>
+                            <td>
+                                {{client.lastname}} {{client.firstname}}
+                            </td>
+                            <td>
+                                {% if catalogue.toutLesProduits %}
+                                    <span class="badge badge-pill badge-success">OUI</span> 
+                                {% else %}
+                                    <span class="badge badge-pill badge-danger">NON</span> 
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal{{catalogue.id}}"> <i class="os-icon os-icon-eye"></i> </button>
+
+                                <div class="modal fade" id="modal{{catalogue.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Liste des marques et gammes</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <table class="table text-center table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Marques</th>
+                                                            <th scope="col">Gammes</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% if catalogue.unitGameClientMarques %}
+                                                            {% for marqueCli in catalogue.unitGameClientMarques %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {% if marqueCli.marque %}
+                                                                            {{marqueCli.marque.nom}}
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if catalogue.unitGameClientGames %}
+                                                                            {% for gammeCli in catalogue.unitGameClientGames  %}
+                                                                                {% if gammeCli.marque.id == marqueCli.marque.id %}
+                                                                                    {{gammeCli.gamme.nom}} <br>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        {% endif %} 
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                {% if catalogue.unitGammeClientProduits %}
+                                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#produit{{catalogue.id}}"> <i class="os-icon os-icon-eye"></i> </button>
+
+                                    <div class="modal fade" id="produit{{catalogue.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Liste des produits dans le catalogue</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body p-4">
+                                                    <table width="100%" class="table table-striped table-lightfont table-hover dataTable1">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Référence</th>
+                                                                <th scope="col">Nom commercial interne</th>
+                                                                <th scope="col">Decliné avec</th>
+                                                                <th scope="col">Déclinaison</th>
+                                                                <th scope="col">Prix de <br> réference</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for catalo in catalogue.unitGammeClientProduits %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {{catalo.produit.reference}}
+                                                                    </td>
+                                                                    <td>
+                                                                        {{catalo.produit.nom}}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if catalo.produit.principeActif %}                                                                      
+                                                                            {{catalo.produit.principeActif}}
+                                                                        {% else %}
+                                                                            Sans déclinaison
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if catalo.declinaison %}
+                                                                            {% for declinaison in catalo.declinaison %}
+                                                                               
+                                                                                <span class="mr-1">{{declinaison}}</span>
+                                                                            
+                                                                            {% endfor %}
+                                                                        {% else %}
+                                                                            {% for declinaison in catalo.produit.declinaison %}
+                                                                                <span class="mr-1">{{declinaison}}</span>
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    </td>
+
+                                                                    <td>
+                                                                        {% if catalo.produit.tarif %}
+                                                                            
+                                                                            {% if catalo.produit.tarif.prixDeclinaisons %}
+                                                                                <span class="badge badge-light">Par déclinaison</span>
+                                                                            {% else %}
+                                                                                {{catalo.produit.tarif.prixDeReference}}€
+                                                                            {% endif %}
+                                                                        {% else %}
+                                                                            <span class="badge badge-danger">Sans tarif</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>  
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not catalogue.toutLesProduits %}
+                                    <a href="{{path('back_modification_marque_gamme_client', {id: catalogue.id})}}" class="btn btn-sm btn-success"><i class="os-icon os-icon-edit"></i></a>  
+                                {% endif %}
+                                
+                                {#<form method="post" class="d-inline" action="{{ path('back_supprimer_gamme_client', {'id': catalogue.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet catalogue?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ catalogue.id) }}">
+                                    <button style="padding-top: 0;" class="btn btn-danger ml-1"><i class="os-icon os-icon-ui-15"></i></button>
+                                </form>#}
+                            </td>
+                        </tr>
+                    
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

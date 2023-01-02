@@ -1,0 +1,409 @@
+
+<form method="post" action="" autocomplete="off">
+    {#<div class="form-desc">
+        <h5>Quantités préparées</h5>
+        {% for o in orders %}
+            {{ o.produit.nom }} : {{ o.quantite }} commandée - {{ o.preparer }} préparée <br>
+        {% endfor %}
+    </div>#}
+
+    <div class="my-2">
+        <a href="" class="btn commandeComplet btn-success">Commande complet</a>    
+    </div>
+
+
+    {% set devis = bonDeCommande.devis %}
+    {% set nombre = bonDeCommande.lotCommandes|length %}
+
+    {% if nombre == 0 %}
+        {% set nombre = 1 %}
+    {% else %}
+        {% set nombre = nombre + 1 %}
+    {% endif %}
+
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <label class="col-form-label" for=""> Donner un nom </label>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-4">
+
+                    <input autocomplete="off" required name="name" class="form-control" placeholder="Nom" type="text" value="Préparation#{{nombre}}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <label class="col-form-label" for=""> Décrire le statut </label>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-4">
+
+                    <input autocomplete="off" name="status" class="form-control" placeholder="Vous pouvez le laisser vide" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+   
+    {% for produit, values in customOrders %}
+
+        <div class="form-group row">
+            <div class="col-sm-3 mt-3">
+                
+                {% if 'offert' in produit %}
+                    {% set nom = produit %}
+                    
+                    {% if values['customName'] %}
+                        
+                        {% set nom = values['customName'] ~ ' offert' %}
+
+                    {% endif %}
+
+                    {% set nomProduit = produit %}
+
+                {% else %}
+                    {% set nom = produit %}
+
+                    {% if values['customName'] %}
+                        
+                        {% set nom = values['customName'] %}
+
+                    {% endif %}
+
+                    {% set nomProduit = produit %}
+                {% endif %}
+                <label class="col-form-label " for=""> {{nom}} </label>
+                
+            </div>
+
+            <div class="col-sm-9">
+
+                {% set ajoutNumero = null %}
+
+                
+                <div class="row">
+                    
+                    {% for declinaison, quantite in values %}
+                        
+                        {% if declinaison != "lotNicotine" and declinaison != "lotGlycerine" and declinaison != "lotIsolat" and declinaison != "lotVegetol" and declinaison != "lotArome" and declinaison != "customName"  %}
+                            <div class=" {% if ajoutNumero %} col-sm-6 {% else %} col-sm-4 {% endif %} mt-5">
+
+                                {% set dec = declinaison|split('_') %}
+                                <small>{{ dec[0] }} ({{ quantite["quantity"] > 0 ? quantite["quantity"] : 0}})</small>
+                                {% set orderId =  quantite["order"] %}
+                               
+                                {% if declinaison != "Sans déclinaison" %}
+                                    {% set decl = dec[0] | deleteSpecialChar %}
+                                    <input autocomplete="off" name="{{ nomProduit|replace({" ": '_'}) }}_{{decl}}_{{orderId}}" class="form-control complet" placeholder="Quantité" type="number" data-max="{{ quantite["quantity"] > 0 ? quantite["quantity"] : 0 }}" min="0">
+                                {% else %}                            
+                                    <input autocomplete="off" name="{{ nomProduit|replace({" ": '_'}) }}_{{orderId}}" class="form-control complet" placeholder="Quantité" type="number" data-max="{{ quantite["quantity"] > 0 ? quantite["quantity"] : 0 }}" min="0">
+                                {% endif %}
+                            </div>
+
+                            {% if devis.client.ajoutNumeroLot %} 
+                                <div class="col-sm-6 mt-5">
+                                    <div class="row">
+
+                                        <div class="form-group col-sm-6">
+                                            <small>N° lot CRF (PF)</small>
+                                            
+                                            <input type="text" class="form-control" name = "lot_Crf_{{ nomProduit|replace({" ": '_'}) }}_{{orderId}}">
+                                        </div>
+
+                                        
+                                        {% if customer.ajoutNumeroLot %} 
+                                           
+                                    
+                                            {% if values['lotNicotine'] is defined and values['lotNicotine']|length > 0 %}
+                                                <div class="col-sm-6">
+                                                
+                                                    <label for="">Lot nicotine</label>
+                                                    <select class="form-control form-control-sm" name="lot_nicotine_{{ nomProduit|replace({" ": '_'}) }}_{{orderId}}">
+                                                        <option></option>
+                                            
+                                                        {% for lotNicotine  in lotNicotines %}
+                                                            {#% if values['lotNicotine'] is defined and values['lotNicotine'] == lotNicotine.id %}
+                                                                <option value="{{lotNicotine.id}}" selected>{{lotNicotine.numero}}</option>
+                                                            {% else %}
+                                                            {% endif %#}
+                                                            <option value="{{lotNicotine.id}}">{{lotNicotine.numero}}</option> 
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if values['lotGlycerine'] is defined and values['lotGlycerine']|length > 0 %}
+                                                <div class="col-sm-6">
+                                                    <label for="">Lot d'olivéine</label>
+                                                    <select class="form-control form-control-sm" name="lot_glycerine_{{ nomProduit|replace({" ": '_'}) }}_{{orderId}}">
+                                                        <option></option>
+
+                                                        {% for glycerine  in lotGlycerine %}
+                                                            {#% if values['lotGlycerine'] is defined and values['lotGlycerine'] == glycerine.id %}
+                                                                <option value="{{glycerine.id}}" selected>{{glycerine.numero}}</option> 
+                                                            {% else %}
+                                                            {% endif %#}
+                                                            <option value="{{glycerine.id}}">{{glycerine.numero}}</option> 
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if values['lotIsolat'] is defined and values['lotIsolat']|length > 0 %}
+                                                <div class="col-sm-6">
+                                                    <label for="">Lot isolat</label>
+                                                    <select class="form-control form-control-sm" name="lot_isolat_{{ nomProduit|replace({" ": '_'}) }}_{{orderId}}">
+                                                        <option></option>
+                                            
+                                                        {% for isolat  in lotIsolat %}
+                                                            {#% if values['lotIsolat'] is defined and values['lotIsolat'] == isolat.id %}
+                                                                <option value="{{isolat.id}}" selected>{{isolat.numero}}</option> 
+                                                            {% else %}
+                                                            {% endif %#}
+                                                            <option value="{{isolat.id}}">{{isolat.numero}}</option> 
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if values['lotVegetol'] is defined and values['lotVegetol']|length > 0 %}
+                                                <div class="col-sm-6">
+                                                    <label for="">Lot vegetol pdo</label>
+                                                    <select class="form-control form-control-sm" name="lot_vegetol_{{ nomProduit|replace({" ": '_'}) }}_{{orderId}}">
+                                                        <option></option>
+                                            
+                                                        {% for vegetol  in lotVegetolPdo %}
+                                                            {#% if values['lotVegetol'] is defined and values['lotVegetol'] == vegetol.id %}
+                                                                <option value="{{vegetol.id}}" selected>{{vegetol.numero}}</option> 
+                                                            {% else %}
+                                                            {% endif %#}
+                                                            <option value="{{vegetol.id}}">{{vegetol.numero}}</option> 
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            {% endif %}
+
+
+                                            {% if values['lotArome'] is defined and values['lotArome']|length > 0 %}
+                                                <div class="col-sm-6">
+                                                    <label for="">Lot arome</label>
+                                                    <select class="form-control form-control-sm" name="lot_arome_{{ nomProduit|replace({" ": '_'}) }}_{{orderId}}">
+                                                        <option></option>
+                                            
+                                                        {% for arome  in lotAromes %}
+                                                            {#% if values['lotArome'] is defined and values['lotArome'] == arome.id %}
+                                                                <option value="{{arome.id}}" selected>{{arome.numero}}</option> 
+                                                            {% else %}
+                                                            {% endif %#}
+                                                            <option value="{{arome.id}}">{{arome.numero}}</option> 
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        {% endif %}
+                    {% endfor %}
+                    
+                </div>
+                    
+            </div>
+        </div>
+
+        <hr class="my-5">
+    {% endfor %}
+
+
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <label class="col-form-label" for="">Nombre de colis</label>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-4">
+
+                    <input autocomplete="off" required name="nombreColis" class="form-control" placeholder="Quantité" type="number" min="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-3">
+            <a href="" class="btn livraison btn-outline-dark" data-info="express">Livraison express <i class="os-icon expresse os-icon-arrow-left6"></i></a>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-4">
+
+                    <input autocomplete="off" name="expresse" id="express"  style="display: none;" value="0" class="form-control mode" placeholder="nombre de palette " type="number" min="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <a href="" class="btn livraison btn-outline-dark" data-info="affretement"> Affrêtement <i class="os-icon affretement os-icon-arrow-left6"></i> </a>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-sm-4">
+
+                    <input autocomplete="off" name="affretement" id="affretement" style="display: none;" value="0"  class="form-control mode" placeholder="nombre de palette " type="number" min="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+    
+    <div class=" mt-3 {% if devis.client.extravape %} d-none {% endif %} ">
+        <p>  
+            Livraison à l'adresse {% if devis.boutique %} du shop {% else %} de facturation {% endif %}?
+        </p>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="adresseFacturation" id="adresseFacturationOui" value="1" required="required" {% if devis.client.extravape %} checked {% endif %}>
+            <label class="form-check-label" for="adresseFacturationOui">Oui</label>
+        </div>
+    
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="adresseFacturation" id="adresseFacturationNon" value="0">
+            <label class="form-check-label" for="adresseFacturationNon">Non</label>
+        </div>
+    </div>
+
+    <div class="choixAdresse">
+
+
+        <div class="listeAdresse row" style="display: none;">
+            <div class="col-md-6">
+                <select class="form-control" name="choixAdresse" data-route="{{path('back_logistique_select_addresse')}}">
+                    <option></option>
+    
+                    {% if customer.adresseServiceAchats %}
+                        <option value="default">{{customer.adresseServiceAchats }}</option>
+                    {% endif %}
+    
+                    {% if customer.adresseLivraisons|length > 0 %}
+                        {% for adresse in customer.adresseLivraisons %}
+                            <option value="{{adresse.id}}">{{adresse.adresse}}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+
+            <br>
+            
+        </div>
+        
+
+        <div class="autreAdresse" style="display: none;">
+            <div class="row mt-3">
+                <div class="ajoutAdresse col-md-12 mt-3"></div>
+                <div class="col-md-6">
+                    <a href="" class="btn confirmAddress btn-sm btn-primary" data-client="{{customer.id}}">Confirmer</a>
+                    <a href="{{path('back_logistique_new_addresse')}}" data-client="{{customer.id}}" class="btn addAddress btn-sm float-right btn-secondary">
+                        <i class="os-icon os-icon-plus-circle"></i>Ajouter une adresse de livraison
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    
+
+    <div class="row default mt-3"  style="display: none;">
+        <div class="col-md-6">
+            <div class="card rownded shadow p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Adresse de livraison choisie :</h5>
+    
+                    <div class="default-add"></div>
+    
+                    <a href="" class="modifierChoix mt-3 text-success btn btn-outline-success btn-sm" style="display: none;"><i class="os-icon os-icon-edit"></i> En choisir une autre</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <p>Est-ce que c'est le dernier lot pour cette commande?</p>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="dernier" id="inlineRadio1" value="1" required="required">
+                <label class="form-check-label" for="inlineRadio1">Oui</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="dernier" id="inlineRadio2" value="0">
+                <label class="form-check-label" for="inlineRadio2">Non</label>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <p>Voulez-vous envoyer des échantillons ?</p>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="echantillons" id="echantillons" value="1">
+                <label class="form-check-label" for="echantillons">Oui</label>
+              </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="echantillons" id="echantillons2" value="0">
+                <label class="form-check-label" for="echantillons2">Non</label>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="samples_choices" style="display: none;">
+        
+        <label for="" class="mt-3">Choisir des échantillons (Veuillez cliquer sur confirmer après chaque modification)</label>
+        <br>
+
+        <input type="hidden" name="samples_products" id="samples_products" value="">
+    
+        <input type="hidden" class="sample_route" value="{{path('back_logistique_get_samples')}}">
+        
+        <div class="row">
+            <div class="col-md-6">
+                <select name="" class=" sample form-control" id="">
+                    <option value=""></option>
+                    {% for product in products %}
+                        <option value="{{product.id}}">{{product.nom}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    
+        <div class="add-sample mt-2"></div>
+    
+    
+        <div class="row mb-5 mt-2">
+            <div class="col-md-6">
+                <a href="" id="confirm-sample" class=" btn btn-sm btn-primary float-left">Confirmer</a>
+                <a href="" id="add-sample" class=" btn float-right btn-sm btn-secondary">Ajouter</a>
+            </div>
+        </div>
+    
+        <div class="spinLoader" style="padding-left: 247px; display:none;">
+            <div style="width: 80px; height: 80px;" class="loader"></div>
+        </div>
+        <div class="samples-list mt-3"></div>
+    </div>
+
+    <div class="form-buttons-w">
+        <button class="btn btn-success btn-block valid" type="submit">Valider</button>
+    </div>
+</form>

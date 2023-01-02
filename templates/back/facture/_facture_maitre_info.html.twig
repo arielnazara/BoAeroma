@@ -1,0 +1,108 @@
+{% for bon in invoiceOrder.bonDeCommandes %}
+
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+        <tr>
+            <th style="text-align: center;">
+                
+                {% set devis = bon.devis %}
+
+                {% if devis.boutique %}
+
+                    Commande {{ devis.boutique.nomShop }} n° {{ bon.code }}
+
+                {% endif %}
+                
+            </th>
+        </tr>
+    </table>
+    
+    <table style="width: 100%; border-collapse: collapse;  ">
+        <thead style="background-color: rgb(240,240,240); border-top: red;" >
+            <th style=" text-align: center;  padding: 7px;">Référence</th>
+            <th style=" text-align: center; padding: 7px;">Produit</th>
+            <th style=" text-align: center; padding: 7px;">Prix unitaire <br>(HT)</th>
+            <th style=" text-align: center; padding: 7px;">Quantité</th>
+            <th style=" text-align: center; padding: 7px;">Total(HT)</th>
+        </thead>
+
+        <tbody>
+
+            {% for lot in bon.lotCommandes %}    
+
+                {% if lot.factureMaitre == invoiceOrder %}
+                    
+                    <tr>
+                        <td style="background-color: lightgrey; padding-top: 5px; border-bottom: 2px solid grey;" colspan="6">
+                            <span style="text-transform: uppercase">{{ lot.nom }} </span>  expédiée le {{ lot.dateExpedition|date('d.m.Y') }}
+                        </td>
+                    </tr>
+
+                    {% for lq in lot.lotQuantites %}
+                        {% if not lq.echantillon %}
+                            <tr style=" border-bottom: 1pt solid #E0E0E0;">
+                                <td style=" text-align: center;  padding: 5px;">
+                                    {{lq.produit.reference}}
+                                </td>
+                                <td style=" text-align: center;  padding: 5px;">
+                                    
+                                    {% set nom = lq.produit.nom %}
+                                    
+                                    {% if lq.produit.marqueBlanches %}
+                                        {% for mb in lq.produit.marqueBlanches %}
+                                            {% if client == mb.client %}
+                                                {% set nom = mb.nom %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    {{nom}}
+                                    
+                                    {% if lq.produit.principeActif %}
+                                        {{lq.produit.principeActif.principeActif}} {{lq.declinaison}}
+                                    {% endif %}
+                                </td>
+                            
+                                <td style=" text-align: center;  padding: 5px;">
+                                    {% set prix = 0 %}
+
+                                    {% set offert = false %}
+                                    {% if lq.offert %}
+                                        {% set offert = true %}
+                                    {% endif %}
+
+                                    {% if offert %}
+                                        <span style="color: green;">Offert</span>
+                                        {% set prix = 0 %}
+                                    {% else %}
+                                        
+                                        {% if lq.prixSpecial %}
+                                            {{lq.prixSpecial|number_format(2, '.', ',')}}€
+                                            {% set prix = lq.prixSpecial %}
+                                        {% else %}
+                                            {{lq.prix|number_format(2, '.', ',')}}€
+                                            {% set prix = lq.prix %}
+                                        {% endif %}
+                                    {% endif %}
+
+                                </td>
+                                <td style=" text-align: center;  padding: 5px;">
+                                    {{lq.quantite}}
+                                </td>
+                                <td style=" text-align: center;  padding: 5px;">
+                                    {% set totalPerProduct =  lq.quantite * prix %}
+                                    
+                                    {% if totalPerProduct %}
+                                        {{totalPerProduct|number_format(2, ',', ' ')}}€
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                {% endif %}
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+{% endfor %}

@@ -1,0 +1,122 @@
+{% set countSupp = 0 %}
+{% for produit in produits %}
+    {% set tarif = null %}
+    {% set typeClient = client.typeDeClient.nom|lower %}
+    {% set message = false %}
+    {% set prixDecl = null %}
+
+    {% set tarifProduit = produit.tarif %}
+
+    {% if tarifProduit %}
+    
+        {% set tarif = produit.tarif %}
+        
+        {% set prixDecl = tarif.getActivePrice(client) %}
+
+        {% if tarif.client != client %}
+            {% set message = true %}
+        {% endif %}
+        
+    {% endif %}
+
+    {% set produit = produit is isInstanceOfProduct ? produit : produit.produit %}
+
+    <div class="col-md-4 mt-3 new ">
+        <div class="card border p-4 m-2 bg-light border-light shadow" id="{{produit.id}}">
+            <div class="row">
+                <div class="col-sm-10">
+                    <h5 class="card-title text-center mb-3 font-weight-bold nom_{{produit.id}}" >{{produit.getNomMarqueBlanche(client)}}</h5>
+                    </div>
+                <div class="col-sm-2">
+                    <a href="#" class="deleteNew btn btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></a>
+                </div>
+                {% if message %}
+                    <div class="alert alert-warning col-sm-12">
+                        Le client n'a pas de tarif pour cette produit <br>
+                        Le tarif afficher est le tarif de référence
+                    </div>
+                {% endif %}
+            </div>
+            <hr style="width: 90%;">
+
+            <div class="card-body">
+                <input type="hidden" name="produit-supp-{{countSupp}}" value="{{produit.id}}">
+
+                {% if produit.declinaison %}
+
+                    {% for declinaison in produit.declinaison %}
+                    {% set declinaisonReplace = declinaison | deleteSpecialChar %}
+
+                    <div class="row">
+                        <div class="form-check col-sm-3 ">
+                        
+                            <input class="form-check-input declinaison" id="{{ produit.id ~ declinaisonReplace }}" type="checkbox" data-dec="{{declinaison}}" data-productid="{{ produit.id }}" name="produit-supp-{{countSupp}}-{{declinaisonReplace}}" data-ref="{{produit.reference|replace({' ': '', "'":'','%': '', '+':'_'})}}" data-poids="{{produit.poids}}" value="{{declinaisonReplace}}" {#% if show %} checked {% endif %#}
+                            >
+                            <label class="form-check-label" for="{{ produit.id ~ declinaisonReplace }}" class="{{declinaisonReplace}}">{{declinaison}}</label> <br>
+
+                        </div>
+
+                        <div class="col-sm-4">
+                            
+                            {% if tarif %}
+                            
+                                {% set prix = null %}
+
+                                {% if tarif.memeTarif %}
+                        
+                                    {% if typeClient == "grossiste" %}
+                                        {% set prix = tarif.prixDeReferenceGrossiste %}
+                                    {% else %}
+                                        {% set prix = tarif.prixDeReferenceDetaillant %}
+                                    {% endif %}
+                                {% else %}
+                                    {% if prixDecl[typeClient][declinaison] %}
+                                        {% set prix =  prixDecl[typeClient][declinaison] %}
+                                    {% endif %}
+                                {% endif %}
+
+                                {% set prix = prix ? prix : 0 %}
+
+                                <span class="badge badge-success display-4 {{declinaisonReplace}}{{produit.id}}" data-val="{{prix}}" style="display: none;" >{{prix}}€</span> <br>
+
+                            {% else %}
+                                <span class="badge badge-danger" data-val="0">Aucun prix</span>
+                            {% endif %}
+
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <input type="number" data-dec = "{{ declinaison }}"  data-productid="{{ produit.id }}" min="0" value="" class="form-control quantite{{declinaisonReplace}}{{produit.id}}" name="quantite-supp-{{produit.id}}-{{declinaisonReplace}}" placeholder="Quantité" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+            
+                    {% endfor %}
+                {% else %}
+                    
+                    {% if tarif %}
+                                        
+                        {% if typeClient == "grossiste" %}
+                            <span class="badge badge-success sans-{{produit.id}}" data-val="{{tarif.prixDeReferenceGrossiste}}" >{{tarif.prixDeReferenceGrossiste}}€</span> <br>
+                        {% else %}
+                        
+                            <span class="badge badge-success sans-{{produit.id}}" data-val="{{tarif.prixDeReferenceDetaillant}}" >{{tarif.prixDeReferenceDetaillant}}€</span> <br>
+                        {% endif %}
+                        
+                    {% else %}    
+                        
+                        <span class="badge badge-danger  sans-{{produit.id}}" data-val="0">Aucun prix</span>
+                        
+                    {% endif %}
+                    <label for="">Quantitées</label>
+                    <input type="number" data-dec = "sans" data-ref="{{produit.reference|replace({' ': '', "'":'','%': '', '+':'_'})}}"  data-productid="{{ produit.id }}" name="quantite-supp-{{produit.id}}-{{produit.id}}" min="0" value="" class="form-control sansDecl" data-poids="{{produit.poids}}" data-id="{{produit.id}}">
+                    
+
+                {% endif %}
+                
+            </div>
+
+        </div>
+    </div>
+    {% set countSupp = countSupp + 1 %}
+{% endfor %}

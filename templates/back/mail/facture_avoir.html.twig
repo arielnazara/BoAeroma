@@ -1,0 +1,15 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+{% block title %}Laboratoires Aeroma {% endblock %}
+
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        Veuillez trouvez si joint la facture d'avoir numéro {{factureAvoir.numero}} sur la facture N° {% if factureAvoir.facture %} {{ factureAvoir.facture.numero }} {% else %} {{ factureAvoir.factureMaitre.numero }} {% endif %}
+
+        <br><br>
+        Nous sommes à votre disposition pour toute information complémentaire.<br><br>
+        Bien cordialement,
+    </div>
+{% endblock %}

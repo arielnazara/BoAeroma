@@ -1,0 +1,61 @@
+{% if countPreparation > 1 and not bonDeCommande.client.extravape %}
+        
+    <div class="my-3">
+        Fusionner plusieurs lot dans une facture? <br> 
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="ouiFusion" value="1">
+            <label class="form-check-label" for="ouiFusion">Oui</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="nonFusion" value="0">
+            <label class="form-check-label" for="nonFusion">Non</label>
+        </div>
+    </div>
+   
+
+{% endif %}
+<table class="table">
+    <thead class="thead-light">
+    <tr>
+        <th>Objet</th>
+        <th>Date</th>
+        <th>Quantité préparée</th>
+        <th>Statut</th>
+        <th>Facture</th>
+        <th>Date expédition prévue</th>
+        <th>N° suivi</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+        
+        {% for key, lps in lotPreparation %}
+            {% if key == 'none' %}
+                {{ include('back/logistique/_liste_simple.html.twig') }}
+            {% else %}
+                {{ include('back/logistique/_liste_grouper.html.twig') }}
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if bonDeCommande.client.extravape and lotPreparation|length > 0 %}
+
+    <div class="text-center">
+        <a href="{{ path('back_logistique_creation_facture_extravape', {id: bonDeCommande.id}) }}" class="btn btn-success"><i class="os-icon os-icon-plus-circle"></i> Créer une facture extravape</a>
+    </div>
+
+{% endif %}
+
+<div class="text-center lot" style="display: none;">
+
+    <div class="error-message">
+        
+    </div>
+
+    <button class="btn btn-success btn-lg generer" data-path="{{ path('back_logistique_ajax_create_invoice') }}">
+        Créer une facture globale
+    </button>
+    <br>
+    <small>(A partir des lots que vous avez cocher)</small>
+</div>

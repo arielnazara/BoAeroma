@@ -1,0 +1,208 @@
+{{ form_start(form, {'attr' : {'class' : 'js-validate pb-3 mt-5', 'autocomplete' : 'off'}}) }}
+
+    {% if not form.vars.valid %}
+        <div style="background-color: #F8D7DB; color: #721c24" class="alert alert-danger" role="alert">
+            <ul>
+                {# Loop through every form item #}
+                {% for child in form.children %}
+                    {# Display the errors of the form item #}
+                    {%for error in child.vars.errors%}
+                        <li>{{error.message}}</li>
+                    {%endfor%}
+                {%endfor%}
+            </ul>
+        </div>
+    {% endif %}
+
+    <div class="row">
+                                    
+        <div class="form-group col-md-3">
+            <label for="raisonSocial">Raison sociale<span class="text-danger">*</span></label>
+            {{ form_row(form.raisonSocial, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+        <div class="form-group col-md-3">
+            <label for="lastName">Nom<span class="text-danger">*</span></label>
+            {{ form_row(form.lastName, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="lastName">Prénoms<span class="text-danger">*</span></label>
+            {{ form_row(form.firstName, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="email">Email<span class="text-danger">*</span></label>
+            {{ form_widget(form.email, {'attr':{'class': 'form-control form-control-sm', 'value': app.request.get('email') }}) }}
+        </div>
+
+        
+        <div class="form-group d-none">
+            {{ form_widget(form.nomDestinataire, {'attr':{'class': 'form-control form-control-sm', 'value': app.request.get('email') }}) }}
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="form-group col-md-3">
+            <label for="email">Téléphone<span class="text-danger">*</span></label>
+            {{ form_widget(form.telephone, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-9">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>Adresse de facturation<span class="text-danger">*</span></label>
+                    {{ form_row(form.adresseFacturation, {'attr':{'class': 'form-control form-control-sm'}}) }}
+                </div>
+                <div class="col-sm-2">
+                    <label for="codePostal">Code Postal <span class="text-danger">*</span></label>
+                    {{ form_row(form.codePostalFacturation, {'attr':{'class': 'form-control form-control-sm', 'placeholder': '00000', 'pattern': '[0-9]{5}'}}) }}
+                </div>
+                <div class="col-sm-3">
+                    <label for="ville">Ville <span class="text-danger">*</span></label>
+                    {{ form_row(form.villeFacturation, {'attr':{'class': 'form-control form-control-sm'}}) }}
+                </div>
+                <div class="col-sm-3">
+                    <label for="ville">Département<span class="text-danger">*</span></label>
+                    {{ form_row(form.communeFacturation, {'attr':{'class': 'form-control form-control-sm'}}) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="row">
+        <div class="form-group col-md-3">
+            <label for="principaleActivite">Activité principale <span class="text-danger">*</span></label>
+            {{ form_row(form.principaleActivite, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+        <div class="form-group col-md-9">
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <label style="margin-top: -18px;">Adresse de livraison <br> <small>Si différente de l’adresse de facturation</small></label>
+                    {{ form_row(form.adresseServiceAchats, {'attr':{'class': 'form-control form-control-sm'}}) }}
+                </div>
+                <div class="col-sm-2">
+                    <label for="codePostal">Code Postal</label>
+                    {{ form_row(form.codePostalServiceAchat, {'attr':{'class': 'form-control form-control-sm' , 'placeholder': '00000', 'pattern': '[0-9]{5}'}}) }}
+                </div>
+                <div class="col-sm-3">
+                    <label for="ville">Ville</label>
+                    {{ form_row(form.villeServiceAchat, {'attr':{'class': 'form-control form-control-sm'}}) }}
+                </div>
+                <div class="col-sm-3">
+                    <label for="ville">Département</label>
+                    {{ form_row(form.communeServiceAchat, {'attr':{'class': 'form-control form-control-sm'}}) }}
+                </div>
+                
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label for="formeJuridique">Forme juridique <span class="text-danger">*</span></label>
+            {{ form_row(form.formeJuridique, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="capital">Capital <span class="text-danger">*</span></label>
+            {{ form_row(form.capital, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="codeNaf">Code NAF<span class="text-danger">*</span></label>
+            {{ form_row(form.codeNaf, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+       
+    </div>
+  
+    <div class="row">
+
+        <div class="form-group col-md-4">
+            <label for="sire">SIREN <span class="text-danger">*</span></label>
+            {{ form_widget(form.Siren, { 'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="noTva">Numéro TVA intracommunautaire <span class="text-danger">*</span></label>
+            {{ form_row(form.noTva, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="iban">IBAN</label>
+            {{ form_row(form.iban, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label for="swift">SWIFT</label>
+            {{ form_row(form.swift, { 'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="regimeTva">Régime TVA</label>
+            {{ form_row(form.regimeTva, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="domiciliatioBancaire">Domiciliation Bancaire</label>
+            {{ form_row(form.domiciliationBancaire, {'attr':{'class': 'form-control form-control-sm'}}) }}
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="form-group col-sm-4">
+            <label for="pays">Type de client<span class="text-danger">*</span></label>
+            {{ form_row(form.typeDeClient, { 'attr':{'class':'form-control form-control-sm'}}) }}
+
+            
+        </div>
+        
+        <div class="form-group col-sm-4">
+            <label for="jourLivraison">Jour de livraison</label>
+            {{ form_row(form.jourLivraison, {'attr':{'class':'form-control form-control-sm'}}) }}
+        </div>
+        <div class="form-group col-sm-4">
+            <label for="horaireLivraison">Tranche horaire</label>
+            {{ form_row(form.horaireLivraison, {'attr':{'class':'form-control form-control-sm'}}) }}
+        </div>
+
+        <div class="form-group d-none">
+            <label for="pays">Pays<span class="text-danger">*</span></label>
+            {{ form_row(form.pays, { 'attr':{'class':'form-control form-control form-control-sm'}}) }}
+        </div>
+        <div class=" col-md-12 grossisteMessage"></div>
+    </div>
+    
+    <div class="form-group d-none">
+        <label for="remarque">Remarque </label>
+        {{ form_row(form.remarque, { 'attr':{'class': 'form-control'}}) }}
+    </div>
+    
+    {#<div class="row">
+        <div class="col-md-12">
+            <p style="color: black">
+                <a href="#" class="text-underline add-delivery">Ajouter une adresse de livraison</a> <br> <span style="font-size: 80%">(si différente de l’adresse de facturation)</span>
+            </p>
+        </div>
+    </div>
+
+
+    <div id="container-prototype" data-prototype="{{ deliveryAddress|e('html') }}" class="container"></div>#}
+
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center">
+            <button class="btn btn-primary" type="submit">Valider</button>
+        </div>
+    </div>
+
+<input class="indice" type="hidden" name="_index_" value="0">
+{{ form_rest(form) }}
+
+{{ form_end(form) }}

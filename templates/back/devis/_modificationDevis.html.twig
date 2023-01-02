@@ -1,0 +1,275 @@
+<div class="row">
+    
+    {% set countProduit = 1 %}
+    {% set array = [] %}
+
+    {% set prod = null %}
+    {% set devis = null %}
+    {% for produit in listeProduit %}
+        
+        {% if not produit.offert %}
+            {% set prod = produit.produit %}
+        {% endif %}
+
+        {% if prod.id not in array %}
+            {% set marqueBlanche = false %}
+            {% set tarif = null %}
+
+            {% for mb in marqueBlanches %}
+                {% if prod == mb.produit %}
+                    {% set marqueBlanche = true %}
+                    {% set tarif = mb.tarif %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="col-md-4 mt-3 ">
+                <div class="card border p-4 m-2 bg-light border-light shadow" id="{{prod.id}}">
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <h5 class="card-title text-center mb-3 font-weight-bold nom_{{prod.id}}" >{{prod.getNomMarqueBlanche(client)}}</h5>
+                        </div>
+                        <div class="col-sm-2">
+                            <a href="{{path('delete_product')}}" class="delete btn btn-danger btn-sm" data-devis="{{produit.devis.id}}" data-id="{{prod.id}}"><i class="os-icon os-icon-ui-15"></i></a>
+                            {% set devis = produit.devis %}
+                        </div>
+                        {% if not marqueBlanche %}
+                            <div class="alert alert-warning col-sm-12">
+                                Le client n'a pas de tarif pour ce produit <br>
+                                Le tarif afficher est le tarif de référence
+                            </div>
+                        {% endif %}
+                    </div>
+                    <hr style="width: 90%;">
+                    <div class="card-body">
+
+                        <input type="hidden" name="produit-{{countProduit}}" value="{{prod.id}}">
+                        
+                        {% if prod.declinaison %}
+
+                            {% set declinaisonModifier = [] %}
+                            
+                            {% for prodDecl in listeProduit %}
+                                {% if not prodDecl.offert %}
+                                    {% if prodDecl.produit == prod %}
+                                      
+                                        {% if declinaisonModifier[prodDecl.declinaison] is defined %}
+                                        
+                                            {% set val = declinaisonModifier[prodDecl.declinaison] + prodDecl.quantite %}
+
+                                            {% set declinaisonModifier = declinaisonModifier|merge({(prodDecl.declinaison):val }) %}
+
+                                        {% else %}
+                                            {% set declinaisonModifier = declinaisonModifier|merge({(prodDecl.declinaison):(prodDecl.quantite) }) %}
+                                            
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% for declinaison in prod.declinaison %}
+
+                                {% set show = false %}
+                                {% set quantiteModif = 0 %}
+
+                                {% if  brouillon[prod.id] is defined and brouillon[prod.id][declinaison] is defined %}
+                                
+                                    {% set show = true %}
+                                    {% set quantiteModif = brouillon[prod.id][declinaison] %}
+                                    
+                                {% endif %}
+                                
+                                {% if declinaison in declinaisonModifier|keys %}
+                                    {% set show = true %}
+                                    {% for dec,quantite in declinaisonModifier %}
+                                        {% if dec == declinaison %}
+                                            {% set quantiteModif = quantite %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+
+                                {% set declinaisonReplace = declinaison | deleteSpecialChar %}
+
+                                
+                                <div class="row">
+                                    <div class="form-check col-sm-3 ">
+                                        
+                                        <input class="form-check-input declinaison" {% if show %}checked{% endif %} id="{{ prod.id ~ declinaisonReplace }}" type="checkbox"  data-dec = "{{declinaison}}" data-productid="{{ prod.id }}" name="produit-{{prod.id}}-{{declinaisonReplace}}" data-ref="{{prod.reference|replace({' ': '','%': '', "'":'', '+':'_'})}}" data-poids="{{prod.poids}}" value="{{declinaisonReplace}}">
+                                        <label class="form-check-label" for="{{ prod.id ~ declinaisonReplace }}" class="{{declinaisonReplace}}">{{declinaison}}</label> <br>
+
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        {% if marqueBlanche %}
+                                            {% if tarif %}
+                                             
+                                                {% if tarif.memeTarif %}
+                                                    
+                                                    {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                        <span class="badge badge-success {{declinaisonReplace}}{{prod.id}}" data-val="{{tarif.prixDeReferenceGrossiste}}" {% if not show %} style="display: none;" {% endif %} >{{tarif.prixDeReferenceGrossiste}}€</span> <br>
+                                                    {% else %}
+                                                       
+                                                        <span class="badge badge-success {{declinaisonReplace}}{{prod.id}}" data-val="{{tarif.prixDeReferenceDetaillant}}" {% if not show %} style="display: none;" {% endif %}>{{tarif.prixDeReferenceDetaillant}}€</span> <br>
+                                                            
+                                                       
+                                                    {% endif %}
+
+                                                {% else %}
+                                                
+                                                    {% for tarifDecl in tarif.prixDeclinaisons %}
+                                                        {% if tarifDecl.typeDeClient == client.typeDeClient %}
+                                                        
+                                                            {% if tarifDecl.actif %}  
+                                                                {% if declinaison == tarifDecl.declinaison %}
+                                                                  
+                                                                    <span class="badge badge-success display-4 {{declinaisonReplace}}{{prod.id}}" data-val="{{tarifDecl.prix}}" {% if not show %} style="display: none;" {% endif %} >{{tarifDecl.prix}}€</span> <br>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge badge-danger" data-val="0">Aucun prix</span>
+                                            {% endif %}
+                                        {% else %}
+                                            
+                                            {% if prod.tarif %}
+                                                {% if prod.tarif.memeTarif %}
+                                                    {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                        <span class="badge badge-success {{declinaisonReplace}}{{prod.id}}" data-val="{{prod.tarif.prixDeReferenceGrossiste}}" {% if not show %} style="display: none;" {% endif %}>{{prod.tarif.prixDeReferenceGrossiste}}€</span> <br>
+                                                    {% else %}
+                                                        {% if listeProduit[0].devis.shop %}
+                                                            {% for devisProd in listeProduit %}
+                                                                {% if devisProd.produit.id == prod.id %}
+                                                                    <span class="badge badge-success {{declinaisonReplace}}{{prod.id}}" data-val="{{devisProd.prix}}" {% if not show %} style="display: none;" {% endif %}>{{devisProd.prix}}€</span> <br>        
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            <span class="badge badge-success {{declinaisonReplace}}{{prod.id}}" data-val="{{prod.tarif.prixDeReferenceDetaillant}}" {% if not show %} style="display: none;" {% endif %}>{{prod.tarif.prixDeReferenceDetaillant}}€</span> <br>
+                                                        {% endif %}
+                                                        
+                                                    {% endif %}
+
+                                                {% else %}
+
+                                                    {% for tarifDecl in prod.tarif.prixDeclinaisons %}
+                                                        {% if tarifDecl.typeDeClient == client.typeDeClient %}
+                                                        
+                                                            {% if tarifDecl.actif %}  
+                                                                {% if declinaison == tarifDecl.declinaison %}
+                                                                    <span class="badge badge-success display-4 {{declinaisonReplace}}{{prod.id}}" data-val="{{tarifDecl.prix}}" {% if not show %} style="display: none;" {% endif %} >{{tarifDecl.prix}}€</span> <br>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge badge-danger" data-val="0">Aucun prix</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="form-group">
+                                            <input type="number" data-dec = "{{declinaison}}" data-productid="{{ prod.id }}" min="0" value="{{quantiteModif}}" class="form-control quantite{{declinaisonReplace}}{{prod.id}}" name="quantite-{{prod.id}}-{{declinaisonReplace}}" placeholder="Quantité" {% if not show %}style="display: none;" {% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                            {% endfor %}
+                            
+                        {% else %}
+
+                            <div class="text-center">
+
+                                {% if tarif %}
+                                    
+                                    {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                    
+                                        <span class="badge badge-success sans-{{prod.id}}" data-val="{{tarif.prixDeReferenceGrossiste}}" >{{tarif.prixDeReferenceGrossiste}}€</span> <br>
+                                    {% else %}
+                                    
+                                        <span class="badge badge-success sans-{{prod.id}}" data-val="{{tarif.prixDeReferenceDetaillant}}" >{{tarif.prixDeReferenceDetaillant}}€</span> <br>
+                                    {% endif %}
+                                    
+                                {% else %}    
+                                    {% if prod.tarif %}
+                                        {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                        
+                                            <span class="badge badge-success sans-{{prod.id}}" data-val="{{prod.tarif.prixDeReferenceGrossiste}}" >{{prod.tarif.prixDeReferenceGrossiste}}€</span> <br>
+                                        {% else %}
+                                        
+                                            <span class="badge badge-success sans-{{prod.id}}" data-val="{{prod.tarif.prixDeReferenceDetaillant}}" >{{prod.tarif.prixDeReferenceDetaillant}}€</span> <br>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge badge-danger  sans-{{prod.id}}" data-val="0">Aucun prix</span>
+                                    {% endif %}
+                                {% endif %}
+                                
+
+                            </div>
+
+                            <div class="row">
+                                <label for="">Quantitées</label>
+                                {% set quantiteSans = 0 %}
+                                {% if  brouillon[prod.id] is defined and brouillon[prod.id]["sans"] is defined %}
+                                   
+                                    {% set quantiteSans = brouillon[prod.id]['sans'] %}
+                                    
+                                {% endif %}
+                                
+                                <input type="number" data-dec = "sans" data-productid="{{ prod.id }}" name="quantite-{{prod.id}}-{{prod.id}}" min="0" value="{% if produit.quantite %}{{produit.quantite}}{% else %}{{ quantiteSans }}{% endif %}" class="form-control sansDecl" data-poids="{{prod.poids}}" data-id="{{prod.id}}">
+                            </div>
+                        
+                        {% endif %}
+                       
+                    </div>
+                </div>
+                {% set countProduit = countProduit + 1 %}
+            </div>
+            {% set array = array|merge([prod.id]) %}
+        {% endif %}
+    {% endfor %}
+
+   
+    {% set prod = null %}
+
+</div>
+<hr class="my-5">
+<div class=" row js-add-products"></div>
+
+
+<div class="row p-2">
+
+    <div class="col-md-6">
+        <select class="form-control produit js-add" name="add-produit-supp-1">
+            {% set count = 1 %}
+            <option></option>
+            {% if produitsListe %}
+                {% for produit in produitsListe %}
+                    <option value="{{produit.id}}">{{produit.reference}} - {{produit.getNomMarqueBlanche(client)}}</option>
+                {% endfor %}
+            {% endif %}
+        </select>    
+    
+        
+        <div class="form-group mt-2">
+            <div class="newRow"></div>
+        </div>
+
+        <div class="float-right">
+            <div style="display:none; width: 60px; height: 60px;" class="loader js-spin"></div>
+            <a href="#" data-target = "{{ path('edit_devis_add_new_products') }}" data-clienttype = "{{client.typeDeClient.nom}}" data-client="{{client.id}}" class="js-ajouter btn btn-success btn-sm">
+                Valider 
+            </a>
+        </div>
+
+        <div class="float-left">
+            <a href="#" class="ajout-produit btn btn-secondary btn-sm" data-count='{{count}}'> <i class="os-icon os-icon-plus-circle"></i> Ajouter un produit </a>
+        </div>
+        
+    </div>
+
+</div>

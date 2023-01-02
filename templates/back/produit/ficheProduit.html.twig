@@ -1,0 +1,397 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Fiche produit{% endblock %}
+
+{% block produits %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="element-wrapper">
+            <div class="element-box">
+
+                {% for message in app.flashes('successProduit') %}
+                <div class="alert alert-success">{{message}}</div>
+                {% endfor %}
+
+                {% for message in app.flashes('successMarque') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+
+                <h2 class="title mb-3">Fiche produit : {{ produits.reference}}</h2>
+
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-3  mr-2 border rounded p-4 bg-light shadow">
+                        <div class="row">
+                            Catégorie:
+                            {{produits.categorie}}
+                        </div>
+                        <div class="row">
+                            Support: {{produits.base}}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mr-2 border rounded p-4 bg-light shadow">
+                        <div class="row">
+                            Aromes utilisés:
+
+                            {% set exist = [] %}
+                            
+                            {% for pro in proAro %}
+                                {% if pro.arome and pro.arome.id not in exist %}
+                                    {% set exist = exist|merge([pro.arome.id]) %}
+                                    {{pro.arome.nom}},
+                                {% endif %}
+                            {% endfor %}
+
+                        </div>
+                        <div class="row">
+                            Déclinaison:
+                            {% if produits.declinaison %}
+                            {% for declinaison in produits.declinaison %}
+                            {{declinaison}}
+                            {% endfor %}<br>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mr-2 border rounded p-4 bg-light shadow">
+                        <div class="row">
+                            Produit décliné avec de la :
+                            {% if produits.principeActif %}
+                            {{produits.principeActif.principeActif}}
+                            {% else %}
+                            Sans déclinaison
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                            Contenant utilisé :
+                            {% if produits.contenant %}{{produits.contenant.nom}}{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if produits %}
+                <div class="col-md-12 mt-5 table-responsive ">
+                    <table class="table table-striped ">
+                        <thead class="thead-light">
+                            <th>Marque</th>
+                            <th></th>
+                            <th>Client</th>
+                            <th>Référence interne</th>
+                            <th>Nom Commercial</th>
+                            <th>Gamme produit</th>
+                            <th class="text-center">Tarif</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{produits.marque}}</td>
+
+                                <td>
+                                    {% if produits.marque %}
+                                    <a
+                                        href="{{path('back_produit_modification_marque', {id: produits.marque.id, pr: produits.id })}}"><i
+                                            class="os-icon os-icon-edit"></i></a>
+                                    {% endif %}
+                                </td>
+                                <td></td>
+                                <td>{{produits.reference}}</td>
+
+                                <td>{{produits.nom}}</td>
+
+                                <td>{{produits.gamme}}</td>
+
+                                <td class="text-center">
+                                    {% if produits.tarif %}
+                                    {% if produits.tarif.memeTarif %}
+                                    <p class="font-weight-bold">Prix détaillant:
+                                        {{produits.tarif.prixDeReferenceDetaillant}}€ <br>
+                                        Prix grossiste: {{produits.tarif.prixDeReferenceGrossiste}}€
+                                    </p>
+
+                                    {% else %}
+
+                                    {% if produits.tarif.prixDeclinaisons %}
+                                    {#<small>
+                                        Tarif de référence : {{produits.tarif.prixDeReference}} € <br>
+                                    </small> #}
+                                    {% for type in types %}
+
+                                    <button type="button" class="btn btn-link btn-sm mt-2" data-toggle="modal"
+                                        data-target="#modal{{produits.id}}{{type.id}}">
+                                        <i class="os-icon os-icon-eye"></i> Tarif pro {{type.nom}}
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modal{{produits.id}}{{type.id}}" tabindex="-1"
+                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5
+                                                        style="text-align: center; text-transform: uppercase; color: black">
+                                                        Prix des déclinasons du tarif {{produits.tarif.nom}}</h5> <br>
+
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <table class="table table-striped">
+
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Declinaison
+                                                                    {{produits.principeActif.principeActif}}
+                                                                    {{type.nom}}</th>
+                                                                <th scope="col">Prix</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for prix in produits.tarif.prixDeclinaisons %}
+                                                            {% if prix.actif %}
+                                                            {% if prix.typeDeClient.id == type.id %}
+
+                                                            {% for declinaison in produits.declinaison %}
+                                                            {% if prix.declinaison == declinaison %}
+
+                                                            <tr>
+                                                                <th scope="row">{{prix.declinaison}}</th>
+                                                                <td>
+                                                                    {{prix.prix}}€
+                                                                </td>
+                                                            </tr>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            {% endif %}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Fermer</button>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {% endfor %}
+                                    {% else %}
+                                    <p class="text-danger">
+                                        Aucun tarif créer
+                                    </p>
+                                    {% endif %}
+
+                                    {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            {% set mbExist = [] %}
+                            {% if marqueBlanche %}
+                                {% for mb in marqueBlanche %}
+                                    {#% set norm = norm|merge([val]) %#}
+                                    {% if mb.client.id not in mbExist  %}
+                                        {#% set mbExist = mbExist|merge([mb.client.id]) %#}
+
+                                        <tr>
+                                            <td>
+                                                {% if mb.produit.marque %}
+                                                    {{mb.produit.marque}}
+                                                {% endif %}
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                {% if mb.marque %}
+                                                    <span class="badge badge-pill badge-info">{{mb.marque}}</span>
+                                                {% else %}
+                                                    
+                                                    <span class="badge badge-pill badge-info">
+                                                        {{mb.client.lastName}} {{mb.client.firstName}} 
+                                                    </span> 
+                                                {% endif %}
+                                            
+                                            </td>
+                                            <td>{{mb.reference}}</td>
+                                            <td>{{mb.nom}} </td>
+                                            <td>{{produits.gamme}}</td>
+                                            <td class="text-center">
+                                                {% if mb.tarif %}
+                                                {% if mb.tarif.memeTarif %}
+                                                {% if mb.client.typeDeClient.nom|lower == "grossiste" %}
+                                                Prix grossiste: {{mb.tarif.prixDeReferenceGrossiste|number_format(2, '.', ',')}}€
+                                                {% else %}
+                                                Prix détaillant: {{mb.tarif.prixDeReferenceDetaillant|number_format(2, '.', ',')}}€
+                                                {% endif %}
+                                                {% else %}
+
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-sm btn-link" data-toggle="modal"
+                                                    data-target="#modal{{mb.id}}">
+                                                    <i class="os-icon os-icon-eye"></i> Prix pro {{mb.client.typeDeClient.nom}}
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="modal{{mb.id}}" tabindex="-1" role="dialog"
+                                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Prix pro
+                                                                    {{mb.client.typeDeClient.nom}}</h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <th>Déclinaisons </th>
+                                                                        <th>Prix </th>
+                                                                    </thead>
+                                                                    <tbody>
+
+                                                                        {% for prixDecl in mb.tarif.prixDeclinaisons %}
+
+                                                                        {% if prixDecl.typeDeClient == mb.client.typeDeClient %}
+                                                                        {% if prixDecl.actif %}
+                                                                        {% for decl in mb.produit.declinaison %}
+                                                                        {% if decl == prixDecl.declinaison %}
+                                                                        <tr>
+                                                                            <td>{{decl}}</td>
+                                                                            <td>
+                                                                                {{prixDecl.prix|number_format(2, '.', ',')}}€
+                                                                            </td>
+                                                                        </tr>
+                                                                        {% endif %}
+                                                                        {% endfor %}
+                                                                        {% endif %}
+                                                                        {% endif %}
+                                                                        {% endfor %}
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {% endif %}
+
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+
+                            {#<div>
+                                <tr>
+                                    <td>Gamme produit:</td>
+                                    <td>{{produits.gamme}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Catégorie:</td>
+                                    <td>{{produits.categorie}} </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Base:</td>
+                                    <td>
+                                        {% for pro in proBase %}
+                                        {{pro.base.categorieBase}},
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td> Produit fabriqué par Aeroma :</td>
+                                    <td>{% if produits.faitParAeroma %} Oui {% else %} Non {% endif %}</td>
+                                </tr>
+
+                                {% if not produits.faitParAeroma %}
+                                <tr>
+                                    <td> Fournisseur :</td>
+                                    <td>
+                                        {% if produits.fournisseur %}
+                                        {{produits.fournisseur.nom}}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+
+                                <tr>
+                                    <td> Produit proposé en marque blanche :</td>
+                                    <td>{% if produits.marqueBlanche %} Oui {% else %} Non {% endif %} </td>
+                                </tr>
+
+                                <tr>
+                                    <td> Produit décliné avec de la : </td>
+                                    <td> {{produits.declineAvec}} </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Déclinaison:</td>
+                                    <td>
+                                        {% if produits.declinaisonNicotine %}
+                                        {% for declinaison in produits.declinaisonNicotine %}
+                                        {{declinaison}}
+                                        {% endfor %}<br>
+                                        {% elseif produits.declinaisonCBD %}
+                                        {% for declinaison in produits.declinaisonCBD %}
+                                        {{declinaison}}
+                                        {% endfor %}<br>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                                {% if produits.codeEAN13 %}
+                                <tr>
+                                    <td>Référence EAN13</td>
+                                    <td>
+                                        {% for ean in produits.codeEAN13 %}
+                                        {{ean}},
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+
+                                <tr>
+                                    <td>Contenant utilisé :</td>
+                                    <td>{% if produits.contenant %}{{produits.contenant.nom}}{% endif %} </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Aromes utilisés:</td>
+                                    <td>
+                                        {% for pro in proAro %}
+                                        {{pro.arome.nom}},
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td> Quantité:</td>
+                                    <td>{{produits.quantite}}</td>
+                                </tr>
+                            </div>#}
+
+                        </tbody>
+                    </table>
+                    {#% if produits.marqueBlanche %}
+                    Référence marque blanche: {{produits.referenceMarqueBlanche}} <br>
+                    {% endif %#}
+                </div>
+                <a href="{{path('back_produit_modification', {id: produits.id})}}" class="mt-2 ml-2 btn btn-success"><i
+                        class="os-icon os-icon-edit"></i> Editer</a>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

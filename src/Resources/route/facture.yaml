@@ -1,0 +1,123 @@
+back_liste_facture:
+    path: /
+    defaults:
+        _controller: App\Controller\Back\FactureController::liste
+
+back_invoice_regenerate_invoice:
+    path: /regenerer/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::regenerer
+        requirements:
+            id: \d+
+
+back_invoice_regenerate_invoice_extravape:
+    path: /regenerer/extravape/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::regenererExtravape
+        requirements:
+            id: \d+
+
+back_prestashop_invoice_regenerate_invoice:
+    path: /regenerer_facture_prestashop/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::facturePrestashop
+        requirements:
+            id: \d+
+
+back_logistique_creation_facture_extravape:
+    path: /extravape/{id}
+    defaults:
+        id: null
+        _controller: App\Controller\Back\FactureController::factureExtravape
+        requirements:
+            id: \d+
+
+back_logistique_invoice_info:
+    path: /voir/information/{id}/{maitre}
+    defaults:
+        maitre: false
+        _controller: App\Controller\Back\FactureController::showInvoiceInfo
+        requirements:
+            id: \d+
+
+back_escompte_facture:
+    path: /escompte/{id}/{maitre}
+    methods: POST
+    defaults:
+        maitre: false
+        _controller: App\Controller\Back\FactureController::escompteFacture
+        requirements:
+            id: \d+
+
+
+back_acompte_facture:
+    path: /acompte/{id}
+    methods: POST
+    defaults:
+        _controller: App\Controller\Back\FactureController::acompteFacture
+        requirements:
+            id: \d+
+
+back_logistique_liste_facture_extravape:
+    path: /liste/facture/extravape
+    defaults:
+        _controller: App\Controller\Back\FactureController::listeFactureExtravape
+       
+
+back_logistique_ifo_extravape:
+    path: /information/extravape
+    defaults:
+        _controller: App\Controller\Back\FactureController::infoExtravape
+
+back_creation_facture_avoir:
+    path: /creation/avoir
+    defaults:
+        _controller: App\Controller\Back\FactureController::factureAvoir
+
+back_modification_facture_avoir:
+    path: /modification/avoir/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::factureAvoir
+        requirements:
+            id: \d+
+            
+back_ajax_facture_info:
+    path: /ajax/facture
+    defaults:
+        _controller: App\Controller\Back\FactureController::ajaxFactureInfo
+
+        
+back_facture_avoir_list:
+    path: /avoir
+    defaults:
+        _controller: App\Controller\Back\FactureController::listeFactureAvoir
+
+
+back_download_facture_avoir:
+    path: /telecharger/avoir/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::downloadFactureAvoir
+        requirements:
+            id: \d+
+
+back_envoie_facture_avoir:
+    path: /envoie/avoir/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::sendInvoice
+        requirements:
+            id: \d+
+
+
+back_facture_excel:
+    path: /facture/excel/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::factureExcel
+        requirements:
+            id: \d+
+
+avoir_payement:
+    path: /paiement_avoir/{id}
+    defaults:
+        _controller: App\Controller\Back\FactureController::payerAvoir
+        requirements:
+            id: \d+

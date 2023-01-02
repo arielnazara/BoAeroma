@@ -1,0 +1,132 @@
+<table class="table table-padded animate-bottom ">
+    <thead>
+        <tr>
+            <th> Date </th>
+            <th> Commande </th>
+            <th class=""> Entreprise</th>
+            <th> Paiement </th>
+            <th> Qt livrées/commandées </th>
+            <th> Statut</th>
+            <th class="text-right"> Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for bdc in commandes %}
+    
+        <tr id="tr-{{ bdc.id }}">
+            <td data-source="{{ bdc.client.raisonSocial}} {{ bdc.code }} {{ bdc.client.lastname }} {{ bdc.client.firstname }}">
+                <div class="smaller lighter">
+                    {{ bdc.date|date('d.m.Y')}}
+                </div>
+            </td>
+
+            <td class="text-center">
+                <button type="button" class="btn btn-white">{{ bdc.code }}</button>
+                <br>
+                {% if bdc.devis.shop %}
+                    {% if bdc.devis.shop == 'aeroma_prostore' %}
+                        <span class="badge badge-success">Aeroma prostore</span>
+                    {% endif %}
+
+                    {% if bdc.devis.shop == 'grossiste_greendot' %}
+                        <span class="badge badge-primary">Greendot</span>
+                    {% endif %}
+
+                    {% if bdc.devis.shop == 'yzy_vape' %}
+                        <span class="badge badge-secondary">Yzyvape store</span>
+                    {% endif %}
+                    
+                {% endif %}
+            </td>
+
+            <td>
+                {% if bdc.client.raisonSocial|split('-')[0] == 'n' %}
+                    <span>NA</span> <br>
+                {% else %}
+                    
+                    {% if bdc.devis.shop == "grossiste_greendot" %}
+                        <span>{{ bdc.devis.client.raisonSocial }}</span>
+                    {% else %}
+                        {% if bdc.devis.boutique %}
+                            <span> {{ bdc.devis.boutique.nomShop }}</span> <br>
+                        {% else %}
+                            <span> {{ bdc.client.raisonSocial }}</span> <br>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+                {#% if bdc.devis.boutique %}
+                    <small>{{bdc.devis.boutique.prenom ~ ' ' ~  bdc.devis.boutique.nom}}</small>
+                {% else %}
+                    <small>{{ bdc.client.firstname ~ ' ' ~ bdc.client.lastname }}</small>
+                {% endif %#}
+                
+            </td>
+
+            <td class="nowrap">
+                {% if bdc.totalTtc %}
+                
+                    {% set paid = bdc.totalTtc - bdc.resteAPayer %}
+                    
+                    {% set percent = (paid * 100) / bdc.totalTtc %}
+
+                    {% if percent > 100 %}
+                        {% set percent = 100 %}
+                    {% endif %}
+                   
+                    <div class="os-progress-bar primary">
+                        <div class="bar-labels">
+                            <div class="bar-label-right">
+                                <span style="{% if percent == 100 %}color:#24b314{% endif %}" class="info">{{ paid|number_format(2, ',', ' ') ~ '€ / ' ~  bdc.totalTtc|number_format(2, ',', ' ') }}€</span>
+                            </div>
+                        </div>
+                        <div class="bar-level-1" style="width: 100%;">
+                            <div class="bar-level-2" style="width: {{ percent }}%;{% if percent >= 100 %}background-color:#24b314{% endif %}"></div>
+                        </div>
+                    </div>
+                {% endif %}
+            </td>
+
+            <td class="text-uppercase">
+                <div>
+                    {% set tlivred = bdc.nombreProduit - bdc.resteALivrer %}
+                
+                    <small> {{ tlivred }}/{{ bdc.nombreProduit}} </small> <br>
+                </div>
+            </td>
+
+            <td>
+                {{ bdc.status }}
+            </td>
+
+            <td class="row-actions text-right" style="width: 150px">
+               
+                
+                {% if bdc.devis.abandonner  %}
+
+                    <span class="badge badge-pill badge-danger text-uppercase">annulé</span>
+                    
+                {% else %}
+
+                    {% if not bdc.traitementTerminer %}
+                        <form action="{{ path('back_annuler_commande', {id: bdc.id}) }}" class="d-inline" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">
+
+                            <button  type="submit"  title="Annuler la commande" style="text-decoration: none ;" class="btn mb-1 btn-link text-danger"><i class="os-icon os-icon-x text-danger"></i></button>
+
+                        </form>
+                    {% endif %}
+                    
+                    <a data-placement="top" data-toggle="tooltip" title="Editer la commande" href="{{ path('back_modification_commande', {number:bdc.code, id:bdc.id}) }}"><i class="os-icon os-icon-edit"></i></a>
+                    {% if not bdc.envoyerAuLogistique %}
+                        <a id="{{ bdc.id }}" class="sendToLogistic" data-placement="top" data-toggle="tooltip" title="Envoyer à la logistique" href="{{ path('back_creation_commande', {id:bdc.id}) }}"><i class="os-icon os-icon-box"></i></a>
+                        <div style="display:none; margin-top: -21px; margin-left: 51px;" class="loader2 load{{bdc.id}}"></div>
+                    {% endif %}
+
+                {% endif %}
+                
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

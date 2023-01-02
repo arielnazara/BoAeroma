@@ -1,0 +1,30 @@
+{% block _produit_produitAromes_widget %}
+    
+    {{ form_widget(form) }}
+    
+{% endblock %}
+
+{% block _produit_produitAromes_entry_label %}
+    
+    
+{% endblock %}
+
+{% block _produit_produitAromes_entry_row %}
+
+    <div id="block_arome_{{id}}">
+
+        <div class="row my-3">
+            <div class="col-md-11">
+                {{form_widget(form.arome, {'attr': {"class": "search"}})}}
+                
+            </div>
+            <div class="col">
+                <a href="" data-action="delete" data-target="#block_arome_{{id}}" class=" float-right btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>
+            </div>
+        </div>
+        
+    </div>
+
+{% endblock %}
+
+

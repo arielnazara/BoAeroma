@@ -1,0 +1,33 @@
+
+###> symfony/framework-bundle ###
+/.env
+/.env.local
+/.env.local.php
+/.env.*.local
+/composer.lock
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/public/back/
+/public/pdf/
+/public/excel/
+/public/images/
+/public/bpco/
+/var/
+/vendor/
+/tests/
+/.idea/
+**/.DS_Store
+**/*.php~
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+/symfony.lock
+/domino_masque.sql
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

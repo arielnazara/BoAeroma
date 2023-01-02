@@ -1,0 +1,591 @@
+{% extends 'front-base.html.twig' %}
+
+{% block title "Calcul et génération du devis"%}
+{% block classBody "bg-light"%}
+{% block custom_css %}
+    <style>
+        .bareme:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row card p-3">
+        <div class="col-12">
+            {{ include('front/header.html.twig') }}
+        </div>
+        <div class="col-12 mt-4" style="min-height: calc(100vh - 200px);">
+            <div class="row">
+                <div class="col-md-12">
+                    {% include 'front/customnav.html.twig' %}
+                </div>
+               
+                <div class="col-md-12 mt-3">
+                    <h2 class="display-4 mb-4" >Etape 2/2 : Choix des produits  </h2> 
+                </div>
+                <div class="col-md-12">
+                
+                    <div class="mb-3 row ">    
+                        
+                        <div class=" col-sm-12 mt-2 ">
+                            
+                        </div>
+                    </div>
+                    
+                    {% set prodId = [] %}
+                    
+                    {% for categorie in categories %}
+  
+                        <div class="col-md-12">
+                            
+                            <h5><a href="" class="toogle btn btn-link" data-id="{{categorie.id}}">{{categorie.nom}} <i data-id="{{categorie.id}}" class="  fas fa-angle-down"></i></a></h5>
+                           
+                        </div>
+                        
+                        <div class="row mb-5  " id="{{categorie.id}}">
+                            {% for gam in gamme %}
+                                
+                                {% if gam.produit.categorie %}
+                                
+                                    {% if gam.produit.categorie.id == categorie.id %}
+                                        {% if gam.produit.id not in prodId %}
+                                            {% set prodId = prodId|merge([gam.produit.id]) %}
+
+                                            {% set tarif = gam.produit.tarif %}
+                                            {% for mb in marqueBlanches %}
+                                                {% if prod.produit == mb.produit %}
+                                                    {% set tarif = mb.tarif %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <div class="col-md-12 categorie p-3">
+                                                <form action="{{path('ajax_cart_add')}}" method="POST">
+                                                    <div class="row ">
+
+                                                        <div class="col-md-2 mb-4 text-center ">
+                                                            <div class="titre ">
+                                                                Réference
+                                                            </div>
+                                                            {{gam.produit.reference}}
+                                                        </div>
+                                                        
+                                                        <div class="col-md-3 mb-4 text-center">
+                                                            <div class="titre">
+                                                                Nom
+                                                            </div>
+                                                            {{gam.produit.nom}}
+                                                        </div>
+                                                        
+                                                        <div class="col-md-5 text-center mb-4">
+                                                            <div class="titre mb-1" >
+                                                                Déclinaisons
+                                                            </div>
+                                                        
+                                                            {% if gam.produit.principeActif %}
+                                                                {% if gam.toutLesDeclinaisons %}
+                                                                    {% for decl in gam.produit.declinaison %}
+                                                                        <input type="hidden" name="decl" class="info" value="declinaison">
+                                                                        <div class="row">
+                                                                            <div class="col-sm-4 custom-control custom-checkbox">
+                                                                                <input type="checkbox" class="form-check-input" value="{{decl|replace({',': ''})}}" data-produit="{{gam.produit.id}}">
+                                                                                <label class="form-check-label">{{decl}}</label>
+                                                                            </div>
+                                                                            <div class="col-sm-2 mb-2">
+                                                                                {% if tarif %}
+                                                                                    {% for type in types %}
+                                                                                        {% if client.typeDeClient == type %}
+                                                                                        
+                                                                                            {% if tarif.memeTarif %} 
+                                                                                                
+                                                                                                {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                                                                    <span class="badge badge-success display-4" >{{tarif.prixDeReferenceGrossiste}}€</span> <br>
+                                                                                                {% else %}
+                                                                                                    <span class="badge badge-success display-4" >{{tarif.prixDeReferenceDetaillant}}€</span> <br>
+                                                                                                {% endif %}
+                        
+                                                                                            {% else %}
+
+                                                                                                {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                                                                
+                                                                                                    {% for tarifDecl in tarif.prixDeclinaisons %}
+                                                                                                        {% if tarifDecl.actif %}
+                                                                                                            {% if tarifDecl.typeDeClient == type %}
+                                                                                                                {% if decl == tarifDecl.declinaison %}
+                                                                                                                    <span class="badge badge-success display-4" >{{tarifDecl.prix}}€</span> <br>
+                                                                                                                {% endif %}
+                                                                                                            {% endif %}
+                                                                                                        {% endif %}
+                                                                                                    {% endfor %}
+                                                                                                    
+                                                                                                {% else %}
+
+                                                                                                    {% for tarifDecl in tarif.prixDeclinaisons %}
+                                                                                                        {% if tarifDecl.actif %}
+                                                                                                            {% if tarifDecl.typeDeClient == type %}
+                                                                                                                {% if decl == tarifDecl.declinaison %}
+                                                                                                                    <span class="badge badge-success display-4" >{{tarifDecl.prix}}€</span> <br>
+                                                                                                                {% endif %}
+                                                                                                            {% endif %}
+                                                                                                        {% endif %}
+                                                                                                    {% endfor %}
+                                                                                                    
+                                                                                                {% endif %}
+    
+                                                                                            {% endif %}
+
+                                                                                        {% endif %}
+                                                                                        
+                                                                                    {% endfor %}
+                                                                                    
+                                                                                {% else %}
+                                                                                    <span class="badge badge-danger" >Aucun prix</span>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                            <div class=" col-sm-6 form-group div{{decl|replace({',': ''})}}{{gam.produit.id}}" style="display: none;" >
+                                                                                <div class="row">
+                
+                                                                                    <div class="col-sm-10">
+                                                                                        <input type="number" min="0" data-declinaison="{{decl|replace({',': ''})}}" class="form-control quantite form-control-sm quantite{{decl|replace({',': ''})}}{{gam.produit.id}} " name="quantite-{{decl|replace({',': ''})}}{{gam.produit.id}}" placeholder="Quantité"  >
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    {% endfor %}
+                                                                {% else %}
+                                                                    {% for prodDecl in gam.produit.declinaison %}
+                                                                        {% for gamDecl in gam.declinaison %}
+                                                                            {% if prodDecl == gamDecl %}
+                                                                                <input type="hidden" name="decl" class="info" value="declinaison">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 custom-control custom-checkbox">
+                                                                                        <input type="checkbox" class="form-check-input" value="{{gamDecl}}" data-produit="{{gam.produit.id}}">
+                                                                                        <label class="form-check-label">{{gamDecl}}</label>
+                                                                                    </div>
+                                                                                    <div class="col-sm-2 mb-2">
+                                                                                        {% if tarif %}
+                                                                                            {% for type in types %}
+                                                                                                {% if client.typeDeClient == type %}
+                                                                                                
+                                                                                                    {% if tarif.memeTarif %} 
+                                                                                                        
+                                                                                                        {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                                                                            <span class="badge badge-success display-4" >{{tarif.prixDeReferenceGrossiste}}€</span> <br>
+                                                                                                        {% else %}
+                                                                                                            <span class="badge badge-success display-4" >{{tarif.prixDeReferenceDetaillant}}€</span> <br>
+                                                                                                        {% endif %}
+                                
+                                                                                                    {% else %}
+        
+                                                                                                        {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                                                                        
+                                                                                                            {% for tarifDecl in tarif.prixDeclinaisons %}
+                                                                                                                {% if tarifDecl.actif %}
+                                                                                                                    {% if tarifDecl.typeDeClient == type %}
+                                                                                                                        {% if prodDecl == tarifDecl.declinaison %}
+                                                                                                                            <span class="badge badge-success display-4" >{{tarifDecl.prix}}€</span> <br>
+                                                                                                                        {% endif %}
+                                                                                                                    {% endif %}
+                                                                                                                {% endif %}
+                                                                                                            {% endfor %}
+                                                                                                            
+                                                                                                        {% else %}
+        
+                                                                                                            {% for tarifDecl in tarif.prixDeclinaisons %}
+                                                                                                                {% if tarifDecl.actif %}
+                                                                                                                    {% if tarifDecl.typeDeClient == type %}
+                                                                                                                        {% if prodDecl == tarifDecl.declinaison %}
+                                                                                                                            <span class="badge badge-success display-4" >{{tarifDecl.prix}}€</span> <br>
+                                                                                                                        {% endif %}
+                                                                                                                    {% endif %}
+                                                                                                                {% endif %}
+                                                                                                            {% endfor %}
+                                                                                                            
+                                                                                                        {% endif %}
+            
+                                                                                                    {% endif %}
+        
+                                                                                                {% endif %}
+                                                                                                
+                                                                                            {% endfor %}
+                                                                                            
+                                                                                        {% else %}
+                                                                                            <span class="badge badge-danger" >Aucun prix</span>
+                                                                                        {% endif %}
+                                                                                    </div>
+                                                                                    <div class=" col-sm-6 form-group div{{gamDecl}}{{gam.produit.id}}" style="display: none;" >
+                                                                                        <div class="row">
+                        
+                                                                                            <div class="col-sm-10">
+                                                                                                <input type="number" min="0" data-declinaison="{{gamDecl}}" class="form-control quantite form-control-sm quantite{{gamDecl}}{{gam.produit.id}} " name="quantite-{{gamDecl}}{{gam.produit.id}}" placeholder="Quantité"  >
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                                
+                                                            {% else %}
+                                                                   
+                                                                <div class="col-sm-12">
+                                                                    <input type="hidden" name="sans" class="info" value="sans">
+                                                                    <label for="" class="text-center">
+                                                                        Sans déclinaison 
+        
+                                                                        {% if prod.produit.tarif %}
+                                                                            {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                                                <span class="badge badge-success">{{prod.produit.tarif.prixDeReferenceGrossiste}}€</span>
+                                                                            {% else %}
+                                                                                <span class="badge badge-success">{{prod.produit.tarif.prixDeReferenceDetaillant}}€</span>
+                                                                            {% endif %}
+                                                                        {% else %}
+                                                                            <span class="badge badge-danger">Aucun prix</span>
+                                                                        {% endif %}
+                                                                        
+                                                                    </label>
+                                                                    <div class="col-sm-8 mx-auto">
+                                                                        <input type="number" min="0" class="form-control form-control-sm quantiteSans" value="0">
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                            
+                                                        <div class="col-md-2 p-2 mb-4 text-center">
+                                                            
+                                                          
+                                                            <button class="btn btn-sm {% if gam.produit.id in panier|keys %} btn-success {% else %} btn-primary {% endif %} mt-3 ajouter" data-clientid="{{client.id}}" id="{{gam.produit.id}}">
+                                                                <div class="spinner-border spinner-border-sm add{{gam.produit.id}}" role="status" style="display: none;">
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </div>
+                                                                Ajouter
+                                                            </button>
+                                                         
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-md-12 text-center">
+                                                <hr style="width: 100%;">
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                {% endif %}
+                                
+                            {% endfor %}
+                        </div>
+             
+                    {% endfor %}
+
+                    {% if sansCategorie %}
+                    
+                        <div class="col-md-12">
+                                
+                            <h5><a href="" class="toogle btn btn-link" data-id="sans">AUTRES <i data-id="sans" class="  fas fa-angle-down"></i></a></h5>
+                        
+                        </div>
+
+                        <div id="sans">
+
+                            {% for gam in gamme %}
+                                
+                                    {% if not gam.produit.categorie %}
+                                    
+                                        {% if gam.produit.id not in prodId %}
+                                            {% set prodId = prodId|merge([gam.produit.id]) %}
+
+                                            <div class="col-md-12 categorie p-3">
+                                                <form action="{{path('ajax_cart_add')}}" method="POST">
+                                                    <div class="row ">
+
+                                                        <div class="col-md-2 mb-4 text-center ">
+                                                            <div class="titre ">
+                                                                Réference
+                                                            </div>
+                                                        
+                                                            {{gam.produit.reference}}
+                                                        </div>
+                                                        
+                                                        <div class="col-md-3 mb-4 text-center">
+                                                            <div class="titre">
+                                                                Nom
+                                                            </div>
+                                                            {{gam.produit.nom}}
+                                                        </div>
+                                                        
+                                                        <div class="col-md-5 text-center mb-4">
+                                                            <div class="titre mb-1" >
+                                                                Déclinaisons
+                                                            </div>
+                                                        
+                                                            {% if gam.produit.principeActif %}
+                                                                {% if gam.toutLesDeclinaisons %}
+                                                                    {% for decl in gam.produit.declinaison %}
+                                                                        <input type="hidden" name="decl" class="info" value="declinaison">
+                                                                        <div class="row">
+                                                                            <div class="col-sm-4 custom-control custom-checkbox">
+                                                                                <input type="checkbox" class="form-check-input" value="{{decl|replace({',': ''})}}" data-produit="{{gam.produit.id}}">
+                                                                                <label class="form-check-label">{{decl}}</label>
+                                                                            </div>
+                                                                            <div class="col-sm-2 mb-2">
+                                                                                {% if tarif %}
+                                                                                    {% if tarif.typeDeClient == client.typeDeClient %}
+                                                                                    
+                                                                                        {% if tarif.memeTarif %} 
+                    
+                                                                                            <span class="badge badge-success display-4" >{{tarif.prixDeReference}}€</span> <br>
+                    
+                                                                                        {% else %}
+                    
+                                                                                            {% for tarifDecl in tarif.prixDeclinaisons %}
+                                                                                                {% if tarifDecl.actif %}
+                                                                                                    {% if decl == tarifDecl.declinaison %}
+                                                                                                        <span class="badge badge-success display-4" >{{tarifDecl.prix}}€</span> <br>
+                                                                                                    {% endif %}
+                                                                                                {% endif %}
+                                                                                            {% endfor %}
+                    
+                                                                                        {% endif %}
+                                                                                    {% endif %}
+                                                                                    
+                                                                                {% else %}
+                                                                                    <span class="badge badge-danger" >Aucun prix</span>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                            <div class=" col-sm-6 form-group div{{decl|replace({',': ''})}}{{gam.produit.id}}" style="display: none;" >
+                                                                                <div class="row">
+                
+                                                                                    <div class="col-sm-10">
+                                                                                        <input type="number" min="0" data-declinaison="{{decl|replace({',': ''})}}" class="form-control quantite form-control-sm quantite{{decl|replace({',': ''})}}{{gam.produit.id}} " name="quantite-{{decl|replace({',': ''})}}{{gam.produit.id}}" placeholder="Quantité"  >
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    {% endfor %}
+                                                                {% else %}
+                                                                    {% for prodDecl in gam.produit.declinaison %}
+                                                                        {% for gamDecl in gam.declinaison %}
+                                                                            {% if prodDecl == gamDecl %}
+                                                                                <input type="hidden" name="decl" class="info" value="declinaison">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 custom-control custom-checkbox">
+                                                                                        <input type="checkbox" class="form-check-input" value="{{gamDecl}}" data-produit="{{gam.produit.id}}">
+                                                                                        <label class="form-check-label">{{gamDecl}}</label>
+                                                                                    </div>
+                                                                                    <div class="col-sm-2 mb-2">
+                                                                                        {% if tarif %}
+                                                                                            {% if tarif.typeDeClient == client.typeDeClient %}
+                                                                                            
+                                                                                                {% if tarif.memeTarif %} 
+                            
+                                                                                                    <span class="badge badge-success display-4" >{{tarif.prixDeReference}}€</span> <br>
+                            
+                                                                                                {% else %}
+                            
+                                                                                                    {% for tarifDecl in tarif.prixDeclinaisons %}
+                                                                                                        {% if tarifDecl.actif %}
+                                                                                                            {% if gamDecl == tarifDecl.declinaison %}
+                                                                                                                <span class="badge badge-success display-4" >{{tarifDecl.prix}}€</span> <br>
+                                                                                                            {% endif %}
+                                                                                                        {% endif %}
+                                                                                                    {% endfor %}
+                            
+                                                                                                {% endif %}
+                                                                                                
+                                                                                            {% endif %}
+                                                                                            
+                                                                                        {% else %}
+                                                                                            <span class="badge badge-danger" >Aucun prix</span>
+                                                                                        {% endif %}
+                                                                                    </div>
+                                                                                    <div class=" col-sm-6 form-group div{{gamDecl}}{{gam.produit.id}}" style="display: none;" >
+                                                                                        <div class="row">
+                        
+                                                                                            <div class="col-sm-10">
+                                                                                                <input type="number" min="0" data-declinaison="{{gamDecl}}" class="form-control quantite form-control-sm quantite{{gamDecl}}{{gam.produit.id}} " name="quantite-{{gamDecl}}{{gam.produit.id}}" placeholder="Quantité"  >
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                                
+                                                            {% else %}
+                                                                
+                                                                <div class="col-sm-12">
+                                                                    <input type="hidden" name="sans" class="info" value="sans">
+                                                                    <label for="" class="text-center">
+                                                                        Sans déclinaison 
+        
+                                                                        {% if tarif %}
+                                                                            {% if tarif.typeDeClient == client.typeDeClient %}
+                                                                            
+                                                                                <span class="badge badge-success">{{tarif.prixDeReference}}€</span>
+                                                                            {% endif %}
+                                                                            
+                                                                        {% else %}
+                                                                            <span class="badge badge-danger">Aucun prix</span>
+                                                                        {% endif %}
+                                                                        
+                                                                    </label>
+                                                                    <div class="col-sm-8 mx-auto">
+                                                                        <input type="number" min="0" class="form-control form-control-sm quantiteSans" value="0">
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                            
+                                                        <div class="col-md-2 p-2 mb-4 text-center">
+                                                            {% if tarif %}
+                                                                {% if tarif.typeDeClient == client.typeDeClient %}
+                                                                
+                                                                    <button class="btn btn-sm {% if gam.produit.id in panier|keys %} btn-success {% else %} btn-primary {% endif %} mt-3 ajouter" data-clientid="{{client.id}}" id="{{gam.produit.id}}">
+                                                                        <div class="spinner-border spinner-border-sm add{{gam.produit.id}}" role="status" style="display: none;">
+                                                                            <span class="sr-only">Loading...</span>
+                                                                        </div>
+                                                                        Ajouter
+                                                                    </button>
+
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-md-12 text-center">
+                                                <hr style="width: 100%;">
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                
+                            {% endfor %}
+                        </div>
+                    
+                    {% endif %}
+                    
+                     
+                </div>
+                <div class="col-md-12 mb-5">
+                    <a href="" title="Retour en haut de la page" class="float-right hautPage"><i class="fas fa-chevron-circle-up fa-2x"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {{ include('front/footer.html.twig') }}
+{% endblock %}
+
+{% block custom_js %}
+
+   <script>
+        $(function(){
+            let countQuantity = {};
+
+            $(window).scroll(()=>{
+                let height = $(window).height() - 300;
+
+                if ($(window).scrollTop() > height) {
+                    $('.hautPage').show();
+                } else {
+                    $('.hautPage').hide();
+                }
+            });
+
+            $('.hautPage').click(function(e){
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $(".haut").offset().top
+                }, 2000)
+            })
+            
+            $('input[type=checkbox]').click(function(){ 
+
+                let declinaison = $(this).val();
+                let prodId = $(this).data('produit');
+                
+                if($(this).is(':checked')){
+
+                    $('.div'+declinaison+prodId +'').show('slow');
+                    $('.quantite'+ declinaison+prodId +'').attr('required', true);
+                    $('.quantite'+ declinaison+prodId +'').val(0);
+                        
+                }else{
+                    $('.div'+ declinaison+prodId +'').hide('slow');
+                        
+                    $('.quantite'+ declinaison+prodId +'').val('').removeAttr('required');
+                    
+                }
+            })
+
+            if($('.alert').is(':visible')){
+                
+                $('.alert').delay(3000).slideUp("slow");
+            }
+
+            $('.toogle').click(function(e){
+                e.preventDefault();
+                let id = $(this).data('id');
+                $('#'+ id +'').toggle("slow");
+
+                $(this).find("i").toggleClass('fa-angle-right fa-angle-down');
+                
+            });
+
+            $('.ajouter').click(function(e){
+                e.preventDefault();
+                
+                let idClient = $(this).data('clientid');
+                let idProduit = $(this).attr('id');
+                let declinaison = {};
+                let sans = 0;
+
+                $('.add'+ idProduit +'').show();
+                if($(this).closest('form').find('.info').val() == 'declinaison'){
+                    $(this).closest('form').find('.quantite').each(function(){
+                        
+                        if($(this).is(':visible') && $(this).val() ){
+                            
+                            let decl = $(this).data('declinaison');
+                            let val = $(this).val();
+                            
+                            declinaison[decl] = val;
+                        }
+
+                        
+                    });
+                    
+                }else if($(this).closest('form').find('.info').val() == 'sans') {
+                    sans =  $(this).closest('form').find('.quantiteSans').val();
+                }
+                
+
+                $.ajax({
+                    url: $('form').attr('action'),
+                    type: 'POST',
+                    data: {idClient : idClient, idProduit: idProduit, quantiteDecl: declinaison, sans :sans},
+                    success: function(data) {
+                        
+                        let produitId = data.produit;
+                        let produitDansPanier = data.panier;
+                        
+                        $('.add'+ idProduit +'').hide();
+                        $("#"+ produitId + "").addClass('btn btn-success btn-sm');
+
+                        $('.countpanier').text(produitDansPanier);
+                       
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            });
+        })
+   </script>
+{% endblock %}

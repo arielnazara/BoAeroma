@@ -1,0 +1,51 @@
+{% extends 'back/produit/arome/listeArome.html.twig' %}
+
+{% block title %}Création EAN 13{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% for message in app.flashes('errorModifProduit') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <h4 class="title">Création EAN 13</h4>
+                    <div class="mt-3">
+                        {% if produit.declinaison %}
+                            <p class="text-info">
+                                Veuillez creer {{ produit.declinaison|length }} référence(s) EAN pour les {{ produit.declinaison|length }}  déclinaison(s) que vous venez de choisir
+                            </p>
+                        {% else %}
+                            <p class="text-danger">Veuillez choisir une déclinaison </p>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4">
+                        <div class="col-md-8"> 
+                            <form action="{{path('back_produit_creation_ean', {id: produit.id})}}" method="POST">
+                                {% set compt = 0 %}
+                                {% if produit.declinaison %}
+                                    {% for input in 1..produit.declinaison|length %}
+                                        <div class="form-group">
+                                            <label for="{{compt}}">Code EAN n°{{compt + 1}}</label>
+                                            
+                                            <input type="number" name="{{compt}}" class="form-control" required>
+                                            
+                                            {% set compt = compt + 1 %}
+                                        </div>
+                                    {% endfor %}
+                                
+                                {% endif %}
+                                {% if produit.declinaison %}
+                                    <button class="btn btn-primary" type="submit">Enregistrer</button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,453 @@
+{% set generated = false %}
+{% set lotCommandeId = [] %}
+
+{% for lp in lps %}
+    {% for lq in lp.lotQuantites %}
+        {% if lq.lotCommande.id not in lotCommandeId %}
+            {% set lotCommandeId = lotCommandeId|merge([lq.lotCommande.id]) %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+
+{% for lp in lps %}
+
+    <tr>
+        <td>
+            {% if not lp.factureCommande %}
+                <div class="form-check  lot form-check-inline" style="display: none;">
+                    <input class="form-check-input checkbox " type="checkbox" id="{{ lp.id }}" value="{{ lp.id }}" name="{{ lp.nom }}">
+                </div>
+                <label for="{{ lp.id }}">{{ lp.nom }}</label>
+            {% else %}
+                {{ lp.nom }}
+            {% endif %}
+        </td>
+        
+        <td>
+            <div class="smaller lighter py-5">
+                Préparée le {{ lp.date|date('d/m/Y') }}
+            </div>
+        </td>
+
+        <td style="font-weight: bolder">
+                            
+            <button type="button" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#Modal{{lp.id}}">
+                <i class="os-icon os-icon-eye"></i>
+            </button>
+
+            <div class="modal fade" id="Modal{{lp.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-uppercase" id="exampleModalLabel">Quantité préparée</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col text-uppercase">Produit</th>
+                                    <th scope="col text-uppercase">Quantités</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lq in lp.lotQuantites %}
+                                    <tr>
+                                        <th scope="row">{{ lq.produit.nom }} </th>
+                                        <td>{{ lq.quantite }} {% if lq.offert %} <span style="color: green;"> (Offert)</span>{% endif %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        
+                    </div>
+                </div>
+            </div>
+            </div>
+        </td>
+        
+        <td class="text-center">
+            
+        {% set quantiteTotal = 0 %}
+        {% set blQuantite = 0 %}
+
+        {% for lq in lp.lotQuantites %}
+            {% set quantiteTotal = quantiteTotal + lq.quantite   %}
+        {% endfor %}
+        
+        {% if lp.bonLivraison %}
+
+            {% if lp.bonLivraison.estGenerer == true %}
+                
+                <a class="badge badge-success-inverted text-left" href="javascript:void(0)">
+                Expédié le {{ lp.dateExpedition|date('d/m/Y') }}
+                </a> <br>
+
+                <a target="_blank" class="btn btn-link" href="{{ path('back_logistique_bon_livraison_download', {id:lp.bonLivraison.id}) }}">
+                <i class="os-icon os-icon-download"></i> Bon de livraison
+                </a>
+                <div class=" text-center">
+                    {% if not lp.estExpedier %}
+                        {# <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#lot{{lp.id}}"> <i class="os-icon os-icon-edit"></i> Editer</button>#}
+                    {% endif %}
+                    {% set produitExist = [] %}
+                    {#<div class="modal fade" id="lot{{lp.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg p-2">
+                            <div class="modal-content p-2">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Editer le bon de livraison</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <form method="post" action="" autocomplete="off">
+                                    <input type="hidden" name="modifier" value="{{lp.id}}">
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-sm-5">
+                                                    <label class="col-form-label" for=""> Donner un nom </label>
+                                                </div>
+                                                <div class="col-sm-7">
+                                                
+                                                    <input autocomplete="off" required name="name" class="form-control" placeholder="Nom" type="text" value="{{lp.nom}}">        
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-sm-5">
+                                                    <label for="">Nombre de colis</label>
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <input autocomplete="off" required name="nombreColis" class="form-control" placeholder="Quantité" value="{{lp.nombreColis}}" type="number" min="0">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                        <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-sm-5">
+                                                    <label class="col-form-label" for=""> Décrire le statut </label>
+                                                </div>
+                                                <div class="col-sm-7">
+                                                
+                                                    <input autocomplete="off" name="status" class="form-control" value="{{lp.status}}" placeholder="Vous pouvez le laisser vide" type="text">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-sm-5">
+                                                    <label for="">Livraison express </label>
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <input autocomplete="off" name="expresse" id="express" class="form-control mode" value="{{lp.expresse}}" placeholder="nombre de palette " type="number" min="0">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-6"></div>
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-sm-5">
+                                                    <label class="col-form-label" for=""> Affrêtement </label>
+                                                </div>
+                                                <div class="col-sm-7">
+                                                
+                                                    <input autocomplete="off" name="affretement" id="affretement" value="{{lp.affretement}}"  class="form-control mode" placeholder="nombre de palette " type="number" min="0">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <hr style="width: 100%;">
+
+                                    {% set count = 1 %}
+                                    {% for produit, values in customOrders %}
+                                        {#% set max = o.quantite - o.preparer - o.priorite %#}
+                                        {#<div class="form-group row">
+                                            <div class="col-sm-3">
+                                                {% set nomProduit = null %}
+                                                {% set nomProduitOffert = null %}
+                                                {% if 'offert' in produit %}
+                                                    {% set nom = produit|trim(count) %}
+                                                    {% set nomProduitOffert = produit|trim(count) %}
+                                                    {% set count = count + 1 %}
+                                                {% else %}
+                                                    {% set nom = produit %}
+                                                    {% set nomProduit = produit %}
+                                                {% endif %}
+                                                <label class="col-form-label " for=""> {{nom}} </label>
+        
+                                            </div>
+
+                                            <div class="col-sm-9">
+                                                
+                                                <div class="row">
+                                                    
+                                                    {% for declinaison, quantite in values %}
+                                                    
+                                                        {% for lq in lp.lotQuantites %}
+                                                            {% if not lq.offert %}
+                            
+                                                                {% if lq.produit.nom == produit %}
+                
+                                                                    {% if declinaison =="Sans déclinaison" %}
+                                                                        {% set declinaison = null %}
+                                                                    {% endif %}
+                                                                    {% if lq.declinaison == declinaison %}
+                                                                        
+                                                                        <div class="col-sm-4">
+            
+                                                                            <small>{{ declinaison }} ({{ quantite }} Max)</small>
+                                                                            
+                                                                            {% if declinaison != "Sans déclinaison" %}
+                                                                                <input autocomplete="off" required name="{{ nomProduit }}{{declinaison}}" class="form-control" placeholder="Quantité" value="{{lq.quantite}}" type="number" max="{{ quantite }}" min="0">
+                                                                            {% else %}                            
+                                                                                <input autocomplete="off" required name="{{ nomProduit }}" class="form-control" placeholder="Quantité" type="number" value="{{lq.quantite}}" max="{{ quantite }}" min="0">
+                                                                            {% endif %}
+                                                                        </div>
+                                                                        
+                                                                    {% endif %}
+                                                                
+                                                                {% endif %}
+                                                            {% elseif lq.offert %}
+                                                                {% if 'offert' in produit %}
+                                                                    {% if declinaison =="Sans déclinaison" %}
+                                                                        {% set declinaison = null %}
+                                                                    {% endif %}
+                                                                    {% if lq.declinaison == declinaison %}
+                                                                
+                                                                        <div class="col-sm-4">
+                                                                            
+                                                                            <small>{{ declinaison }} ({{ quantite }} Max)</small>
+                                                                            
+                                                                            {% if declinaison != "Sans déclinaison" %}
+                                                                                <input autocomplete="off" required name="{{ nomProduitOffert }}{{declinaison}}" class="form-control" placeholder="Quantité" value="{{lq.quantite}}" type="number" max="{{ quantite }}" min="0">
+                                                                            {% else %}                            
+                                                                                <input autocomplete="off" required name="{{ nomProduitOffert }}" class="form-control" placeholder="Quantité" type="number" value="{{lq.quantite}}" max="{{ quantite }}" min="0">
+                                                                            {% endif %}
+
+                                                                        </div>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </div>
+                                                    
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    {% endfor %}
+
+                                    <button class="btn btn-success rounded">Modifier</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>#}
+
+                </div>
+                
+            {% else %}
+                {{ lp.status }}
+            {% endif %}
+            
+        {% endif %}
+        </td>
+
+        <td>
+            {% if lp.factureCommande %}
+                <div class="text-center">
+                    <span class="badge badge-pill badge-success">Facturé</span> <br>
+                </div>
+        
+                <a target="_blank" class="btn btn-link" href="{{ path('back_logistique_show_invoice', {id: lp.factureCommande.id, idB: lp.bonDeCommande.id}) }}">
+            
+                    <i class="os-icon os-icon-eye"></i> Voir la facture
+                </a>
+                <br>
+
+
+                {#% include "back/logistique/_acompte_escompte.html.twig" with {'facture': lp.factureCommande} %#}
+            {% elseif lp.factureMaitre %}
+                <div class="text-center">
+                    <span class="badge badge-pill badge-success">Facturé</span> <br>
+                </div>
+
+                <a target="_blank" class="btn btn-link" href="{{ path('back_logistique_show_invoice_master', {id: lp.factureMaitre.id, maitre: true}) }}">
+            
+                    <i class="os-icon os-icon-eye"></i> Voir la facture
+                </a>
+
+                <br>
+
+                {#% include "back/logistique/_acompte_escompte.html.twig" with {'facture': lp.factureMaitre} %#}
+
+                
+            {% else %}
+                <div class="text-center">
+                    <span class="badge badge-pill badge-danger">Non facturé</span> <br>
+                </div>
+            {% endif %}
+
+
+        </td>
+
+        <td>{{ lp.date|date('d/m/Y') }}</td>
+
+        <td>
+            {% if lp.numeroSuivi %}
+                {{ lp.numeroSuivi }}
+            {% else %}
+                -
+            {% endif %}
+
+            <button  data-toggle="modal" data-target="#numeroSuivi_{{ lp.id }}" class="btn btn-link" type="button">
+                <i class="os-icon os-icon-edit"></i>
+            </button>
+            <div aria-hidden="true" aria-labelledby="numeroSuivi" class="modal fade" id="numeroSuivi_{{ lp.id }}" role="dialog" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                Modifier numéro de suivi
+                            </h5>
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"> &times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <form autocomplete="off" method="post" id="myForm" action="{{ path('back_logistique_modification_numero_suivi', {id:lp.id}) }}">
+                                <div class="form-group">
+                                    <label for="track_number">Numéro de suivi </label>
+                                    <input id="track_number" required autocomplete="off" class="form-control" name="track_number" {% if lp.numeroSuivi %} value="{{lp.numeroSuivi}}" {% endif %} type="text">
+                                </div>
+
+                                <div class="form-group">
+                                    <button class="btn btn-primary " type="submit"> VALIDER </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+
+        <td>
+            
+            {% if lp.bonLivraison and not lp.bonLivraison.estGenerer or not lp.bonLivraison %}
+                
+                <form action="{{path('back_logistique_email', {'id': lp.id})}}" method="POST">
+                    <input type="hidden" value="{{lp.id}}">
+                    <button type="submit" class="btn btn-primary btn-sm text-center mr-1"> Générer le bon de livraison </button>
+                </form>
+
+            {% else %}
+                
+                {% if lp.estExpedier %}
+                    <h6 class="btn btn-light text-success">
+                        <i class="os-icon os-icon-check-circle"></i>
+                        BL expédié
+                    </h6>
+                {% else %} 
+                    <button data-toggle="modal" data-target="#shipped_{{ lp.id }}" class="btn btn-success btn-sm" type="button">
+                        <i class="os-icon os-icon-navigation-2"></i> BL prêt à expédier
+                    </button>
+                {% endif %}
+                <div aria-hidden="true" aria-labelledby="shipped" class="modal fade" id="shipped_{{ lp.id }}" role="dialog" tabindex="-1">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">
+                                    Date de paiement
+                                </h5>
+                                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"> &times;</span></button>
+                            </div>
+                            <div class="modal-body">
+                                <form autocomplete="off" method="post" id="myForm" action="{{ path('back_logistique_expedier', {id:lp.id}) }}">
+                                    <div class="form-group">
+                                        <label for="date_shipped">
+                                            Date d’expédition
+                                        </label>
+                                        <input id="date_shipped" autocomplete="off" class="form-control single-daterange" name="date_shipped" type="text">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="track_number">Numéro de suivi </label>
+                                        
+                                        <input id="track_number" autocomplete="off" class="form-control" placeholder="Vous pouvez le laisser vide et le remplir ultérieurement" name="track_number" {% if lp.numeroSuivi %} value=" {{lp.numeroSuivi}}"{% endif %}
+                                            type="text">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-secondary" data-dismiss="modal" type="button"> Fermer</button>
+                                        <button class="btn btn-primary envoyeNumSuivi check" type="submit"> VALIDER </button>
+                                        <button class="envoyeNumSuivi" type="submit" disabled style="display: none;">Click</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endif %}
+            
+            <div class="d-block mt-2">
+
+                {% if lp.bonLivraison.estGenerer == true and not lp.client.extravape  %}
+
+                    {% if not lp.factureCommande %}
+                        <a href="{{ path('back_logistique_generate_invoice', {id: lp.id}) }}" class="btn btn-sm btn-warning" style="color: #fff; background-color: #b08847;border-color: #b08847;"><i class="os-icon os-icon-plus"></i> Générer une facture</a>
+                    {% else %}
+                        <form method="post" class="d-inline" action="{{ path('back_logistique_send_invoice', {'id': lp.factureCommande.id}) }}" method="post" onsubmit="return confirm('Etes-vous sur de vouloir envoyer cette facture au client?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('send' ~ lp.factureCommande.id) }}">
+                            
+                            {% if lp.factureCommande.expedier %}
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="os-icon os-icon-navigation"></i> 
+                                    Renvoyer la facture
+                                </button>
+                            {% else %}
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="os-icon os-icon-navigation"></i> 
+                                    Envoyer la facture
+                                </button>
+                            {% endif %}
+                        </form>
+
+                    {% endif %}
+
+                {% endif %}
+            </div>
+            
+            {% if lp.client.escompte %}
+                {% if lp.factureCommande|length > 0 %}
+                
+                    <br>
+                    <a href="{{ path('back_logistique_invoice_info', {id: lp.factureCommande.id}) }}" class="btn btn-info mt-2 btn-sm">
+                        <i class="os-icon os-icon-plus-circle"></i> Escompte
+                    </a>
+                {% elseif lp.factureMaitre|length > 0 %}
+                    <br>
+                    <a href="{{ path('back_logistique_invoice_info', {id: lp.factureMaitre.id, maitre: true}) }}" class="btn btn-info mt-2 btn-sm">
+                        <i class="os-icon os-icon-plus-circle"></i> Escompte
+                    </a>
+                {% endif %}
+            {% endif %}
+
+        </td>
+    </tr>
+{% endfor %}

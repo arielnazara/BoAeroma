@@ -1,0 +1,131 @@
+{% extends 'back/tarif/index.html.twig' %}
+
+
+{% block tarifs %}
+
+    {% for message in app.flashes('successTarif') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h6 class="element-header">Liste des declinaisons</h6>
+
+    <div id="tablecontent" class="table-responsive mt-2">
+        <div style="margin: auto; display: none" class="loader"></div>
+
+        {% for message in app.flashes('successTarif') %}
+            <div class="alert alert-success">
+                {{message}}
+            </div>
+        {% endfor %}
+        <a href="{{path('back_tarif_client_creation')}}" class="btn btn-sm btn-primary mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer un tarif client</a>
+        <table class="table table-striped table-lightfont table-hover dataTable1">
+            <thead>
+                <tr>
+                    <th> Nom </th>
+                    <th>Client</th>
+                    <th>Marque</th>
+                    <th> Contenance </th>
+                    <th>Base</th>
+                    <th>Catégorie</th>
+                    <th> Décliné avec </th>
+                    <th>Prix de référence</th>
+                    <th>Même tarif pour <br> toute les déclinaisons</th>
+                    <th>Type de <br> client </th>
+                    <th> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if parClient %}
+                    {% for tarif in parClient %}
+                        <tr>
+                            <td>
+                                {{tarif.nom}}
+                            </td>
+                            <td>
+                                {% if tarif.tarifParClient %}
+                                    {% for client in listeClient %}
+                                        {% if tarif.tarifParClient.client == client.id %}
+                                        <span class="btn btn-success btn-sm">{{client.lastname}} </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if tarif.tarifParMarque %}
+                                    {{tarif.tarifParMarque.marque.nom}}
+                                {% endif %}
+
+                                {% if tarif.tarifParClient %}
+                                    {% for marque in marques %}
+                                        {% if marque.id == tarif.tarifParClient.marque  %}
+                                            {{marque.nom}}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{tarif.contenance}}
+                            </td>
+                            <td>
+                                {{tarif.base}}
+                            </td>    
+                            
+                            <td>
+                                {{tarif.categorie}}
+                            </td>
+
+                            <td>
+                                {{tarif.declineAvec}}
+                            </td>
+
+                            <td>
+                                {% if tarif.tarifParMarque %}
+                                    {% if tarif.tarifParMarque.prix %}
+                                        {{tarif.tarifParMarque.prix}}€
+                                    {% else %}
+                                        {{tarif.prixDeReference}}€    
+                                    {% endif %}
+                                {% else %}
+                                    {{tarif.prixDeReference}}€    
+                                {% endif %}
+                                
+                            </td>
+
+                            <td> 
+                                {% if tarif.tarifParMarque %}
+                                    {% if tarif.tarifParMarque.memeTarif %}
+                                        <span class="badge badge-success-inverted"> OUI </span>
+                                    {% else %}
+                                        <span class="badge badge-danger-inverted">NON</span>
+                                    {% endif %}
+                                {% else %}
+                                    {% if tarif.memeTarif %}
+                                        <span class="badge badge-success-inverted">OUI</span>
+                                    {% else %}
+                                        <span class="badge badge-danger-inverted">NON</span>
+                                    {% endif %}
+                                {% endif %}
+                                
+                            </td>
+
+                            <td>
+                                {% if tarif.typeDeClient %}
+                                    <span>{{tarif.typeDeClient.nom}}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+
+                                <a href="{{path('back_modification_tarif_client', {id: tarif.id})}}"><i class="os-icon os-icon-edit"></i></a>
+                                
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        
+    </div>
+{% endblock %}
+                
+                

@@ -1,0 +1,124 @@
+{% extends 'back-base.html.twig' %}
+
+{% block custom_css %}
+
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-10 mx-auto">
+
+    {% for message in app.flashes('success') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="element-wrapper p-3 alert-light">
+        {% set devis = null %}
+
+        {% if invoiceOrder.devis is defined %}
+            {% set devis = invoiceOrder.devis %}
+        {% endif %}
+
+        <h6 class="element-header">Facture n° {{ invoiceOrder.numero }}</h6>
+        
+        <div class="float-left">
+
+            {% include "back/logistique/_acompte_escompte.html.twig" with {'facture': invoiceOrder, 'fact' : true, 'maitre': maitre} %}
+            
+            <a target="_blank" href="{{ path('back_logistique_show_invoice_master', {id: invoiceOrder.id, maitre: maitre}) }}" class="btn mt-3 btn-success "><i class="os-icon os-icon-download"></i> Télécharger </a>
+        </div>
+    
+        <div class="element-box-tp">
+        
+            {% if maitre %}
+
+                {% include "back/facture/_facture_maitre_info.html.twig" %}
+
+            {% else %}
+                
+                {% include "back/facture/_facture_info.html.twig" %}
+
+            {% endif %}
+
+            <table style=" width: 100%;">
+                <tr>
+                    <td>
+        
+                        <table style=" width: 90%; border-collapse: collapse; float: left; margin-top: -60px">
+                            <thead style="background-color: rgb(240,240,240); ">
+                                <th style="padding: 5px;">Détail des taxes</th>
+                                <th style="padding: 5px;">Taux de taxe</th>
+                                <th style="padding: 5px;">Taxe total</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Produits</td>
+                                    <td>20 % </td>
+                                    <td>{{invoiceOrder.tva|number_format(2, ',', ' ') }}€</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                    
+                        <table style="width: 90%; border-collapse: collapse; margin-top: 25px; float:right;">
+                            <tr>
+                                <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;">Montant total</td>
+                                <td style="text-align: right;">
+                                    {{invoiceOrder.total|number_format(2, ',', ' ') }}€
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;">Frais de livraison </td>
+                                <td style="text-align: right;">
+                                    {% if devis and invoiceOrder.devis.fraisExpedition and invoiceOrder.devis.fraisExpedition > 0 %}
+                                        {{invoiceOrder.devis.fraisExpedition|number_format(2, ',', ' ')}}€
+                                    {% else %}
+                                        Livraison gratuite
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="background-color: rgb(240,240,240); padding: 10px; text-align: right; "> <strong>Total (HT)</strong> </td>
+                                <td style="text-align: right;"> <strong>{{invoiceOrder.totalHt|number_format(2, ',', ' ') }}€</strong> </td>
+                            </tr>
+
+                            {% if invoiceOrder.escompte and invoiceOrder.escompte > 0 and invoiceOrder.netFinancier %}
+                                <tr>
+                                    <td style="background-color: rgb(240,240,240); padding: 10px; text-align: right; "> <strong>Escompte {{ invoiceOrder.pourcentageEscompte|round(2) }} % </strong> </td>
+                                    <td style="text-align: right;"> <strong>{{invoiceOrder.escompte|number_format(2, ',', ' ') }}€</strong> </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: rgb(240,240,240); padding: 10px; text-align: right; "> <strong>Net financier </strong> </td>
+                                    <td style="text-align: right;"> <strong>{{invoiceOrder.netFinancier|number_format(2, ',', ' ') }}€</strong> </td>
+                                </tr>
+                            {% endif %}
+
+                            <tr>
+                                <td style="background-color: rgb(240,240,240); padding: 10px;  text-align: right;"> <strong>Taxe total</strong> </td>
+                                <td style="text-align: right;"> <strong>{{invoiceOrder.tva|number_format(2, ',', ' ') }}€</strong> </td>
+                            </tr>
+                            <tr>
+                                <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Total TTC</strong>  </td>
+                                <td style="text-align: right;"> <strong>{{invoiceOrder.totalTtc|number_format(2, ',', ' ') }}€</strong> </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+           
+        </div>
+    </div>
+    
+</div>
+
+    
+  
+{% endblock %}

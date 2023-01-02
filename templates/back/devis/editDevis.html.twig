@@ -1,0 +1,655 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="padded-lg">
+                {% for message in app.flashes('success') %}
+                    <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('modificationFraisEffectuer') %}
+                    <div class="alert alert-success">
+                        {{message}}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('successEdit') %}
+                    <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <a href="{{ path('back_devis_list') }}" class="btn btn-primary"><i class="os-icon os-icon-corner-down-left"></i> Revenir a la liste</a>
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#infoClient">
+                    <i class="os-icon os-icon-eye"></i> À propos du client
+                </button>
+                
+                <a style="display: none ;" href="{{ path('add_pr_products', {id: devis.id})}}">actualiser</a>
+                {% if not devis.abandonner %}
+                
+                    {% if not devis.valider %}
+                        <a href="{{ path('back_devis_handler_validate', {id:devis.id}) }}" class="btn btn-outline-success"> Valider ce devis </a>
+                    {% endif %}
+
+                    {% if devis.valider and devis.signeParClient %}
+                        <a href="{{ path('back_devis_envoie_bdc', {id:devis.id}) }}" class="btn btn-outline-secondary"><i class="os-icon os-icon-send"></i> Envoyer le Bon de commande</a>
+                    {% endif %}
+
+                    {% if not devis.signeParClient %}
+                        <form style="display: inline" class="" method="post" action="{{ path('back_devis_signature', {id:devis.id}) }}">
+                            <input type="hidden" value="2" name="state_progress">
+                            <input type="hidden" value="on" name="signedbyedit">
+                            <button type="submit" class="btn btn-outline-danger">Signer et envoyer BC</button>
+                        </form>
+                    {% endif %}
+                
+                {% else %}
+                    <button class="btn btn-danger" disabled> Devis annulé</button>
+                {% endif %}
+            
+                <a href="{{path("add_missing_products")}}" style="display: none;">add</a>
+                        
+                <div class="modal fade bd-example-modal-lg" id="infoClient" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" style="font-weight: bolde;" id="exampleModalLongTitle"> À PROPOS DU CLIENT</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+
+                            {% set client = devis.client %}
+
+                            {% if devis.boutique %}
+                                {% set infoClient = devis.boutique %}
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Raison sociale/ organisation</th>
+                                            <td>{{infoClient.nomShop}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Nom</th>
+                                            <td>{{infoClient.nom}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Prénom</th>
+                                            <td>{{infoClient.prenom}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Téléphone</th>
+                                            <td>{{infoClient.telephone}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Email</th>
+                                            <td>{{infoClient.email}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Adresse de livraison</th>
+                                            <td>{{infoClient.adresse }} {{infoClient.codePostal}} {{infoClient.ville}} {{infoClient.commune}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                
+                                {% set infoClient = devis.client %}
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Raison sociale/ organisation</th>
+                                            <td>{{infoClient.raisonSocial}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Nom</th>
+                                            <td>{{infoClient.lastName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Prénom</th>
+                                            <td>{{infoClient.firstName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Téléphone</th>
+                                            <td>{{infoClient.telephone}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Email</th>
+                                            <td>{{infoClient.email}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Adresse de facturation</th>
+                                            <td>{{infoClient.adresseFacturation }} {{infoClient.codePostalFacturation}} {{infoClient.villeFacturation}} {{infoClient.communeFacturation}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Adresse de livraison</th>
+                                            <td>{{infoClient.adresseServiceAchats }} {{infoClient.codePostalServiceAchat}} {{infoClient.villeServiceAchat}} {{infoClient.communeServiceAchat}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Forme juridique</th>
+                                            <td>{{infoClient.formeJuridique}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Capital</th>
+                                            <td>{{infoClient.capital}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Code NAF</th>
+                                            <td>{{infoClient.codeNaf}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolde;">SIREN</th>
+                                            <td>{{infoClient.siren}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Numéro TVA</th>
+                                            <td>{{infoClient.noTva}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">IBAN</th>
+                                            <td>{{infoClient.iban}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">SWIFT</th>
+                                            <td>{{infoClient.swift}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Régime TVA</th>
+                                            <td>{{infoClient.regimeTva}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight: bolder;">Domiciliation Bancaire</th>
+                                            <td>{{infoClient.regimeTva}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
+                <hr>
+                <!--START - DEVIS -->
+                <div class="projects-list">
+                    <div class="project-box">
+                        <div class="project-head">
+                            <div class="project-title">
+                                <h5>
+                                    {{ devis.client.raisonSocial }} - ID: {{ devis.id }}
+                                </h5>
+                                <small>Créé le {{ devis.date|date('d/m/Y') }}</small>
+                            </div>
+                            <div class="project-users">
+                                {% if devis.signeParClient %}
+                                    <a href="" style="background-color: #24b314" class="more">
+                                        Devis signé le {{ devis.dateSignature|date('d.m.Y') }}
+                                    </a>
+                                {% else %}
+                                    <a href="" style="background-color: #fbe4a0; color: black" class="more">
+                                        <strong>Devis créé</strong>
+                                    </a>
+                                {% endif %}
+
+                                {% if devis.valider %}
+                                    <a href="" class="more"> Devis validé </a>
+                                {% else %}
+                                    <a href="" style="background-color: red" class="more"> Devis non validé</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {#{ form_start(form, {'attr' : {'class' : 'border padded', 'id' : 'form-edit-client'}} ) }#}
+                        <div class="project-info">
+                            <div class="row align-items-center mb-2">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        
+                                    
+                                        <div class="col-md-9">
+
+                                            <table class="table table-hover">
+                                                <thead class="thead-dark">
+                                                    <tr>
+                                                        <th scope="col">Produit</th>
+                                                        
+                                                        <th scope="col">Prix</th>
+                                                        
+                                                        <th scope="col">Quantité</th>
+                                                        
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                    {% set duplicate = [] %}
+                                                    {% set norm = [] %}
+                                                    {% set t = 0 %}
+                                                    {% for produit in devisProduit %}
+
+                                                        <tr>
+                                                            <th scope="row">
+
+                                                                {% if produit.id not in norm %}
+                        
+                                                                    {% set norm = norm|merge([produit.id]) %}
+
+                                                                {% else %}
+                                                                    {#{dump(produit.id)}#}
+                                                                    {% set duplicate = duplicate|merge([produit.id]) %}
+                                                                    
+                                                                {% endif %}
+
+                                                                
+                                                                {{produit.produit.getNomMarqueBlanche(client)}}
+                                                                {% if produit.offert %}
+                                                                    <span class="text-success">(offert)</span>
+                                                                {% endif %}
+                                                                <br>
+                                                                <small>
+                                                                    {% if produit.produit.principeActif %}
+                                                                        {{produit.produit.principeActif.principeActif}} {{produit.declinaison}}
+                                                                    {% else %}
+                                                                        Sans déclinaison
+                                                                    {% endif %}
+                                                                </small>
+                                                               
+                                                            </th>
+                                                            <th>
+                                                                
+                                                                {% set prix = 0 %}
+
+                                                                {% set tarif = null %}
+                                                                {% if produit.produit.tarif %}
+                                                                    {% set tarif = produit.produit.tarif %}
+                                                                {% endif %}
+
+                                                                {% for blanche in marqueBlanche %}
+                                                                    {% if blanche.produit == produit.produit %}
+                                                                        {% set tarif = blanche.tarif %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                
+                                                                {% if not produit.offert %}
+                                                                
+                                                                    {% if tarif %}
+                                                                        {% for type in types %}
+                                                                            {% if devis.client.typeDeclient == type %}
+                                                                                {% if tarif.memeTarif %}
+                                                                                    {% if devis.client.typeDeClient.nom|lower == "grossiste" %}
+                                                                                        {% set prix = tarif.prixDeReferenceGrossiste %}
+                                                                                    {% else %}
+                                                                                        
+                                                                                        {% if devisProduit[0].devis.shop %}
+                                                                                            {% set prix = produit.prix %}
+                                                                                        {% else %}
+                                                                                            {% set prix = tarif.prixDeReferenceDetaillant %}
+                                                                                        {% endif %}
+
+                                                                                    {% endif %}
+                                                                                {% else %}
+                                                                                    {% if devis.client.typeDeClient.nom|lower == "grossiste" %}
+                                                                            
+                                                                                        {% for prixDecl in tarif.prixDeclinaisons %}
+                                                                                            {% if prixDecl.actif %}
+                                                                                                {% if prixDecl.typeDeclient == type %}
+                                                                                                
+                                                                                                    {% if prixDecl.declinaison == produit.declinaison %}
+                                                                                                        {% set prix = prixDecl.prix %}
+                                                                                                    {% endif %}
+                    
+                                                                                                {% endif %}
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+                                                                                    
+                                                                                    {% else %}
+                    
+                                                                                        {% for prixDecl in tarif.prixDeclinaisons %}
+                                                                                            {% if prixDecl.actif %}
+                                                                                                {% if prixDecl.typeDeclient == type %}
+                                                                                                
+                                                                                                    {% if prixDecl.declinaison == produit.declinaison %}
+                                                                                                        {% set prix = prixDecl.prix %}
+                                                                                                    {% endif %}
+                    
+                                                                                                {% endif %}
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+                                                                                        
+                                                                                    {% endif %}
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                {% endif %}
+
+                                                                {{prix}}€
+                                                            </th>
+                                                            <td>
+                                                                
+                                                                {{produit.quantite}}
+                                                                {% set t = t + produit.quantite %}
+                                                            </td>
+                                                        
+                                                        </tr>
+                                                    {% endfor %}
+                                                    {#{ dump(t) }#}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-sm-3" style="text-transform: uppercase;">
+                                            <div class="table-responsive">
+                                                {% set accompte = devis.totalHt * 0.2 %}
+                                                <table class="table table-striped table-bordered">
+        
+                                                    <tr>
+                                                        <td>Prix</td>
+                                                        <td><span class="price">{{ devis.montant|number_format(2, ',', ' ') }}</span>€</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Frais de <br>port HT</td>
+                                                        <td>
+                                                            {% if devis.fraisExpedition and devis.fraisExpedition > 0 %}
+                                                                <span class="fee">{{ devis.fraisExpedition|number_format(2, ',', ' ') ~ '€' }}</span>
+                                                            {% elseif devis.fraisExpedition == 0 and devis.totalHt >= 50 %}
+                                                                <span class="fee">GRATUIT</span>
+                                                            {% else %}
+                                                                <span class="fee">{{ devis.fraisExpedition|number_format(2, ',', ' ') ~ '€' }}</span>
+                                                            {% endif %}
+                                                            <!-- Button trigger modal -->
+
+                                                            {#% set btnModificationFraisDePort = true %}
+                                                            {% if devis.bonDeCommande %}
+                                                                {% if devis.bonDeCommande.toutEstExpedier or devis.signeParClient %}
+                                                                    {% if devis.shopOrderId %}
+                                                                        {% if devis.payerParCarte %}
+                                                                            {% set btnModificationFraisDePort = false %}
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        {% set btnModificationFraisDePort = false %}
+                                                                    {% endif %}    
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            
+                                                            {% if btnModificationFraisDePort %}
+                                                            {% endif %#}
+                                                            <button type="button" style="margin-top: -7px;" class="btn btn-link text-success" data-toggle="modal" data-target="#exampleModalCenter">
+                                                                <i class="os-icon os-icon-edit"></i>
+                                                            </button>
+                                                            <!-- Modal -->
+                                                            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="exampleModalLongTitle">Modifier le frais de port</h5>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form action="{{path('back_devis_change_shipping_fee', {id: devis.id})}}" method="POST">
+                                                                                <div class="form-group">
+                                                                                    <input class="form-control" required value="{{devis.fraisExpedition}}"  min="0" step=".01" type="number" name="fraisDeLivraison">
+                                                                                </div>
+                                                                                <button class="btn btn-primary">Valider</button>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+        
+                                                    <tr>
+                                                        <td>total ht</td>
+                                                        <td><span class="total_ht">{{ devis.totalHt|number_format(2, ',', ' ') }}</span>€</td>
+                                                    </tr>
+        
+                                                    <tr>
+                                                        <td>Tva 20%</td>
+                                                        <td> <span class="taxe">{{ devis.taxe|number_format(2, ',', ' ') }}</span>€ </td>
+                                                    </tr>
+        
+                                                    <tr>
+                                                        <td><strong style="font-weight: bold;">total ttc</strong></td>
+                                                        <td><strong style="font-weight: bold;" class="total_ttc">{{ devis.totalTtc|number_format(2, ',', ' ') }}</strong>€</td>
+                                                    </tr>
+        
+                                                </table>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 text-center mt-3">
+                                                    {#<input type="hidden" class="last-ttc" value="{{ devis.totalTtc }}">
+                                                    <button type="button" class="btn btn-primary btn-lg btn-save" {% if devis.abandonner %} disabled {%endif %}>
+                                                        Enregistrer les changements
+                                                    </button>#}
+
+                                                    {#% set btnModificationDevis = true %}
+                                                   
+                                                    {% if devis.bonDeCommande %}
+                                                        {% if devis.bonDeCommande.toutEstExpedier or devis.signeParClient %}
+                                                            {% if devis.shopOrderId %}
+                                                                {% if devis.payerParCarte %}
+                                                                    {% set btnModificationDevis = false %}
+                                                                {% endif %}
+                                                            {% else %}
+                                                                {% set btnModificationDevis = false %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    
+                                                    {% if btnModificationDevis %}
+                                                    {% endif %#}
+                                                    <a href="{{path('back_capture_declinaison_devis', {id: devis.client.id, idDevis: devis.id})}}" class="btn btn-primary">Modifier</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {#<div class="row">
+                                <div class="col-sm-7">
+                                    <div class="alert alert-warning" role="alert">
+                                        <strong>Remarque venant du client: </strong> {{ devis.client.remarque }}
+                                    </div>
+                                    {{ include('back/form/form_client.html.twig') }}
+                                </div>
+                                <div class="col-sm-5" style="text-transform: uppercase;">
+                                    <div class="table-responsive">
+                                        {% set accompte = devis.totalHt * 0.2 %}
+                                        <table class="table table-striped table-bordered">
+
+                                            <tr>
+                                                <td>Prix</td>
+                                                <td><span class="price">{{ devis.montant|number_format(2, ',', ' ') }}</span>€</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Frais de <br>port HT</td>
+                                                <td>
+                                                    {% if devis.fraisExpedition and devis.fraisExpedition > 0 %}
+                                                        <span class="fee">{{ devis.fraisExpedition|number_format(2, ',', ' ') ~ '€' }}</span>
+                                                    {% elseif devis.fraisExpedition == 0 and devis.totalHt >= 50 %}
+                                                        <p class="fee">GRATUIT</p>
+                                                    {% else %}
+                                                        <span class="fee">{{ devis.fraisExpedition|number_format(2, ',', ' ') ~ '€' }}</span>
+                                                    {% endif %}
+                                                    
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>total ht</td>
+                                                <td><span class="total_ht">{{ devis.totalHt|number_format(2, ',', ' ') }}</span>€</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Tva 20%</td>
+                                                <td> <span class="taxe">{{ devis.taxe|number_format(2, ',', ' ') }}</span>€ </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><strong style="font-weight: bold;">total ttc</strong></td>
+                                                <td><strong style="font-weight: bold;" class="total_ttc">{{ devis.totalTtc|number_format(2, ',', ' ') }}</strong>€</td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 text-center mt-3">
+                                            <input type="hidden" class="last-ttc" value="{{ devis.totalTtc }}">
+                                            <button type="button" class="btn btn-primary btn-lg btn-save" {% if devis.abandonner %} disabled {%endif %}>
+                                                Enregistrer les changements
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>#}
+
+                        </div>
+                        {#{ form_end(form) }#}
+                    </div>
+                </div>
+                <!--END - DEVIS -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+   
+    <script>
+        $(function () {
+
+            $('input[type=number]').change(function(){
+                $('.total_ht').text(0);
+                $('.taxe').text(0);
+                $('.total_ttc').text(0);
+                $('.price').text(0);
+                $('.fee').text('0€').css('color', '#3e4b5b');
+            })
+
+            $('.calculer').click(function(e){
+                e.preventDefault();
+                let countQuantity = 1;
+                let quantiteTotal = 0;
+                let total = 0;
+                let poids = 0;
+                let fraisLivraison = 0;
+                let totalPoids = 0;
+                $('.produit').each(function(){
+                    
+                    quantite = parseInt($(this).val());
+                    poids = parseFloat($(this).data('poids')) * quantite;
+        
+                    totalPoids +=  poids ;
+                    
+                    total += parseInt($(this).attr('data-prix')) * quantite;
+                    
+                    quantiteTotal += quantite
+                    countQuantity += 1;
+                    
+                });
+
+
+                if(totalPoids > 0) {
+                    fraisLivraison = calculFrais(totalPoids);
+                }
+
+                if(total >= 50 ){
+                    fraisLivraison = 0;
+                }
+                
+                $('.amount_ht').text(total);
+
+                let totalHt = total + fraisLivraison;
+                let tva  = totalHt * 0.2;
+                let totalTtc = totalHt + tva;
+                $('.total_ht').text(totalHt.toFixed(2));
+                $('.taxe').text(tva.toFixed(2));
+                $('.total_ttc').text(totalTtc.toFixed(2));
+                $('.price').text(total.toFixed(2));
+
+                if(total >= 50 ){
+                    $('.fee').text('Gratuit').css('color', 'green');
+                }else{
+                    $('.fee').text(fraisLivraison.toFixed(2)+ "€").css('color', '#3e4b5b');
+                }
+
+                $('input[name=quantite]').val(quantiteTotal);
+                $('input[name=montant]').val(total.toFixed(2));
+                $('input[name=fraisDeTransport]').val(fraisLivraison.toFixed(2));
+                $('input[name=taxe]').val(tva.toFixed(2));
+                $('input[name=totalHt]').val(totalHt.toFixed(2));
+                $('input[name=totalTtc]').val(totalTtc.toFixed(2));
+                $('input[name=new_quote]').val(1);
+
+                $('.btn-save').removeClass('btn-primary').addClass('btn-info').text('Générer un nouveau devis');
+            });
+
+            let $btnSave = $('.btn-save');
+
+            $btnSave.on('click', function () {
+                $('#form-edit-client').submit();
+            });
+
+            function calculFrais($poids) {
+                switch (true) {
+                    case $poids>=0 && $poids <= 0.99:
+                        frais = 8.28;
+                        break;
+                    case $poids>=1 && $poids <= 1.99:
+                        frais = 9.09;
+                        break;
+                    case $poids>=2 && $poids <= 2.99:
+                        frais = 9.9;
+                        break;
+                    case $poids >=3 && $poids <= 3.99:
+                        frais = 10.71;
+                        break;
+                    case $poids >=4 && $poids <= 4.99:
+                        frais = 11.52;
+                        break;
+                    case $poids>=5 && $poids <= 5.99:
+                        frais = 12.33;
+                        break;
+                    case $poids>=6 && $poids <= 6.99:
+                        frais = 13.44;
+                        break;
+                    case $poids>=7 && $poids <= 7.99:
+                        frais = 13.95;
+                        break;
+                    case $poids>=8 && $poids <= 8.99:
+                        frais = 14.76;
+                        break;
+                    case $poids >=9 && $poids <= 9.99:
+                        frais = 15.57;
+                        break;
+                    case $poids >=10 && $poids <= 14.99:
+                        frais = 19.62;
+                        break;
+                    case $poids>=15 && $poids <= 19.99:
+                        frais = 23.67;
+                        break;
+                    case $poids>=20 && $poids <= 24.99:
+                        frais = 27.72;
+                        break;
+
+                    case $poids>=25:
+                        frais = 31.77;
+                        break;
+                }
+
+                return  frais;
+            }
+        });
+    </script>
+{% endblock %}

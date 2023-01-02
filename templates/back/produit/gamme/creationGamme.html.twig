@@ -1,0 +1,38 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Création gamme{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title">Créer une gamme</h4>
+                    <div class="mt-4">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                {{form_errors(form)}}
+                            
+                                <div class="form-group">
+                                    {{ form_row(form.nom, {'label': 'Nom ', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{form_row(form.parDefaut, {'label': 'Gamme par defaut : ','attr':{'class' : 'form-check form-check-inline' }})}}
+                                    
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.description, {'label': 'Description', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+ 
+                                <button class="btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

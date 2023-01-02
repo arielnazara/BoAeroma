@@ -1,0 +1,280 @@
+{% extends 'back/produit/index.html.twig' %}
+{% block title %} Voir les produits{% endblock %}
+
+{% block produits %}
+
+    {% for message in app.flashes('successProduit') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    <h6 class="element-header">Liste des produits de la marque {{marque.nom}} {% if gamme is defined %} {{gamme.nom}} {% endif %} </h6>
+    
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+
+        {% for message in app.flashes('ajoutProduit') %}
+            <div class="alert alert-success col-md-6">
+                {{message}}
+            </div>
+        {% endfor %}
+
+        {% set modif = false %}
+        {% if modifConfig %}
+            {% set modif = true %}
+        {% endif %}
+        
+        {% if listeProduit %}
+            {% for produit in listeProduit %}
+                {% if produit.produit %}
+                   <form action="{{path('back_ajout_produit_gamme_client')}}" method="POST" data-idproduit="{{produit.produit.id}}" data-id="{{produit.produit.marque.id}}" data-idgamme="{{gammeClient.id}}">
+                        <div class="row">
+                            <div class="message col-md-6 alert alert-success" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            
+                            <div class="col-md-3">
+                                <h5 class="d-inline">{{produit.produit.nom}}</h5> 
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="envoie btn btn-primary btn-sm" id="{{produit.produit.id}}" {% if not produit.configurer %}style="display: none;"{% endif %}>Valider</button>
+                                <a href="" class="configurer btn btn-secondary btn-sm" data-id="{{produit.id}}">Configurer <i class="os-icon expresse os-icon-arrow-left6"></i></a>
+                                <a href="{{path('back_supprime_produit_gamme_client')}}" class=" btn btn-danger btn-sm supprimer " ><i class="os-icon os-icon-ui-15" ></i></a>
+                            </div>
+
+                            <div class="col-md-6 declinaison {{produit.id}}" {% if not produit.configurer %} style="display: none;" {% endif %}> 
+                                <h6 style="text-decoration: underline;">
+                                    {% if produit.produit.principeActif %}
+                                        {{produit.produit.principeActif.principeActif}}
+                                    {% else %}
+                                        Produit sans déclinaison
+                                    {% endif %}
+                                </h6>
+                                
+                                {% for principe in principeActif %}
+                                    {% if produit.produit.principeActif == principe.principeActif %}
+                                        <div class=" mb-2 {{principe.principeActif}} listeDeclinaison">
+                                            {% for listeGamme in listeProduitGamme %}
+                                                {% if listeGamme.produit.id == produit.produit.id %}
+                                                    {% if listeGamme.declinaison is defined %}
+                                                        {% for decl in principe.declinaisons %}
+                                                            {% if decl.declinaison in produit.produit.declinaison %}
+                                                                {% if decl.declinaison in listeGamme.declinaison %}
+                                                                    <div class="form-check form-check-inline ">
+                                                                        
+                                                                        <input class="form-check-input" type="checkbox" name="{{decl.declinaison}}" id="{{decl.declinaison}}" value="{{decl.declinaison}}" checked>
+                                                                        <label class="form-check-label" for="{{decl.declinaison}}" class="{{decl.declinaison}}">{{decl.declinaison}}</label>
+                                                                    </div>
+                                                                {% else %}
+                                                                    
+                                                                    <div class="form-check form-check-inline ">
+                                                                        <input class="form-check-input" type="checkbox" name="{{decl.declinaison}}" id="{{decl.declinaison}}" value="{{decl.declinaison}}">
+                                                                        <label class="form-check-label" for="{{decl.declinaison}}" class="{{decl.declinaison}}">{{decl.declinaison}}</label>
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endif %}    
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <div class="form-check form-check-inline ">
+                                                            <input class="form-check-input" type="checkbox" name="{{decl.declinaison}}" id="{{decl.declinaison}}" value="{{decl.declinaison}}">
+                                                            <label class="form-check-label" for="{{decl.declinaison}}" class="{{decl.declinaison}}">{{decl.declinaison}}</label>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                           
+                            </div>
+                            
+                        </div>
+                        <hr>
+                    </form>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="">
+                <p>
+                    Aucun produit n’a été trouvé.
+                </p>
+            </div>
+        {% endif %}
+
+        {% if modif %}
+            
+            {% if totalProduits|length > listeProduit|length %}
+                <div class="info" id="incomplet"></div>
+            {% endif %}
+            
+            <div class="produit col-md-6" style="display: none;">
+               
+                {% if gamme is defined %}
+                    <form action="{{path('back_modification_ajout_produit_gamme', {id: gammeClient.id, idG: gamme.id, idM: marque.id, modif: true})}}" id="produit-supp" method="POST">
+                {% else %}
+                    <form action="{{path('back_modification_ajout_produit_supplementaire', {id: gammeClient.id, idM: marque.id, modif: true})}}" id="produit-supp" method="POST">
+                {% endif %}
+
+                    <div class="plus-produit"></div>
+                    <div class="float-right">  
+                        <a href="" class="ajout-produit btn btn-secondary btn-sm mt-2" ><i class="os-icon os-icon-plus-circle"></i> Ajouter un produit</a>
+                        <button type="submit" class="enregistrer btn btn-primary btn-sm mt-2" style="display: none;">Enregistrer</button>
+                    </div>
+                    
+                </form>
+            </div>
+        {% endif %}
+
+        <div class="information mb-3 " style="display: none;">Veuillez valider les modifications éffectuées sur les déclinaison avant de cliquer sur terminer</div>
+        
+        {% if produitGamme is defined and produitGamme %}
+
+            <a href="{{path('back_config_list_gamme_client', {idGC: gammeClient.id, idM: marque.id, modif: modif})}}" class="btn btn-primary">Confirmer</a>
+
+            {% if modif %}
+                <a  href="{{path('back_config_list_gamme_client', {idGC: gammeClient.id, idM: marque.id, modif: modif})}}" class="btn btn-secondary mt-1 " >Annuller</a>     
+            {% endif %}
+
+        {% elseif  produitGamme is defined and not produitGamme  %}
+
+            <a href="{{path('back_config_list_gamme_client', {idGC: gammeClient.id, idM: marque.id, modif: modif})}}" class="btn btn-success"> <i class="os-icon os-icon-arrow-left-circle"></i> Retour</a>
+            
+        {% else %}
+            
+            <a href="{{path('back_config_produit_terminer', {id: gammeClient.id, idM: marque.id, modif: modif})}}" class="btn btn-primary">Terminer</a>
+
+            {% if modif %}
+                <a href="{{path('back_modification_gamme_client', {id: gammeClient.id})}}" class="btn btn-secondary ml-1 etapeSuivant" >Annuller</a>
+            {% endif %}
+
+        {% endif %}
+            
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            
+            $('.configurer').click(function(e){
+                e.preventDefault();
+                let form = $(this).closest('form');
+                let id = form.attr('data-idproduit');
+                let produit = $(this).attr('data-id');
+
+                $(this).find('i').toggleClass('os-icon-arrow-left6 os-icon-arrow-right7')
+                $('#'+ id + '').toggle('slow');
+                $('.'+ produit +'').toggle('slow');
+            });
+
+            $(':checkbox').change(function(){
+                $('.information').show('slow');
+            });
+
+            if($('#incomplet').is(':visible')){
+                $('.produit').show();
+            }
+
+            $('.envoie').click(function(e){
+                e.preventDefault();
+                let declinaison = [];
+                let form = $(this).closest("form");
+                let tout ;
+                let gammeClientId = form.attr('data-idgamme');
+                let marqueId = form.attr('data-id');
+                let produitId = form.attr('data-idproduit');
+
+                form.find('input[type=checkbox]:checked').each(function(){
+                    
+                    declinaison.push($(this).val());
+                });
+
+                if(declinaison.length == 0){
+                    tout = true;
+                }
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: { produitId : produitId , tout: tout , gammeClientId : gammeClientId, declinaison : declinaison, marqueId: marqueId },
+                    success: function(data) {
+                        form.find(".message").show('slow').html("Configuration du produit "+ data.reponse +" éffectué avec succès").css('color', 'green').delay(3000).slideUp("slow");
+                        form.find(":submit").addClass('btn btn-success');
+
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            });
+
+            
+
+            $('.supprimer').click(function(e){
+                e.preventDefault();
+                
+                let form = $(this).closest("form");
+                let gammeClientId = form.attr('data-idgamme');
+                let produitId = form.attr('data-idproduit');
+                
+                let result = confirm('êtes-vous sûr de vouloir supprimer ce produit?');
+
+                if(result){
+                    $.ajax({
+                        url: $(this).attr('href'),
+                        type: 'POST',
+                        data: { produitId : produitId ,gammeClientId : gammeClientId},
+                        success: function(data) {
+                            //form.find(".message").show('slow').html("Configuration du produit "+ data.reponse +" éffectué avec succès").css('color', 'green').delay(3000).slideUp("slow");;
+                            //form.find(":submit").addClass('btn btn-success');
+                            form.remove();
+                            $('.produit').show().slideDown('slow');
+                        },
+                        error: function (data) {
+                            alert(data);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(function(){
+            let count = 0;
+            
+            $(".ajout-produit").click(function(e){
+                e.preventDefault();
+                
+                count += 1;
+                
+                let html = '';
+                html += '<div class=" row add-produit form-group mt-2">';
+                html += '<div class="col-sm-11">';
+                html += '<select class="form-control" name="produit-'+ count +'">';
+                html += '{% for produit in totalProduits %}';
+                html += '<option value="{{produit.id}}">{{ produit.nom }}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removeProduit btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".plus-produit").append(html);
+                $('.enregistrer').show('slow');
+            });
+
+            $(document).on('click', '.removeProduit', function(e){
+                count -= 1;
+                e.preventDefault();
+                $(this).closest('.add-produit').remove();
+                $('.enregistrer').hide('slow');
+            });
+
+
+        });
+    </script>
+{% endblock %}
+                

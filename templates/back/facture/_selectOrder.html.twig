@@ -1,0 +1,99 @@
+<table class="table table-padded animate-bottom">
+    <thead>
+        <tr>
+            <th> Code </th>
+            <th> Entreprise </th>
+            <th> 
+                Quantités
+                livrées/ Commandées
+            </th>
+            <th> Status des lots </th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for bon in bonDeCommandes %}
+
+        {% set select = false %}
+
+        {% set terminer = false %}
+
+        {% if bon.traitementTerminer %}
+            {% set terminer = true %}
+        {% endif %}
+
+        {% for bon in bon.lotCommandes %}
+            {% if not bon.factureMaitre %}
+                {% set select = true %}
+                {% set terminer = false %}
+            {% endif %}
+        {% endfor %}
+
+        {% if not terminer %}
+        
+            <tr>
+                <td>
+                    <div class="form-check">
+                        {% if bon.lotCommandes|length > 0 %}
+
+                            {% if select %}
+                                <input type="checkbox" name="{{ "bon" ~ bon.id }}" value="{{ bon.id }}" class="form-check-input" id="{{ bon.id }}">
+                            {% endif %}
+                        {% endif %}
+                        <label class="form-check-label btn btn-white" for="{{ bon.id }}">{{ bon.code }}</label>
+                    </div>
+                </td>
+                <td>
+                    {% if bon.devis.boutique %}
+                        <span class="btn btn-white">
+                                
+                            {{ bon.devis.boutique.nomShop }} <br>
+                        
+                            {{ bon.client.raisonSocial }}
+                            
+                        </span>
+                    {% else %}
+                        
+                        <span class="btn btn-white">
+                            
+                            {{ bon.client.raisonSocial }}
+                            
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td  class="text-uppercase text-center">
+                    
+                    <div>
+                        {% set tlivred = bon.nombreProduit - bon.resteALivrer %}
+                    
+                        <h6 style="font-weight: bolder;"> {{ tlivred }}/{{ bon.nombreProduit}} </h6>
+                    </div>
+                </td>
+
+                <td >
+                    
+                    {% for lot in bon.lotCommandes %}
+                        {% if lot.facturer %}
+                            <p class="text-success " style="font-weight: 700;">
+                                <i class="os-icon os-icon-check"></i> {{ lot.nom }} ( Facturé ) <br>
+                            </p> 
+
+                        {% else %}
+                            <p class="text-danger " style="font-weight: 700;">
+                                <i class="os-icon os-icon-x"></i> {{ lot.nom }} ( Non facturé )<br>
+                            </p> 
+                        {% endif %}
+                    {% else %}
+                        <p class="text-center text-uppercase text-muted">Aucun lot</p>
+                    {% endfor %}
+                
+                </td>
+            </tr>
+        
+        {% endif %}
+
+    {% endfor %}
+    </tbody>
+    
+</table>

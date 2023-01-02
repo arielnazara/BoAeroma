@@ -1,0 +1,119 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% for message in app.flashes('success') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="element-wrapper">
+                <h6 class="element-header">Liste des commandes</h6>
+
+                <div class="element-box-tp">
+                    <div class="controls-above-table">
+                        <div class="row">
+                            <div class="col-sm-8 d-flex">
+                                <a style="" class="btn btn-sm btn-primary" href="{{ path('back_capture_devis_client') }}"><i class="os-icon os-icon-plus-circle"></i> Créer un devis</a>
+                                <form class="form-inline justify-content-sm-end" method="get" action="{{ path('back_commande') }}">
+                                    <!--<div class="form-check-inline" style="padding-left: 15px; padding-right: 10px; border-right: 1px solid rgba(0, 0, 0, 0.1);">
+                                        <label class="form-check-label">
+                                            <input name="isBpco" type="checkbox" class="form-check-input">Masquer BPCO
+                                        </label>
+                                    </div>-->
+
+                                    <div class="form-check-inline" style="padding-left: 0;">
+                                        <label class="form-check-label">
+                                            <input name="isSendToLogistic" type="checkbox" class="form-check-input">Masquer les commandes en logistique
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-sm-4">
+                                <form method="post" action="{{ path('back_commande') }}" class="form-inline justify-content-sm-end filter-form">
+                                    <input onkeyup="tabFilter()" id="search-input" class="form-control form-control-sm rounded bright" placeholder="Recherche" type="text">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tablecontent" class="table-responsive">
+                        <div style="margin: auto; display: none" class="loader"></div>
+                        {{ include('back/commande/tab_list.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" src="{{ asset('assets/js/function.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/app.js') }}?version=1.1"></script>
+    <script>
+        $(function () {
+            const removeTr = ($id) => {
+                $('#tr-'+$id)
+                    .children('td')
+                    .animate({
+                        padding: 0
+                    }).wrapInner('<div />')
+                    .children()
+                    .slideUp(function () {
+                        $(this).closest('tr').remove();
+                });
+            };
+
+            $(document).on('click', 'a.sendToLogistic', function (e) {
+                e.preventDefault();
+                $(this).hide();
+                
+                $('.load'+ $(this).attr('id') +'').show();
+                const uri = $(this).attr('href');
+                const id = $(this).attr('id');
+                $.ajax({
+                    type: 'GET',
+                    url: uri,
+                    success: function (data) {
+                        if (data === '200') {
+                            //$('.loader2').hide();
+                            $('.load'+id).hide()
+                            removeTr(id);
+                        }
+                    },
+                    error: function (data) { console.log(data); }
+                });
+            });
+
+            $(':checkbox').on('change', function () {
+                const $fomStatus = $('.filter-form'), $tabContainer = $('#tablecontent'), $loader = $('.loader');
+                //let hideBpco = $('input[name="isSendToLogistic"]').is(":checked");
+                let hideIsLogistic =  $('input[name="isSendToLogistic"]').is(":checked");
+
+                if ($loader.attr('class')) {
+                    $loader.show();
+                } else {
+                    $tabContainer.append($('<div style="margin: auto;" class="loader"></div>'));
+                }
+
+                $('.table-padded').hide();
+
+                $.ajax({
+                    type: 'POST',
+                    url: $fomStatus.attr('action'),
+                    data: {
+                        //'hideBpco': hideBpco,
+                        'hideIsLogistic' : hideIsLogistic
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $('.loader').css("display", "none");
+                        $tabContainer.html(data.content);
+                    },
+                    error: function (data) { alert(data); }
+                });
+            });
+        });
+    </script>
+{% endblock %}

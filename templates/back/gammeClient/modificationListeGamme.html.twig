@@ -1,0 +1,69 @@
+{% extends 'back/produit/index.html.twig' %}
+{% block title %} Voir les produits{% endblock %}
+
+{% block produits %}
+
+    {% for message in app.flashes('successProduit') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h6 class="element-header"> Modification de la liste des gammes de la marque {{marque.nom}}</h6>
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+        {% set modif = false %}
+        {% if modifConfig %}
+            {% set modif = true %}
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table">
+
+                    <tbody>
+                        {% for liste in listeGamme %}
+                            <tr class="{{liste.id}}">
+                            <td>{{ liste.gamme.nom}}</td>
+
+                            <td>
+                            <a href="{{path('back_supprime_gamme_client')}}" data-id="{{liste.id}}"  class="btn btn-danger supprimer btn-sm"><i class="os-icon os-icon-ui-15"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>    
+            </div>
+        </div>
+        
+        <form method="POST" class="d-inline mr-1 " action="{{path('back_modif_prod_add_produit_client', {id: marque.id, idGamme: gammeClient.id, modif: modif})}}">
+            <button type="submit" class="btn btn-primary mt-1 ">Suivant</button> 
+        </form>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            $('.supprimer').click(function(e){
+                let id = $(this).attr('data-id');
+                e.preventDefault(); 
+
+                let result = confirm('êtes-vous sûr de vouloir supprimer cette gamme?');
+
+                if(result){
+                    $.ajax({
+                        url: $(this).attr('href'),
+                        type: 'POST',
+                        data: {id : id},
+                        success: function(data) {
+                            $('.'+ data.supprimer +'').remove();
+                        },
+                        error: function (data) {
+                            alert(data);
+                        }
+                    });
+                } 
+            });
+        });
+    </script>
+{% endblock %}
+                

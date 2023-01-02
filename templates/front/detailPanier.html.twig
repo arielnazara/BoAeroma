@@ -1,0 +1,384 @@
+{% extends 'front-base.html.twig' %}
+
+{% block title "Calcul et génération du devis"%}
+{% block classBody "bg-light"%}
+{% block custom_css %}
+    <style>
+        .bareme:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container" >
+        <div class="row card" style="min-height: calc(100vh - 100px);">
+            <div class="col-12">
+                {{ include('front/header.html.twig') }}
+            </div>
+            <div class="col-12 mt-3">
+
+                {% for message in app.flashes('successAdd') %}
+                    <div class="alert alert-success">{{message}}</div>
+                {% endfor %}
+
+                {% for message in app.flashes('successSupp') %}
+                    <div class="alert alert-success">{{message}}</div>
+                {% endfor %}
+                
+                <h2 class="text-center">Votre panier {% if not commandes %}(Vide){% endif %}</h2>
+
+                <a class="btn btn-info btn-sm mb-3 " href="{{path('front_generate_devis', {all: all})}}"> <i class="fas fa-backward"></i> ajouter d'autre produit</a>
+
+                {% if commandes | length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Produit</th>
+                                    <th scope="col">Declinaison</th>
+                                    <th scope="col">Prix</th>
+                                    <th scope="col" class="text-center">Quantités</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                {% set totalHt = 0 %}
+                                
+                                {% for commande in commandes %}
+                                    {% for index,decli in commande.declinaison %}
+
+                                        {% set tarif = commande.produit.tarif %}
+                                        {% for mb in marqueBlanches %}
+                                            {% if commande.produit == mb.produit %}
+                                                {% set tarif = mb.tarif %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        <tr>
+                                            <th scope="row">
+                                                {{commande.produit.nom}}
+                                            </th>
+                                            
+                                            <td>
+                                                {% set total = 0 %}   
+                                                {% if commande.produit.principeActif %}
+                                                    {{commande.produit.principeActif.principeActif}}
+                                                    
+                                                    {{index}}   
+                                                {% else %}
+                                                    Sans déclinaison
+                                                {% endif %}                      
+                                            </td>
+                                            <td>
+                                                {% set prixValide = 0 %}
+    
+                                                {% if commande.offert %}
+                                                    <button class="btn btn-outline-success btn-sm">Offert</button>
+                                                {% else %}
+                                                    
+                                                    {% if tarif %}
+                                                    
+                                                        {% for type in types %}
+                                                            {% if type == client.typeDeClient %}
+                                                            
+                                                                {% if tarif.memeTarif %}
+                                                                    
+                                                                    {% if client.typeDeClient.nom|lower == "grossiste" %}
+                
+                                                                        <span class="badge badge-success display-4" >{{tarif.prixDeReferenceGrossiste|number_format(2, '.', ',')}}€</span> <br>
+                                                                        {% set prixValide = tarif.prixDeReferenceGrossiste|number_format(2, '.', ',') %}
+                
+                                                                    {% else %}
+                
+                                                                        <span class="badge badge-success display-4" >{{tarif.prixDeReferenceDetaillant|number_format(2, '.', ',')}}€</span> <br>
+                                                                        {% set prixValide = tarif.prixDeReferenceDetaillant|number_format(2, '.', ',') %}
+                                                                        
+                                                                    {% endif %}
+                                        
+                                                                {% else %}
+        
+                                                                    {% if client.typeDeClient.nom|lower == "grossiste" %}
+        
+                                                                        {% for tarifDecl in tarif.prixDeclinaisons %}
+        
+                                                                            {% if tarifDecl.actif %}
+                                                                                {% if tarifDecl.typeDeClient == type %}
+                                                                                
+                                                                                    {% if index == tarifDecl.declinaison %}
+                                                                                        <span class="badge badge-success display-4" >{{tarifDecl.prix|number_format(2, '.', ',')}}€</span> <br>
+                                                                                        {% set prixValide = tarifDecl.prix|number_format(2, '.', ',') %}
+                                                                                    {% endif %}
+        
+                                                                                {% endif %}
+                                                                            {% endif %}
+        
+                                                                        {% endfor %}
+        
+                                                                    {% else %}
+                                                                        {% for tarifDecl in tarif.prixDeclinaisons %}
+        
+                                                                            {% if tarifDecl.actif %}
+                                                                                {% if tarifDecl.typeDeClient == type %}
+                                                                                
+                                                                                    {% if index == tarifDecl.declinaison %}
+                                                                                        <span class="badge badge-success display-4" >{{tarifDecl.prix|number_format(2, '.', ',')}}€</span> <br>
+                                                                                        {% set prixValide = tarifDecl.prix|number_format(2, '.', ',') %}
+                                                                                    {% endif %}
+        
+                                                                                {% endif %}
+                                                                            {% endif %}
+        
+                                                                        {% endfor %}
+                                                                    {% endif %}
+        
+                                                                {% endif %}
+        
+                                                            {% endif %}        
+                                                        {% endfor %}
+        
+                                                    {% else %}
+                                                        <span class="badge badge-danger" >Aucun prix</span>
+                                                    {% endif %}
+        
+                                                {% endif %}
+                                            </td>
+    
+                                            <td class="text-center">
+                                                {{decli}}  
+                                                <input type="hidden" class="poids" value="{{commande.produit.poids}}" data-quantite="{{decli}}">       
+                                            </td>
+                                            
+                                            <td>
+                                                {% if tarif %}
+                                                {% set total = total + prixValide * decli %}
+                                                {% else %}
+                                                    {% set total = 0 %}
+                                                {% endif %}
+                                                {{total|number_format(2, '.', ',')}}€
+                                            </td>
+                                            <td>
+                                                {% if not commande.offert %}
+                                                    <a href="{{path('front_remove_panier', {id: commande.produit.id, decl: index , idC: client.id })}}" onclick="return confirm('Etes-vous sur de vouloir supprimer cet produit de votre panier?');" class="btn btn-danger btn-sm"><i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    
+                                        {% set totalHt = totalHt + total %}
+                                    
+                                    {% endfor %}
+                                    
+                                {% endfor %}
+    
+                                <input type="hidden" id="toutHt" value="{{totalHt}}">
+                                   
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-5">
+                        <div class="col-md-6 text-center">
+                            <button type="button" class="btn btn-primary btn-lg calculer">Calculer et afficher <br> le tarif</button>
+                            <br>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="media align-items-center">
+                                <h3 class="h6 opacity-8 mr-3">Montant</h3>
+                                <div class="media-body text-right">
+                                    <span class="amount_ht">0</span>€ HT
+                                </div>
+                            </div>
+                            <div class="media align-items-center">
+                                <h3 class="h6 opacity-8 mr-3">Frais de port </h3>
+                                <div class="media-body text-right">
+                                    <span class="fee"></span>
+                                </div>
+                            </div>
+                            <div class="media align-items-center">
+                                <h3 class="h6 opacity-8 mr-3">Total</h3>
+                                <div class="media-body text-right">
+                                    <span class="total_ht">0</span>€ HT
+                                </div>
+                            </div>
+                            <div class="media align-items-center">
+                                <h3 class="h6 opacity-8 mr-3">TVA 20%</h3>
+                                <div class="media-body text-right">
+                                    <span class="taxe">0</span>€ HT
+                                </div>
+                            </div>
+                            <hr class="line-info mb-1" style="margin-top: 1px; width: 25%">
+                            <div class="media align-items-center">
+                                <h3 class="h6">Total TTC</h3>
+                                <div class="media-body text-right">
+                                    <span class="font-weight-semi-bold total_ttc">0</span>€
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <form class="col-md-12" method="post" action="{{path('front_generate_devis')}}">
+                            <div class="form-group text-left">
+                                <label for="msg">Message à Laboratoire Aeroma</label>
+                                <textarea placeholder="Entrer votre message ici ..." class="form-control" name="_msg" id="msg"></textarea>
+                            </div>
+
+                            {% set count = 1 %}
+                            {% set quantiteTotal = 0 %}
+                            {% for commande in commandes %}
+
+                                <input type="hidden" value="{{commande.produit.id}}" name="produit-{{count}}{% if commande.offert %}-offert{% endif %}">
+                                
+                                {% set countDecl = 1 %}
+                                {% for index,decli in commande.declinaison %}
+                                    {% if index == "sans" %}
+                                        {% set index = null %}
+                                    {% endif %}
+                                    <input type="hidden" name="declinaison-{{count}}-{{countDecl}}{% if commande.offert %}-offert{% endif %}" value="{{index}}">
+                                    <input type="hidden" name="quantite-{{count}}-{{countDecl}}{% if commande.offert %}-offert{% endif %}" value="{{decli}}">
+
+                                    {% set quantiteTotal = quantiteTotal + decli %}
+                                    {% set countDecl = countDecl + 1 %}
+                                {% endfor %}
+
+                                {% set count = count + 1 %}
+
+                            {% endfor %}
+
+                            <input type="hidden" name="quantiteTotal" value="{{quantiteTotal}}">
+                            <input type="hidden" name="amount" value="0">
+                            <input type="hidden" name="fee" value="0">
+                            <input type="hidden" name="totalHt" value="0">
+                            <input type="hidden" name="taxe" value="0">
+                            <input type="hidden" name="totalTtc" value="0">
+                            <div class="form-group text-center">
+                                <input disabled class="btn btn-secondary btn-lb" type="submit" value="Générer devis">
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {{ include('front/footer.html.twig') }}
+{% endblock %}
+
+{% block custom_js %}
+   <script>
+        $(function(){
+            $('.fee').text('0€ HT').css('color', '#3e4b5b');
+
+            $('.calculer').click(function(){
+                let poids = 0;
+                let totalPoids = 0;
+                let fraisTransport = 0;
+                $('.poids').each(function(){
+                    poids = parseFloat($(this).val()) * parseInt($(this).data('quantite'));
+                    
+                    if(poids){
+                        totalPoids += poids;
+                    }
+                });
+                
+                if(totalPoids > 0 ){
+                    fraisTransport = parseFloat(calculFrais(totalPoids));
+                }
+
+                let value = parseFloat($('#toutHt').val()) ;
+
+                if(value >= 50 ){
+                    fraisTransport = 0;
+                }
+                
+                let totalHt = value + fraisTransport;
+                let taxe = value * 0.2;
+                let totalTtc = totalHt + taxe;
+
+                if( totalHt > 0){
+
+                    if( value >= 50 ){
+                        $('.fee').text('Gratuit').css('color', 'green');
+                    }else{
+                        $('.fee').text(fraisTransport.toFixed(2)+ '€ HT').css('color', '#3e4b5b');
+                    }
+                    $('.amount_ht').text(value.toFixed(2));
+                    $('.total_ht').text(totalHt.toFixed(2));
+                    
+                    $('.taxe').text(taxe.toFixed(2));
+                    $('.total_ttc').text(totalTtc.toFixed(2));
+                    $('.btn-lb').removeAttr('disabled').removeClass('btn-secondary').addClass('btn-success');
+
+                    $('input[name=amount]').val(value.toFixed(2));
+                    $('input[name=fee]').val(fraisTransport.toFixed(2));
+                    $('input[name=taxe]').val(taxe.toFixed(2));
+                    $('input[name=totalHt]').val(totalHt.toFixed(2));
+                    $('input[name=totalTtc]').val(totalTtc.toFixed(2));
+                }
+            });
+
+            $('.btn-lb').click(function(e){
+                
+                $('#devis').submit();
+
+            })
+
+            if($('.alert').is(':visible')){
+                
+                $('.alert').delay(3000).slideUp("slow");
+            }
+
+            function calculFrais($poids) {
+                switch (true) {
+                    case $poids>=0 && $poids <= 0.99:
+                        frais = 8.28;
+                        break;
+                    case $poids>=1 && $poids <= 1.99:
+                        frais = 9.09;
+                        break;
+                    case $poids>=2 && $poids <= 2.99:
+                        frais = 9.9;
+                        break;
+                    case $poids >=3 && $poids <= 3.99:
+                        frais = 10.71;
+                        break;
+                    case $poids >=4 && $poids <= 4.99:
+                        frais = 11.52;
+                        break;
+                    case $poids>=5 && $poids <= 5.99:
+                        frais = 12.33;
+                        break;
+                    case $poids>=6 && $poids <= 6.99:
+                        frais = 13.44;
+                        break;
+                    case $poids>=7 && $poids <= 7.99:
+                        frais = 13.95;
+                        break;
+                    case $poids>=8 && $poids <= 8.99:
+                        frais = 14.76;
+                        break;
+                    case $poids >=9 && $poids <= 9.99:
+                        frais = 15.57;
+                        break;
+                    case $poids >=10 && $poids <= 14.99:
+                        frais = 19.62;
+                        break;
+                    case $poids>=15 && $poids <= 19.99:
+                        frais = 23.67;
+                        break;
+                    case $poids>=20 && $poids <= 24.99:
+                        frais = 27.72;
+                        break;
+
+                    case $poids>=25:
+                        frais = 31.77;
+                        break;
+                }
+
+                return  frais;
+            }
+        })
+   </script>
+{% endblock %}

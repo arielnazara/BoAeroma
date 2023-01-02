@@ -1,0 +1,173 @@
+
+    {% if not form.vars.valid %}
+    <div style="background-color: #F8D7DB; color: #721c24" class="alert alert-danger" role="alert">
+        <ul>
+            {# Loop through every form item #}
+            {% for child in form.children %}
+                {# Display the errors of the form item #}
+                {%for error in child.vars.errors%}
+                    <li>{{error.message}}</li>
+                {%endfor%}
+            {%endfor%}
+        </ul>
+    </div>
+    {%endif%}
+
+    <h5 class="form-header"> INFO CLIENT </h5>
+    <div class="form-check" style="display: none;">
+        {#<label class="form-check-label">{{ form_widget(form.isHealthPro, {'attr' : {'class' : 'form-check-input ispro'} }) }} PROFESSIONNEL DE SANTÉ</label>#}
+        <hr>
+    </div>
+
+    <div class="form-group">
+        {{ form_row(form.lastName, {'label': 'Nom', 'attr':{'class': 'form-control'}}) }}
+    </div>
+    
+    <div class="form-group ">
+        {{ form_row(form.firstName, {'label': 'Prénoms', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        {{ form_widget(form.email, {'label': '', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group">
+        <label for="email">Téléphone</label>
+        {{ form_widget(form.telephone, {'label': '', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_row(form.raisonSocial, {'label': 'Raison social', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_row(form.adresseFacturation, {'label': 'Adresse','attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group ">
+        {{ form_row(form.codePostalFacturation, {'label': 'Code postal', 'attr':{'class': 'form-control'}}) }}
+    </div>
+    <div class="form-group ">
+        {{ form_row(form.villeFacturation, {'label': 'Ville', 'attr':{'class': 'form-control'}}) }}
+    </div>
+            
+    <div class="form-group row d-none">
+        {{ form_row(form.principaleActivite, {'label': 'Activité principale', 'attr':{'class': 'form-control'}}) }}
+    </div>
+    
+    <div class="form-group row d-none">
+        {{ form_row(form.formeJuridique, {'label': 'Forme juridique', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group row d-none">
+        {{ form_row(form.capital, {'label': 'Capital', 'attr':{'class': 'form-control'}}) }}
+    </div>
+    
+    <div class="row d-none">
+        {{ form_row(form.adresseServiceAchats, {'attr':{'class': 'form-control', 'placeholder': 'adresse...'}}) }}
+    </div>
+    <div class="row d-none">
+        {{ form_row(form.codePostalServiceAchat, {'attr':{'class': 'form-control', 'placeholder': 'Code Postal...'}}) }}
+    </div>
+    <div class="row d-none">
+        {{ form_row(form.villeServiceAchat, {'attr':{'class': 'form-control', 'placeholder': 'Ville...'}}) }}
+    </div>
+        
+    <div class="form-group d-none">
+        {{ form_row(form.codeNaf, {'label': 'code NAF', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group  ">
+        <label class="col-form-label col-sm-4" for=""> SIREN</label>
+        {{ form_widget(form.Siren, {'label': 'SIREN', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group  ">
+        {{ form_row(form.noTva, {'label': 'Numéro TVA intracommunautaire ', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    <div class="form-group row d-none">
+        {{ form_row(form.iban, {'label': 'IBAN', 'attr':{'class': 'form-control'}}) }}
+    </div>
+        
+    <div class="row d-none">
+        <div class="form-group col-md-4">
+            {{ form_row(form.swift, {'label': 'SWIFT', 'attr':{'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            {{ form_row(form.regimeTva, {'label': 'Régime TVA', 'attr':{'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group col-md-4">
+            {{ form_row(form.domiciliationBancaire, {'label': 'Domiciliation Bancaire', 'attr':{'class': 'form-control'}}) }}
+        </div>
+
+    </div>
+
+    <div class="row d-none">
+        <div class="col-md-8">
+            <div class="row">
+
+                <div class="form-group col-sm-6">
+                    {{ form_row(form.jourLivraison, {'label': 'Jour de livraison', 'attr':{'class':'form-control'}}) }}
+                </div>
+                <div class="form-group col-sm-6">
+                    {{ form_row(form.horaireLivraison, {'label': 'Tranche horaire', 'attr':{'class':'form-control'}}) }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3 d-none">
+        {{ form_row(form.communeServiceAchat, {'attr':{'class': 'form-control', 'placeholder': 'Commune...'}}) }}
+    </div>
+
+    <div class="col-sm-3 d-none">
+        {{ form_row(form.communeFacturation, {'attr':{'class': 'form-control', 'placeholder': 'Commune...'}}) }}
+    </div>
+
+    <div class="form-group">
+        <label for="pays">Pays</label>
+        {{ form_row(form.pays, { 'attr':{'class':'form-control form-control-sm'}}) }}
+    </div>
+
+    <div class="form-group">
+        <label for="pays">Type de client</label>
+        {{ form_row(form.typeDeClient, { 'attr':{'class':'form-control form-control-sm'}}) }}
+    </div>
+
+    <div class="form-group d-none">
+        {{ form_row(form.remarque, {'label': 'Remarque', 'attr':{'class': 'form-control'}}) }}
+    </div>
+
+    {#% if deliveryAddressRender %}
+        <fieldset class="form-group">
+            <input type="hidden" name="indice" value="1">
+            <legend>Adresse de livraison</legend>
+            {% for delivery in deliveryAddressRender %}
+                {{ delivery|raw }}
+                <hr>
+            {% endfor %}
+        </fieldset>
+    {% endif %#}
+{#
+    <input type="hidden" class="totalunit" name="totalunit" value="{{ totalUnit }}">
+    <input type="hidden" class="last_totalttc" name="last_totalttc" value="{{ devis.totalTtc|number_format(2, ',', ' ') }}">
+
+    <input type="hidden" value="{{ devis.isClientSigned }}" name="is_signed" class="is_signed">
+    <input type="hidden" value="0" name="new_quote" class="new_quote">
+
+    <input type="hidden" class="healthPro" name="healthPro" value="{{ devis.client.isHealthPro }}">
+    <input type="hidden" name="price" value="0">
+ #}  
+
+    <input type="hidden" value="0" name="new_quote" class="new_quote">
+    <input type="hidden" name="montant" value="0">
+    <input type="hidden" name="fraisDeTransport" value="0">
+    <input type="hidden" name="taxe" value="0">
+    <input type="hidden" name="totalHt" value="0">
+    <input type="hidden" name="totalTtc" value="0">
+    <input type="hidden" name="quantite" value="0">

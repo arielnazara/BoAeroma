@@ -1,0 +1,369 @@
+{% extends 'back/tarif/creationTarif.html.twig' %}
+
+{% block title %}Création tarif par marque{% endblock %}
+
+{% block tarifs %}
+    <div class="row ">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+
+                    {% for message in app.flashes('successTarif') %}
+                        <div class="alert alert-success mt-2">
+                            {{message}}
+                        </div>
+                    {% endfor %}
+
+                    <h4 class="title client" {% if tarif %} style="display: none;" {% endif %}>Création tarif par Client</h4>
+                    <div class="mt-4">
+
+                        {% if tarif %}
+                            <div class="d-flex justify-content-center p-2 ">
+                                <div class="question text-center border col-md-6 p-3 bg-light shadow ">
+                                
+                                    <h4>{{tarif.categorie}} - {{tarif.base}} - {{tarif.contenance}} - {{tarif.declineAvec}} </h4>
+                                    Prix de référence détaillant: {{tarif.prixDeReferenceDetaillant}}€ du {{tarif.dateAjout|date('d M Y')}} <br>
+                                    Prix de référence grossiste: {{tarif.prixDeReferenceGrossiste}}€ du {{tarif.dateAjout|date('d M Y')}} <br>
+                                    <p class="mt-1">
+                                        Voulez-vous créer un tarif client à partir du tarif de référence que vous venez de créer? <br>
+                                    </p>
+                                    <button class="btn btn-success  mt-1" id="oui">Oui</button> <a href="{{path('back_tarif_list')}}" class="btn btn-primary mt-1">Non</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            
+                            
+                            <div class="d-flex justify-content-center p-2 ">
+                                <div class="question text-center border col-md-6 p-3 bg-light shadow ">
+                                
+                                    <p class="mt-1">
+                                        Creer un tarif à partir d'un tarif de reference ?
+                                        
+                                    </p>
+                                    <button class="btn btn-success  mt-1" id="oui">Oui</button> <a href="{{path('back_tarif_creation', {'client': true})}}" class="btn btn-primary mt-1">Non</a>
+                                </div>
+                            </div>
+                            
+                        {% endif %}
+
+                        <div class="col-md-12 client" style="display: none;"> 
+                            
+                            {{ form_start(form) }}
+                                {{form_errors(form)}}
+                                <div class="row">
+                                    <div class="form-group col-md-8">
+                                        {{ form_row(form.nom, {'attr':{'class': 'form-control d-none'}}) }}
+                                    </div>
+
+                                    <div class="form-group col-md-8">
+                                        {{ form_row(form.categorie, { 'attr':{'class': 'form-control d-none'}}) }}
+                                    </div>
+                                </div>
+                            
+                                <div class="row">
+                                    <div class="form-group col-md-8">
+                                        {{ form_row(form.contenance, {'attr':{'class': 'form-control d-none'}}) }}
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.base, { 'attr':{'class': 'form-control d-none'}}) }}
+                                    </div>
+
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.client, {'label': 'Veuillez choisir un client','attr':{'class': 'form-control search', 'required': true}}) }}
+                                    </div>
+
+                                    <div class="col-md-6 pl-5">
+                                        <label for="">Meme tarif toute déclinaison :</label>
+                                        {{ form_row(form.memeTarif, {'attr':{'class': 'form-check form-check-inline ', 'required': true}}) }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ form_row(form.marque, { 'attr':{'class': 'form-control d-none'}}) }}
+                                    </div>
+                                </div>
+
+                                {% if tarif %}
+                                    {% if tarif.declineAvec %}
+                                        <input type="hidden" name="marqueDeclineAvec" id="declineAvec" value="{{tarif.declineAvec.principeActif}}">
+                                    {% endif %}
+                                {% else %}
+                                    <input type="hidden" name="marqueDeclineAvec" id="declineAvec" >
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="message" style="display: none;"></div>
+                                            <label> Veuillez choisir un tarif de référence à partir du quel vous allez créer un tarif client </label>
+                                            <select class="form-control search" name="tarifReference" id="tarifRef" required>
+                                                <option></option>
+                                                {% for tarif in tarifListe %}
+                                                    <option value="{{tarif.id}}" >{{tarif.nom}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            {% for tarif in tarifListe %}
+                                                {% if tarif.declineAvec %}
+                                                    <span class="dataDecl" data-id="{{tarif.id}}" data-prix="{{tarif.prixDeReferenceDetaillant}}" data-decl="{{tarif.declineAvec.principeActif}}"></span>
+                                                {% else %}
+                                                    <span class="dataDecl" data-id="{{tarif.id}}" data-prix="{{tarif.prixDeReferenceDetaillant}}" data-decl="null"></span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                              
+                                <div class="row">
+                                    <div class="form-group col-md-6 prixReference" style="display: none;" >
+                                        {{ form_row(form.prixDeReferenceDetaillant, {'label': 'Prix de référence detaillant', 'attr':{'class': 'form-control modifier reference', 'value': '0'}}) }}
+                                    </div>
+
+                                    <div class="form-group col-md-6 prixReference" style="display: none;">
+                                        {{ form_row(form.prixDeReferenceGrossiste, {'label': 'Prix de référence grossiste', 'attr':{'class': 'form-control modifier reference', 'value': '0'}}) }}
+                                    </div>
+
+                                    <div class="form-group ">
+                                        {{ form_row(form.declineAvec, { 'attr':{'class': 'form-control d-none'}}) }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    {% for type in types %}
+                                        
+                                        {% for principe in principes %}
+                                    
+                                            <div class="declinaison col-md-6 p-4 " data-principe="{{principe.principeActif}}" style="display: none;">
+                                                <h4 class="text-center text-primary">{{type.nom}}</h4>
+                                                {% for decl in principe.declinaisons %}
+                                                    <div class="row mt-2">
+                                                        <div class="col-md-6">
+                                                            <label for="{{decl.declinaison}}">Prix pour {{decl.declinaison}}</label>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <input class="form-control declVal" type="number" required min="0" step=".01" name="{{principe.principeActif|replace({' ': '', ',': '_', '%': '_'})}}{{decl.declinaison|replace({' ': '', ',': '_', '%': '_'})}}{{type.nom}}" value="">
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endfor %}
+
+                                    {% endfor %}
+                                </div>
+                            
+                                <div class="text-center">
+                                    <button class="btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+                                </div>
+                                
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+                $('.modifier').attr('type', 'number');
+                if($('.alert').is(':visible')){
+                
+                    $('.alert').delay(3000).slideUp("slow");
+                }
+                
+                $('#oui').click(function(){
+                    $('.select2').css('width', '100%')
+                    $('.question').hide();
+                    $('.client').show('slow');
+                    
+                });
+                
+                $('#tarifRef').change(function(){
+                    let tarif = parseInt($(this).val());
+                    
+                    $('.dataDecl').each(function(){
+                        if( parseInt($(this).data('id')) == tarif ){
+
+                            let declineAvec = $(this).data('decl');
+                            
+                            $('#declineAvec').val(declineAvec);
+
+                            let prix = $(this).data('prix');
+                            
+                            $('.prix').each(function(){
+                                $(this).text(prix+"€");
+                                $('#prixdereference').val(prix);
+                            });
+                            
+                        }
+                    });
+
+                    if($('#tarif_memeTarif_1:checked').length > 0){
+                        
+                        $('.declinaison').each(function(){
+                            if($('#declineAvec').val().length > 0){
+                                if($('.message').is(':visible')){
+                                    $('.message').hide('slow');
+                                }
+                                
+                                if($('#declineAvec').val() == $(this).attr('data-principe')){
+                                    $(this).find('input').prop('required', true);
+                                    $(this).show('slow');
+                                    $('.prixReference').hide('slow');
+                                }else{
+                                    $(this).find('input').prop('required', false);
+                                    $(this).hide();
+                                }
+                            }else{
+                                
+                                $('.message').removeClass('alert alert-warning')
+                                $('.message').addClass('alert alert-info').show('slow').text('Vous venez de choisir un tarif sans déclinaison');
+                                $(this).hide('slow');
+                                $(this).find('input').prop('required', false);
+                            }
+                        
+                        })
+                    }
+                    
+                })
+
+                $('.appliquer').click(function(e){
+                    e.preventDefault();
+                    const prixDeReference = $('#prixdereference').val();
+                    let val = $(this).data('id');
+
+                    $('.prix'+val+'').val(prixDeReference);
+                    
+                });
+
+
+                let tarif = parseInt($('#tarifRef').val());
+
+                $('.dataDecl').each(function(){
+
+                    if( parseInt($(this).data('id')) == tarif ){
+
+                        let declineAvec = $(this).data('decl');
+                        
+                        $('#declineAvec').val(declineAvec);
+
+                    }
+                });
+        
+                if($('#tarif_memeTarif_0').prop('checked')){
+                    $('.declinaison').hide();
+                    $('.declVal').prop('required', false);
+                    $('.prixReference').show();
+                }
+
+                if($('#tarif_memeTarif_1').prop('checked')){
+                    
+                    $('.declinaison').each(function(){
+                        if($('#declineAvec').val() == $(this).attr('data-principe')){
+                            $(this).find('input').prop('required', true);
+                            $(this).show('slow');
+                            $('.prixReference').hide('slow');
+                        }else{
+                            $(this).hide();
+                            $(this).find('input').prop('required', false);
+                        }
+                    })
+                        
+                }
+
+                $('input[type=radio]').change(function() {
+                  
+                    let val = $(this);
+
+                    if($('#tarifRef').is(':visible')){
+                        if($('#tarifRef').val().length > 0){
+
+                            if( val.val() == 0 ){
+                                
+                                $('.declinaison').each(function(){
+                                    if($('#declineAvec').val().length > 0){
+                                        if($('#declineAvec').val() == $(this).attr('data-principe')){
+                                            $(this).find('input').prop('required', true);
+                                            $(this).show('slow');
+                                            $('.prixReference').hide('slow');
+                                            $('.reference').val(0);
+                                            $('.reference').attr('required', false);
+                                            
+                                        }else{
+                                            $(this).hide();
+                                            $(this).find('input[type=number]').prop('required', false);
+                                        }
+                                    }else{
+                                        $('.message').removeClass('alert alert-warning')
+                                        $('.message').addClass('alert alert-info').show('slow').text('Vous venez de choisir un tarif sans déclinaison');
+                                    }
+                                    
+                                })
+                                
+                            }else{
+                                
+                                $('.declinaison').hide('slow');
+                                $('.prixReference').show('slow');
+                                $('.reference').val(0);
+                                $('.reference').attr('required', true);
+                                $('.declinaison').find('input[type=number]').prop('required', false);
+                                
+                                if($('.message').is(':visible')){
+                                    $('.message').hide('slow');
+                                }
+
+                                $('.declVal').prop('required', false);
+        
+                            }
+                        }else{
+                            $('.message').addClass('alert alert-warning').show('slow').text('Veuillez choisir un tarif de réference');
+                        }
+                    }else{
+                        if($('#declineAvec').val().length > 0){
+    
+                            if( val.val() == 0 ){
+                                
+                                $('.declinaison').each(function(){
+                                    if($('#declineAvec').val().length > 0){
+                                        if($('#declineAvec').val() == $(this).attr('data-principe')){
+                                            $(this).show('slow');
+                                            $('.prixReference').hide('slow');
+                                        }else{
+                                            $(this).hide();
+                                            $(this).find('input[type=number]').prop('required', false);
+                                            
+                                        }
+                                    }else{
+                                        $('.message').removeClass('alert alert-warning')
+                                        $('.message').addClass('alert alert-info').show('slow').text('Vous venez de choisir un tarif sans déclinaison');
+                                    }
+                                    
+                                })
+                                
+                            }else{
+                                $('.reference').val(0);
+                                $('.reference').attr('required', true);
+                                $('.declinaison').hide('slow');
+                                $('.prixReference').show('slow');
+                                $('.declinaison').find('input[type=number]').prop('required', false);
+
+                                if($('.message').is(':visible')){
+                                    $('.message').hide('slow');
+                                }
+
+                            }
+                        }
+                    }
+
+                });
+
+                $(".search").select2( {
+                    allowClear: true
+                } );
+                
+            });
+
+    </script>
+
+{% endblock %}

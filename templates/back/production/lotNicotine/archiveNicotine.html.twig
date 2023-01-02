@@ -1,0 +1,77 @@
+{% extends 'back/production/lotNicotine/index.html.twig' %}
+
+
+{% block configuration %}
+    
+    <a href="{{path('back_production_create_nicotine')}}" class="btn btn-primary"><i class="os-icon os-icon-plus-circle"></i> Ajouter un lot de nicotine</a>
+
+    
+    {% for message in app.flashes('successArchive') %}
+        <div class="alert mt-2 alert-success">
+            {{message}}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('lotCréer') %}
+        <div class="alert mt-2 alert-success">
+            {{message}}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('successDelete') %}
+        <div class="alert mt-2 alert-success">
+            {{message}}
+        </div>
+    {% endfor %}
+
+
+    <h5 class="mt-4">ARCHIVES</h5>
+
+    <table class="table mt-5 table-striped table-lightfont table-hover dataTable1">
+        <thead>
+            <tr>
+                <th> Numéro du lot </th>
+                <th>Date de récéption</th>
+                <th>Date debut d'utilisation</th>
+                <th> Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if nicotines %}
+                {% for nicotine in nicotines %}
+                    <tr>
+                        <td>
+                            {{nicotine.numero}}
+                        </td>
+                        <td>
+                            {% if nicotine.dateReception %}
+                                {{nicotine.dateReception|date('d-m-Y')}}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if nicotine.dateDebutUtilisation %}
+                                {{nicotine.dateDebutUtilisation|date('d-m-Y')}}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{path('back_production_edit_nicotine', {id: nicotine.id})}}" class="btn btn-success btn-sm"><i class="os-icon os-icon-edit"></i></a>  
+
+                            <form method="post" class="d-inline" action="{{ path('back_production_delete_nicotine', {'id': nicotine.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette lot?');">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ nicotine.id) }}">
+                                <button style="padding-top: 0;" class="btn btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+
+    <a href="{{path('back_production_index')}}" class="btn btn-link"><i class="os-icon os-icon-corner-down-left"></i> Revenir à la liste des lots actifs</a>
+    
+{% endblock %}

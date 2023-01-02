@@ -1,0 +1,95 @@
+{% extends 'back/client/voir.html.twig' %}
+
+{% block edit_order %}
+<div class="row">
+    <div class="col-sm-12">
+        {% for message in app.flashes('success') %}
+            <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <div class="element-wrapper">
+            <h6 class="element-header">Liste des commandes</h6>
+            <div class="element-box-tp">
+                <div id="tablecontent" class="table-responsive">
+                    <div style="margin: auto; display: none; background-color: black" class="loader"></div>
+                        <table class="table table-striped table-lightfont table-hover dataTable1">
+                            <thead>
+                                <tr class="text-center">
+                                    <th> Date </th>
+                                    <th> Reference commande </th>
+                                    <th class=""> Entreprise</th>
+                                    <th> Paiement </th>
+                                    <th> Qt commandée(s) </th>
+                                    <th> Statut</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                        
+                                {% for commande in commandes %}
+                                    <tr id="tr-{{ commande.id }}" class="text-center">
+                                        <td >
+                                            <div class="smaller lighter">
+                                                {{ commande.date|date('d.m.Y')}}
+                                            </div>
+                                        </td>
+                                
+                                        <td>
+                                            <button type="button" class="btn btn-white">{{commande.code}}</button>
+                                            
+                                        </td>
+                                
+                                        <td class="text-center">
+                                            {% if client.raisonSocial %}
+                                                <span> {{ client.raisonSocial }}</span> <br>
+                                                
+                                            {% else %}
+                                                <span>NA</span> <br>
+                                            {% endif %}
+                                            <small>{{ client.firstName ~ ' ' ~ client.lastName }}</small>
+                                        </td>
+                                
+                                        <td class="nowrap">
+                                            {% if commande.bonDeCommande %}
+                                                {% set paid = commande.bonDeCommande.totalTtc - commande.bonDeCommande.resteAPayer %}
+                    
+                                                {% set percent = (paid * 100)/ commande.bonDeCommande.totalTtc %}
+                                                <div class="os-progress-bar primary">
+                                                    <div class="bar-labels">
+                                                        <div class="bar-label-right">
+                                                            <span style="{% if percent == 100 %}color:#24b314{% endif%}" class="info">{{ paid|number_format(2, ',', ' ') ~ '€ / ' ~  commande.bonDeCommande.totalTtc|number_format(2, ',', ' ') }}€</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-level-1" style="width: 100%;">
+                                                        <div class="bar-level-2" style="width: {{ percent }}%;{% if percent == 100 %}background-color:#24b314{% endif%}"></div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                
+                                        <td class="text-uppercase text-center">
+                                            {{commande.nombreProduit}}
+                                        </td>
+                                
+                                        <td>
+                                            {% if commande.bonDecommande %}
+                                                {% if commande.bonDeCommande.toutEstPayer %}
+                                                    <span class="badge  badge-pill badge-success">Payé</span>
+                                                {% else %}
+                                                    <span class="badge  badge-pill badge-danger">Non payé</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+{% endblock %}

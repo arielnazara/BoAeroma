@@ -1,0 +1,318 @@
+<div class="menu-w selected-menu-color-light menu-activated-on-hover menu-has-selected-link color-scheme-dark color-style-bright sub-menu-color-bright menu-position-top menu-layout-compact sub-menu-style-over">
+    <div class="logo-w">
+        <a class="logo" href="{{path('back_index')}}">
+            <div class="logo-element"></div>
+            <div class="logo-label">    
+                Laboratoires <br> Aeroma
+            </div>
+
+        </a>
+    </div>
+    <div class="logged-user-w avatar-inline">
+        <div class="logged-user-i">
+            <span class="status-pill green mr-1"></span>
+
+            <div class="avatar-w">
+                <img alt="" src="{{ asset('back/img/avatar1.jpg') }}">
+            </div>
+            {#<div class="logged-user-info-w">
+                <div class="logged-user-name">
+                    Maria Gomez
+                </div>
+                <div class="logged-user-role">
+                    Administrator
+                </div>
+            </div>#}
+            
+            <div class="logged-user-toggler-arrow">
+                <div class="os-icon os-icon-chevron-down"></div>
+            </div>
+            <div class="logged-user-menu color-style-bright">
+                <div class="logged-user-avatar-info">
+                    <span class="status-pill smaller green mr-1"></span>
+                    <div class="avatar-w">
+                        <img alt="" src="{{ asset('back/img/avatar1.jpg') }}">
+                    </div>
+                    {#<div class="logged-user-info-w">
+                        <div class="logged-user-name">
+                            Maria Gomez
+                        </div>
+                        <div class="logged-user-role">
+                            Administrator
+                        </div>
+                    </div>#}
+                </div>
+                <div class="bg-icon">
+                    <i class="os-icon os-icon-wallet-loaded"></i>
+                </div>
+                <ul>
+                    <li>
+                        <a href="{{path('modification_utilisateur', {id: app.user.id})}}"><i class="os-icon os-icon-mail-01"></i><span>Editer mon profil</span></a>
+                    </li>
+                    {#<li>
+                        <a href=""><i class="os-icon os-icon-user-male-circle2"></i><span>Paramètres</span></a>
+                    </li>#}
+                    <li>
+                        <a href="{{path('logout_admin')}}"><i class="os-icon os-icon-user-male-circle2"></i><span>Se déconnecter</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="menu-page-header">
+        Page Header
+    </h1>
+    <ul class="main-menu">
+        <li class="sub-header">
+            <span>Layouts</span>
+        </li>
+
+        <li class="{% if devis is defined %}selected{% endif%} has-sub-menu">
+            <a href="">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-layout"></div>
+                </div>
+                <span>Devis</span></a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Devis
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-layout"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        {% if modifier is not defined %}
+                            <li>
+                                <a class="{% if creation_devis is defined %}select-link{% endif %}" href="{{ path('back_capture_devis_client') }}">Créer un devis</a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <a class="{% if liste_devis is defined %}select-link{% endif %}" href="{{ path('back_devis_list') }}">Liste des devis</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+    
+       <li class="{% if commande is defined %}selected{% endif%} has-sub-menu">
+            <a href="">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-layers"></div>
+                </div>
+                <span>Commandes</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Commandes
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-layers"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="{% if creationCommande is defined %}select-link{% endif %}" href="{{path('back_capture_devis_client')}}">Créer une commande</a>
+                        </li>
+                        <li>
+                            <a class="{% if commandes is defined %}select-link{% endif %}" href="{{path('back_commande')}}">Liste des commandes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        <li class="{% if production is defined %}selected{% endif%} has-sub-menu">
+            <a href="{{ path('back_logistique_index') }}">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-pocket"></div>
+                </div>
+                <span> Production</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Production
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-pocket"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu"> 
+                        <li>
+                            <a class="{% if listeProduction is defined %}select-link{% endif %}" href="{{ path('back_production_index') }}">Production</a>
+                        </li>
+                        <li>
+                            <a class="{% if bonPreparation is defined %}select-link{% endif %}" href="{{ path('back_logistique_bonPreparation') }}">Bons de préparation</a>
+                        </li>
+
+                        <li>
+                            <a class="{% if groupes is defined %}select-link{% endif %}" href="{{ path('back_groupe_production_liste') }}">Bons de préparation groupée</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li> 
+
+
+        <li class="{% if logistiques is defined %}selected{% endif%} has-sub-menu">
+            <a href="{{ path('back_logistique_index') }}">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-activity"></div>
+                </div>
+                <span>Logistique</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Logistique
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-layers"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="{% if logistique is defined %}select-link{% endif %}" href="{{ path('back_logistique_index') }}">Liste</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        <li class="{% if invoices is defined %}selected{% endif%} has-sub-menu">
+            <a href="{{ path('back_liste_facture') }}">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-documents-03"></div>
+                </div>
+                <span>Factures</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Factures
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-documents-03"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="{% if invoice is defined %}select-link{% endif %}" href="{{ path('back_liste_facture') }}">Liste des factures</a>
+                        </li>
+                        
+                        <li>
+                            <a class="{% if avoir is defined %}select-link{% endif %}" href="{{ path('back_facture_avoir_list') }}">Facture d'avoir</a>
+                        </li>
+                        <li>
+                            <a class="{% if divers is defined %}select-link{% endif %}" href="{{ path('prestation_index') }}">Divers</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        
+        <li class="{% if produits is defined %}selected{% endif%} has-sub-menu">
+            <a href="{{path('back_produit_list')}}">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-box"></div>
+                </div>
+                <span>Produits</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Produits
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-box"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="{% if produit is defined %}select-link{% endif %}" href="{{path('back_produit_list')}}">À propos des produits</a>
+                        </li>
+                        <li>
+                            <a class="{% if configuration is defined %}select-link{% endif %}" href="{{path('back_produit_list_base')}}">Configuration</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        <li class="{% if tarif is defined %}selected{% endif%} has-sub-menu">
+            <a href="{{path('back_tarif_list')}}">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-documents-03"></div>
+                </div>
+                <span>Tarifs</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Tarifs
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-documents-03"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="{% if tarifs is defined %}select-link{% endif %}" href="{{path('back_tarif_list')}}">Liste des tarifs</a>
+                        </li>
+                       
+                        <li>
+                            <a class="{% if configurateur is defined %}select-link{% endif %}" href="{{path('back_tarif_creation')}}">Configurateur</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        <li class="{% if clients is defined %}selected{% endif%} has-sub-menu">
+            <a href="{{ path('back_client_list') }}">
+                <div class="icon-w">
+                    <div class="os-icon os-icon-users"></div>
+                </div>
+                <span>Clients</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Clients
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-users"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="{% if clients is defined %}select-link{% endif %}" href="{{path('back_client_list')}}">Liste des clients</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        <li class="{% if user is defined %}selected{% endif%} has-sub-menu">
+            <a href="{{ path('liste_utilisateur') }}">
+                <div class="icon-w">
+                    <div class=" os-icon os-icon-user-male-circle"></div>
+                </div>
+                <span>Utilisateurs</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header">
+                    Utilisateurs
+                </div>
+                <div class="sub-menu-icon">
+                    <i class="os-icon os-icon-user-male-circle"></i>
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="{% if user is defined %}select-link{% endif %}" href="{{path('liste_utilisateur')}}">Liste des utilisateurs</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+    </ul>
+</div>

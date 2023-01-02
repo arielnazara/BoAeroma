@@ -1,0 +1,241 @@
+back_production_index:
+    path: /liste/lots
+    defaults:
+        _controller: App\Controller\Back\ProductionController::index
+
+        
+
+back_production_create_nicotine:
+    path: /creation/lots/nicotine
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotNicotine
+        
+back_production_edit_nicotine:
+    path: /modification/lots/nicotine/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotNicotine
+        requirements:
+            id: \d+
+
+back_production_fusionner:
+    path: /fusionner/bon_preparation
+    defaults:
+        _controller: App\Controller\Back\ProductionController::fusionner
+
+
+back_groupe_production_liste:
+    path: /liste/groupe/bon_preparation
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeGroupe
+
+
+
+back_excel_groupe_production_liste:
+    path: /excel/groupe/bon_preparation/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::bdcExcelGrouper
+        requirements:
+            id: \d+
+
+
+back_code_interne_groupe_production_liste:
+    path: /ajoutCodeInterne/groupe/bon_preparation/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::ajoutCodeInterne
+        requirements:
+            id: \d+
+        
+
+back_production_delete_nicotine:
+    path: /suppression/lots/nicotine/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::deleteLotNicotine
+        requirements:
+            id: \d+
+
+back_production_liste_archives_nicotine:
+    path: /archives/lots/nicotine
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeArchiveNicotine
+
+
+back_production_liste_archives_glycerine:
+    path: /archives/lots/glycerine
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeArchiveGlycerine
+
+
+back_production_archiver_nicotine:
+    path: /archiver/lots/nicotine/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::archiver
+        requirements:
+            id: \d+
+
+back_production_archiver_glycerine:
+    path: /archiver/lots/glycerine/{idGlycerine}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::archiver
+        requirements:
+            idGlycerine: \d+
+
+
+back_production_archiver_isolat:
+    path: /archiver/lots/isolat/{idIsolat}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::archiver
+        requirements:
+            idIsolat: \d+
+
+back_production_archiver_vegetol:
+    path: /archiver/lots/vegetol/{idVegetol}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::archiver
+        requirements:
+            idVegetol: \d+
+
+
+back_production_archiver_arome:
+    path: /archiver/lots/arome/{idArome}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::archiver
+        requirements:
+            idVegetol: \d+
+       
+
+back_production_liste_glycerine:
+    path: /liste/glycerine
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeGlycerine
+
+        
+
+back_production_create_glycerine:
+    path: /creation/lots/glycerine
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotGlycerine
+        
+back_production_edit_glycerine:
+    path: /modification/lots/glycerine/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotGlycerine
+        requirements:
+            id: \d+
+
+
+back_production_delete_glycerine:
+    path: /suppression/lots/glycerine/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::deleteLotGlycerine
+        requirements:
+            id: \d+
+
+
+back_production_liste_isolat:
+    path: /liste/lot_isolat
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listIsolat
+
+
+back_production_create_isolat:
+    path: /creation/lots/isolat
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotIsolat
+        
+back_production_edit_isolat:
+    path: /modification/lots/isolat/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotIsolat
+        requirements:
+            id: \d+
+
+
+
+back_production_delete_isolat:
+    path: /suppression/lots/isolat/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::deleteLotIsolat
+        requirements:
+            id: \d+
+
+
+back_production_liste_archives_isolat:
+    path: /archives/lots/isolat
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeArchiveIsolat
+
+
+
+back_production_liste_archives_vegetol:
+    path: /archives/lots/Vegetol
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeArchiveVegetol
+
+
+back_production_liste_vegetol:
+    path: /liste/lot_vegetol
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listVegetol
+
+
+back_production_create_vegetol:
+    path: /creation/lots/vegetol
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotVegetol
+        
+back_production_edit_vegetol:
+    path: /modification/lots/vegetol/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotVegetol
+        requirements:
+            id: \d+
+
+
+
+back_production_delete_vegetol:
+    path: /suppression/lots/vegetol/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::deleteLotVegetol
+        requirements:
+            id: \d+
+
+
+back_production_liste_archives_aromes:
+    path: /archives/lots/aromes
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeArchiveArome
+
+
+
+back_production_liste_arome:
+    path: /liste/lot_arome
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listArome
+
+
+back_production_create_arome:
+    path: /creation/lots/arome
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotArome
+        
+back_production_edit_arome:
+    path: /modification/lots/arome/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::lotArome
+        requirements:
+            id: \d+
+
+
+
+back_production_delete_arome:
+    path: /suppression/lots/arome/{id}
+    defaults:
+        _controller: App\Controller\Back\ProductionController::deleteLotArome
+        requirements:
+            id: \d+
+
+
+back_production_liste_archives_arome:
+    path: /archives/lots/arome
+    defaults:
+        _controller: App\Controller\Back\ProductionController::listeArchiveArome

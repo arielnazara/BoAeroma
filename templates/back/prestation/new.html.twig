@@ -1,0 +1,41 @@
+{% extends 'back-base.html.twig' %}
+
+{% block title %}New Prestation{% endblock %}
+
+{% form_theme form 'back/prestation/_form_template.html.twig' %}
+
+{% block content %}
+
+
+<div class="row d-flex justify-content-center">
+    <div class="col-md-8">
+        <div class="element-wrapper">
+            <div class="element-box">
+                {% if prestation.balance != 0 %}
+                    <h6 class="float-right text-danger" style="font-weight: bolder;">
+                        Reste à payer : {{ prestation.balance }}€
+                    </h6>
+                {% endif %}
+                <h6 class="element-header">Créer une prestation</h6>
+                
+                <div id="tablecontent" class="table-responsive">
+                    <div style="margin: auto; display: none" class="loader"></div>
+                        
+                        {{ include('back/prestation/_form.html.twig') }}
+        
+                        <a href="{{ path('prestation_index') }}" class="btn btn-link"><i class="os-icon os-icon-corner-down-left"></i> Liste des prestations</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+    <script type="text/javascript" src="{{ asset('assets/js/prestation.js') }}?version=1.1"></script>
+
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends 'front-base.html.twig' %}
+
+{% block classBody %}bg-light{% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div class="row card shadow-lg">
+            <div class="col-12">
+                {{ include('front/header.html.twig') }}
+                <h4 style="color: black" class="text-center">  
+                    Faites vos devis gratuitement et passez commande en quelques instants 
+                </h4> 
+                
+            </div>
+
+            <div class="col-12 mb-2">
+                {% for message in app.flashes('instruction') %}
+                    <div class="alert alert-info">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-md-12 mt-3">
+                <h2 class="display-4">Etape 1/2 : Vos coordonnées</h2>
+
+              
+                {% for message in app.flashes("validationGrosssite") %}
+                    <div class="alert alert-success">
+                        {{message}}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes("warningGrosssite") %}
+                    <div class="alert alert-info">
+                        {{message}}
+                    </div>
+                {% endfor %}
+
+                
+                {% if not app.request.get('email') and not pswdEnvoyer %}
+                
+                    <form class="form-inline mb-4" method="get" action="">
+                        <div class="form-group mb-2">
+                            <label for="email_addr" class="">Veuillez entrer votre adresse email <span class="text-danger">*</span> </label>
+                            <input name="email" type="email" required class="form-control form-control-sm ml-2" id="email_addr" placeholder="Votre adresse email">
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary mb-2 ml-2">Suivant</button>
+                    </form>
+
+                {% elseif pswdEnvoyer and not pswdValid %}
+                    
+                    {% for message in app.flashes('mdpError') %}
+                        <div class="">
+                            <p class="text-danger"><i class="fas fa-dot-circle fa-sm"></i> {{message}}</p>
+                        </div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('pswdEnvoyer') %}
+                        <div class="">
+                            <p class="text-success"> <i class="fas fa-dot-circle fa-sm"></i> {{message}}</p>
+                        </div>
+                    {% endfor %}
+
+                    <form class="form-inline mb-4" method="post" action="{{path('front_checkPswd')}}">
+                        <div class="form-group row mb-2">
+                            <div class="col-md-6">
+
+                                <label for="pswd" class="">Veuillez entrer le mot de passe que nous venons de vous envoyer par email <span class="text-danger">*</span> </label>
+                            </div>
+                            <div class="col-md-6">
+
+                                <input name="password" type="password" required class="form-control form-control-sm ml-2" id="pswd" placeholder="votre mot de passe">
+                                <input name="email" type="hidden" required class="form-control form-control-sm ml-2" value="{{app.request.get('email')}}">
+                                <button type="submit" class="btn btn-sm btn-primary ml-2">Suivant</button>
+                            </div>
+                        </div>
+                    </form>
+
+                {% endif %}
+            </div>
+            <div class="">
+                {#<p>
+                    <img class="img-fluid mb-4" src="{{ asset('front/assets/img/processed.jpeg') }}" alt="elican" style="width: 100%; height: 100%;">
+                </p>#}
+                
+                <div id="carouselControls" class="carousel slide " data-ride="carousel">
+                    <div class="carousel-inner " style="margin-bottom: -17px;">
+                        <div class="carousel-item active">
+                            <img class="d-block w-100" src="{{ asset('front/assets/img/slide/1.jpg') }}" alt="First slide" >
+                        </div>
+                        <div class="carousel-item ">
+                            <img class="d-block w-100 " src="{{ asset('front/assets/img/slide/2.jpg') }}" alt="Second slide" >
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="{{ asset('front/assets/img/slide/3.jpg') }}" alt="Third slide">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="{{ asset('front/assets/img/slide/4.png') }}" alt="Third slide">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="{{ asset('front/assets/img/slide/5.jpg') }}" alt="Third slide">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="{{ asset('front/assets/img/slide/6.jpg') }}" alt="Third slide">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="{{ asset('front/assets/img/slide/7.jpg') }}" alt="Third slide">
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselControls" role="button" data-slide="prev">
+                        <span><i class="fa fa-angle-left" id="left" aria-hidden="true"></i></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselControls" role="button"  data-slide="next">
+                        <span><i class="fa fa-angle-right" id="right" aria-hidden="true"></i></span>
+                        <span class="sr-only" >Next</span>
+                    </a>
+                </div>
+            </div>
+        
+            <div class="col-12 mt-3">
+                {% if  app.request.get('email') and pswdValid or  app.request.get('email') and nouveau %}
+                    
+                    {% include 'front/_formulaire.html.twig' %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {{ include('front/footer.html.twig') }}
+{% endblock %}
+
+{% block custom_js %}
+
+    <script>
+        (function() {
+            function carouselNormalization() {
+                let items = $('.carousel-item'), 
+                    heights = [], 
+                    tallest; 
+
+                if (items.length) {
+                    function normalizeHeights() {
+                        items.each(function() { 
+                            heights.push($(this).height());
+                        });
+                        tallest = Math.max.apply(null, heights); 
+                        items.each(function() {
+                            $(this).css('min-height', tallest + 'px');
+                        });
+                    };
+                    normalizeHeights();
+
+                    $(window).on('resize orientationchange', function() {
+                    tallest = 0, heights.length = 0; 
+                    items.each(function() {
+                        $(this).css('min-height', '0'); 
+                    });
+                    normalizeHeights(); 
+                    });
+                }
+            }
+
+            window.onload = function() {
+                carouselNormalization();
+                
+            }
+        })();
+    </script>
+    <script>
+       
+        $(function(){
+
+            if($(document).height()> 1000){
+                $("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 2000);
+            }
+
+            $('#client_typeDeClient').change(function(){
+                const text = $("#client_typeDeClient option:selected").text()
+
+                if(text.toLowerCase() == "grossiste" )
+                {
+                    $('.grossisteMessage').html("<p class='border rounded border-success p-2'>Nous allons vérifier votre statut de grossiste, vous pourrez passer une commande une fois votre statut vérifié</p>")
+                }
+                else
+                {
+                    $('.grossisteMessage').html('')
+                }
+            })
+        });
+       
+    </script>
+    <script type="text/javascript" src="{{ asset('assets/js/form.js') }}"></script>
+
+  
+{% endblock %}

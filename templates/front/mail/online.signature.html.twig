@@ -1,0 +1,28 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+
+{% block title %} Laboratoire Aeroma – Bon de Commande n°{{devis.code}} {% endblock %}
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;"> 
+        Nous vous remercions pour votre demande de devis concernant : <br>
+        
+        <ul>
+            {% for devis in devis.devisProduits %}
+                
+                <li> <strong>{{devis.quantite}}</strong> {{devis.produit.nom}} {{devis.declineAvec}} {{devis.declinaison}} {% if devis.offert %}(Offert){% endif %} </li>
+                
+            {% endfor %}
+        </ul> 
+        {# Si nécessaire vous pouvez accéder au devis en ligne en cliquant sur le lien suivant : <br>
+        <a href="#">https://masque.test</a>
+        <br><br> #}
+        Nous sommes à votre disposition au 0970704707 pour tout renseignement complémentaire<br>
+        Bien cordialement, <br>
+        Océane<br>
+        Laboratoire Aeroma
+        <br><br>
+
+    </div>
+{% endblock %}

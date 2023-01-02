@@ -1,0 +1,175 @@
+@media (max-width: 991px) {
+    img{
+        width: 180px !important;
+        
+    }
+}
+
+@media (max-width: 767px) {
+    img{
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .cart{
+        
+        margin:0 auto;
+        
+    }
+}
+
+#right,
+#left{
+    font-size: 40px;
+    text-shadow: 3px 3px 3px #041a49;
+    background-color: none;
+}
+
+.categorie:hover{
+    background-color: #DCDCDC;
+}
+
+.titre{
+    text-decoration: underline;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.customnav{
+    overflow: hidden;
+    font-size: 17px;
+    font-family: Lato, Helvetica, Arial, sans-serif;
+    
+}
+
+.customnav a{
+    text-decoration: none;
+    display: inline-block;
+    color: #778899;
+    margin-right: 20px;
+    
+}
+
+.activenav{
+    border-bottom: 2px solid #36964c;
+    color: #36964c !important ;
+  
+}
+
+.custom:hover{
+    border-bottom: 2px solid #36964c;
+    color: #36964c;
+  
+}
+
+
+
+@media (max-width:1000px) {
+  
+    .customnav a{
+        margin-top: 10px;
+        display: block;
+    }
+
+    .activenav{
+        border-left: 2px solid #36964c;
+        border-bottom: none;
+        color: #36964c !important; 
+        padding-left: 5px;
+      
+    }
+    
+    .custom:hover{
+        border-left: 2px solid #36964c;
+        color: #36964c !important;
+        border-bottom: none;
+        padding-left: 5px;
+    }
+    
+}
+
+
+
+
+
+#entitiesNav a{
+    color: #525f7f;
+    display : block;
+    
+}
+
+#entitiesNav a:hover{
+    background-color: #e3eaee;
+}
+
+
+.form-search:hover{
+  box-shadow: 0 0.5em 0.5em -0.4em rgb(145, 139, 139);
+  transform: translateY(-0.20em);
+}
+
+.spin{
+    margin-left: 100px;
+}
+
+
+.hautPage{
+    display: none;
+    z-index: 9999;
+    position: fixed ;
+    bottom: 90px;
+    right: 150px;
+}
+
+@media (max-width: 1448px) {
+    .hautPage{
+        display: none;
+        z-index: 9999;
+        position: fixed ;
+        bottom: 90px;
+        right: 20px;
+    }
+}
+
+@media (max-width: 768px ){
+    .footer{
+        margin-top: 23px;
+    }
+}
+@media (max-width: 575px ){
+    .btn-search{
+        width: 100%;
+        margin-top: 2px;
+        padding: 5px;
+        height: 30px;
+    }
+
+    .spin{
+        margin: auto !important;
+        text-align: center;
+    }
+
+    .decli,
+    .prix{
+        margin: auto !important;
+        text-align: center !important;
+    }
+
+}
+
+@media (max-width: 768px ){
+   
+
+    .card{
+        margin-top: 10px;
+        margin: auto;
+    }
+
+    .cart{
+        padding: 10px;
+    }
+
+    .search{
+        float: none;
+    }
+}

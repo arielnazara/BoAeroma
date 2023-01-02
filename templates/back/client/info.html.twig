@@ -1,0 +1,186 @@
+{% extends 'back/client/voir.html.twig' %}
+
+{% block edit_order %}
+    <div class="element-box">
+        <div class="order-items-table">
+            <div class="row mb-2">
+                <div class="col-md-8">
+
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-primary btn-sm" href="{{path('back_client_adresse', {id: client.id} )}}" ><i class="os-icon os-icon-plus-circle"></i> Adresse livraison</a> 
+                    <a class="btn btn-success btn-sm mt-2" href="{{path('back_client_adresse_list', {id: client.id})}}"> <i class="os-icon os-icon-corner-down-right"></i> Liste des adresses de livraison</a> <br>
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-primary btn-sm" href="{{path('back_client_contact', {id:client.id})}}"> <i class="os-icon os-icon-plus-circle"></i> Contact</a> 
+                    <a class="btn btn-success btn-sm mt-2" href="{{path('back_client_contact_list', {id:client.id})}}"> <i class="os-icon os-icon-corner-down-right"> </i>Liste des contacts</a> 
+                </div>
+            </div>
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">{{message}}</div>
+            {% endfor %}
+
+            <div class="alert ajoutShopOk alert-success" style="display: none;">
+                Boutiques ajoutées avec succès
+            </div>
+
+            <div class="table-responsive mt-4">
+                <table class="table table-lightborder">
+                    <thead>
+                    <tr>
+                        <th>Entreprise</th>
+                        <th>Client</th>
+                        <th>Adresse de facturation</th>
+                        <th>Adresse de livraison</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {% if client.raisonSocial %}
+                                    <h6>{{client.raisonSocial}}</h6>
+                                {% else %}
+                                    NA
+                                {% endif %}
+
+                                {% if client.principaleActivite %}
+                                    Principale activité : {{client.principaleActivite}} <br>
+                                {% endif %}
+
+                                {% if client.siren %}
+                                    Siren: {{client.siren}} <br>
+                                {% endif %}
+                                {% if client.formeJuridique %}
+                                    Forme juridique: {{client.formeJuridique}} <br>
+                                {% endif %}
+                                {% if client.noTva %}
+                                    Numéro TVA intracommunautaire : {{client.noTva}} <br>
+                                {% endif %}
+
+                                {% if client.codeNaf %}
+                                    Code NAF : {{client.codeNaf}} <br>
+                                {% endif %}
+
+                                {% if client.iban %}
+                                    IBAN : {{client.iban}} <br>
+                                {% endif %}
+
+                                {% if client.swift %}
+                                    SWIFT : {{client.swift}} <br>
+                                {% endif %}
+
+                                {% if client.regimeTva %}
+                                    Régime TVA : {{client.regimeTva}}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{client.lastname}}
+                                {{client.firstname}} <br>
+                                {{client.email}} <br>
+                                Téléphone: {{client.telephone}}
+                            </td>
+                            <td>
+                               {{client.adresseFacturation}} <br>
+                               {{ client.codePostalFacturation }}, {{ client.villeFacturation }}, {{client.communeFacturation}} <br>
+                            </td>
+                            <td>
+                                {% if client.nomDestinataire %}
+                                    Nom destinataire :  {{client.nomDestinataire}} <br>
+                                {% endif %}
+                                {{client.adresseServiceAchats}} <br>
+                                {{client.codePostalServiceAchat}}, {{client.villeServiceAchat}}, {{client.communeServiceAchat}}
+                            </td>
+                            <td>
+                                <a href="{{path('back_modif_client', {id: client.id})}}" class="btn btn-success"> <i class="os-icon os-icon-edit"></i> Editer</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+            
+            <form id="shopInfo" action="{{path('back_client_add_shop')}}" method="post">
+                <input type="hidden" name="clientId" value="{{client.id}}">
+                <input type="hidden" name="nombreShop" id="nombreShop">
+
+                <div class=" row">
+                    {% for shop in client.shops %}
+                        <div class="col-md-12 mt-3 shop p-3 border rounded shadow p-2" id="{{shop.id}}">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <a class="deleteShop btn btn-danger btn-sm float-right" data-id = "{{shop.id}}" href="{{path('back_client_delete_shop')}}"><i class="os-icon os-icon-ui-15"></i></a>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="form-group col-md-12">
+                                    <label for="shop{{shop.id}}">Nom de la boutique</label>
+                                    <input type="text" class="form-control" id="shop{{shop.id}}" required value="{{shop.nomShop}}" name="shop{{shop.id}}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="nom{{shop.id}}">Nom</label>
+                                    <input type="text" class="form-control" id="nom{{shop.id}}"  value="{{shop.nom}}" name="nom{{shop.id}}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="prenom{{shop.id}}">Prénom</label>
+                                    <input type="text" class="form-control" id="prenom{{shop.id}}"  value="{{shop.prenom}}"  name="prenom{{shop.id}}">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="email{{shop.id}}">Email</label>
+                                    <input type="email" class="form-control" id="email{{shop.id}}"  value="{{shop.email}}"  name="email{{shop.id}}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="telephone{{shop.id}}">Téléphone</label>
+                                    <input type="text" class="form-control" id="telephone{{shop.id}}"  value="{{shop.telephone}}"  name="telephone{{shop.id}}">
+                                </div>
+                            </div>
+            
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label for="adresse{{shop.id}}">Adresse</label>
+                                    <input type="text" class="form-control" id="adresse{{shop.id}}" required value="{{shop.adresse}}"  name="adresse{{shop.id}}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="codePostal{{shop.id}}">Code postale</label>
+                                    <input type="text" class="form-control" id="codePostal{{shop.id}}" required value="{{shop.codePostal}}" name="codePostal{{shop.id}}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="ville{{shop.id}}">Ville</label>
+                                    <input type="text" class="form-control" id="ville{{shop.id}}" required value="{{shop.ville}}" name="ville{{shop.id}}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="commune{{shop.id}}">Commune</label>
+                                    <input type="text" class="form-control" id="commune{{shop.id}}"  value="{{shop.commune}}"  name="commune{{shop.id}}">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="shop" class="row mt-2">
+
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <a href="" id="ajouterShop" class="btn btn-secondary btn-sm"><i class="os-icon os-icon-plus-circle"></i> Ajouter boutique</a>
+                    </div>
+                    <div class="btnShop col-md-6 text-right" {% if client.shops|length == 0 %} style="display: none;" {% endif %}>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{{asset('assets/js/ajoutShop.js')}}"></script>
+{% endblock %}

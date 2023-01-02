@@ -1,0 +1,103 @@
+<table class="table table-padded animate-bottom">
+    <thead>
+        <tr>
+            <th> Date </th>
+            <th> Commande </th>
+            <th class=""> Entreprise</th>
+            <th> Paiement </th>
+            <th> Qt livrées/commandées </th>
+            <th> Statut</th>
+            <th class="text-right"> Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+    {#{% for po in orders %}
+    <tr id="tr-{{ po.id }}">
+        <td data-source="{{ po.client.denomination}} {{ po.codeNumber }} {{ po.client.name }} {{ po.client.firstName }}">
+            <div class="smaller lighter">
+                {{ po.date|date('d.m.Y')}}
+            </div>
+        </td>
+
+        <td>
+            <button type="button" class="btn btn-white">{{ po.codeNumber }}</button>
+            {% if po.isSendTologistics %}
+                <br>
+                <button type="button" class="btn badge badge-info-inverted text-left">Disponible en logistique</button>
+            {% endif %}
+        </td>
+
+        <td>
+            {% if po.client.denomination|split('-')[0] == 'n' %}
+                <span>NA</span> <br>
+            {% else %}
+                <span> {{ po.client.denomination }}</span> <br>
+            {% endif %}
+            <small>{{ po.client.firstName ~ ' ' ~ po.client.name }}</small>
+        </td>
+
+        {#<td class="">
+            {% if po.client.clientType %}
+                <a class="badge badge-primary-inverted text-left" href="">BPCO</a> <br>
+                {% if po.dateTotalPaid %}
+                    <small class="text-success">le {{ po.dateTotalPaid|date('d/m/Y') }}</small>
+                {% endif %}
+            {% else %}
+                {% if po.isNoDeposit %}
+                    <span class="text-info">Pas d'acompte</span>
+                {% else %}
+                    {% if po.dateDepositPaid %}
+                        <span class="text-success">Acompte versé </span>  <br>
+                        <small class="text-success">le {{ po.dateDepositPaid|date('d/m/Y') }}</small>
+                    {% else %}
+                        <span class="text-danger">Acompte non versé</span>
+                    {% endif%}
+                {% endif%}
+            {% endif %}
+        </td>#}
+
+        {#<td class="nowrap">
+            {% set paid = po.totalTtc - po.remainToPaid %}
+            {% set percent = (paid * 100)/po.totalTtc %}
+            <div class="os-progress-bar primary">
+                <div class="bar-labels">
+                    <div class="bar-label-right">
+                        <span style="{% if percent == 100 %}color:#24b314{% endif%}" class="info">{{ paid|number_format(2, ',', ' ') ~ '€ / ' ~  po.totalTtc|number_format(2, ',', ' ') }}€</span>
+                    </div>
+                </div>
+                <div class="bar-level-1" style="width: 100%;">
+                    <div class="bar-level-2" style="width: {{ percent }}%;{% if percent == 100 %}background-color:#24b314{% endif%}"></div>
+                </div>
+            </div>
+        </td>
+
+        <td class="text-uppercase">
+            <div>
+                {% set tlivred = po.totalMask - po.remainToDelivred %}
+                <small> {{ tlivred }}/{{ po.totalMask}} </small> <br>
+            </div>
+        </td>
+
+        <td>
+            {{ po.status }}
+        </td>
+
+        <td class="row-actions text-right" style="width: 150px">
+            <a data-placement="top" data-toggle="tooltip" title="Editer la commande" href="{{ path('back_order_edit_order', {number:po.codeNumber, id:po.id}) }}"><i class="os-icon os-icon-edit"></i></a>
+            {% if not po.isSendTologistics %}
+                <a id="{{ po.id }}" class="sendToLogistic" data-placement="top" data-toggle="tooltip" title="Envoyer à la logistique" href="{{ path('back_order_create_order', {id:po.id}) }}"><i class="os-icon os-icon-box"></i></a>
+            {% endif %}
+
+            {% if not po.isSendToLogistics %}
+                <form style="display: inline-block" method="post" action="{{ path('back_order_delete', {id:po.id}) }}" onsubmit="return confirm('Vous êtes sur ?\nVous allez aussi supprimer toutes les factures et logistique associé a cet commande')">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ po.id) }}">
+                    <button type="submit" class="btn btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></button>
+                </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}#}
+    </tbody>
+</table>

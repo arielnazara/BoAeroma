@@ -1,0 +1,164 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+
+{% block title %}Création support{% endblock %}
+
+{% block configuration %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% for message in app.flashes('erreurBase') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <h4 class="title">Créer un support</h4>
+                    <div class="mt-8">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                {{form_errors(form)}}
+
+                                <div class="form-group">
+                                    {{ form_row(form.nom, {'label': 'Nom', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.reference, {'label': 'Référence ', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group row">
+                                    <div class="col-md-12">Composant</div>
+                                    <div class="col-md-7">
+                                        <select name="composant-1" class="form-control">
+                                           {% for composant in composants %}
+                                               <option value="{{composant.id}}">{{composant.nom}}</option>
+                                           {% endfor %}
+                                        </select>
+                                    </div>
+                                   
+                                    <div class="form-group col-md-5">
+                                        <select name="ratio-1" id="ratio-1" class="form-control">
+                                            <option value="100%">100%</option>
+                                            <option value="80%">80%</option>
+                                            <option value="70%">70%</option>
+                                            <option value="65%">65%</option>
+                                            <option value="60%">60%</option>
+                                            <option value="50%">50%</option>
+                                            <option value="40%">40%</option>
+                                            <option value="35%">35%</option>
+                                            <option value="30%">30%</option>
+                                            <option value="20%">20%</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="new-composant"></div>
+                                <h6 class="erreur text-center"></h6>
+
+                                <input type="hidden" id="somme" name="somme" value="100">
+                                <button class="btn btn-{{ info|default('primary') }} envoie">{{ button_label|default('Enregistrer') }}</button>
+
+                                <a href="" class="add-composant btn btn-secondary btn-sm"> <i class="os-icon os-icon-plus-circle"></i> Ajouter un composant</a>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script>
+        $(function(){
+            let count = 1;
+            let ratio1 = parseInt($('#ratio-1').val());
+            let ratio2 = 0;
+
+             
+            $('#ratio-1').change(function(){
+                ratio1 = parseInt($(this).val());
+                calculRatio(ratio1, ratio2);
+            });
+
+            $(".add-composant").click(function(e){
+                
+                $(".add-composant").hide('slow');
+                let totalRatio;
+                e.preventDefault();
+                //alert('ok');
+                count += 1;
+                
+                let html = '';
+                html += '<div class=" row add-compo form-group">';
+                html += '<div class="col-sm-7 d-flex">';
+                html += '<select class="form-control" name="composant-2">';
+                html += '{% for composant in composants %}';
+                html += '<option value="{{composant.id}}">{{composant.nom}}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-md-4 d-flex">'
+                html += '<select class="form-control" name="ratio-2"  id="ratio-2">';
+                html += '<option value="100%">100%</option>';
+                html += '<option value="80%">80%</option>';
+                html += '<option value="70%">70%</option>';
+                html += '<option value="65%">65%</option>';
+                html += '<option value="60%">60%</option>';
+                html += '<option value="50%">50%</option>';
+                html += '<option value="40%">40%</option>';
+                html += '<option value="35%">35%</option>';
+                html += '<option value="30%">30%</option>';
+                html += '<option value="20%">20%</option>';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1 d-flex">';
+                html += '<a href="" class="removeComposant btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".new-composant").append(html);
+                
+                $('#ratio-2').change(function(){
+                    ratio2 = parseInt($(this).val());
+                    calculRatio(ratio1, ratio2);
+                    
+                });
+                 
+                $('#ratio-1').change(function(){
+                    ratio1 = parseInt($(this).val());
+                    calculRatio(ratio1, ratio2);
+                });
+
+            });
+
+            function calculRatio(val1, val2){  
+                
+                if($("#ratio-2").is(':visible')){
+                    totalRatio = val1 + val2;
+                }else{
+                    totalRatio = val1;
+                }
+                console.log(totalRatio);
+                if(totalRatio > 100 || totalRatio < 100 ){
+                    $('.erreur').html('la somme des ratios doit être égale à 100%').css('color', 'red');
+                
+                }else if(totalRatio == 100){
+                    $('.erreur').html('');
+                }
+
+                $("#somme").val(totalRatio);
+            }
+
+            $(document).on('click', '.removeComposant', function(e){
+                e.preventDefault();
+                $('.erreur').html('');
+                $(".add-composant").show('slow');
+                $(this).closest('.add-compo').remove();
+                calculRatio(ratio1, ratio2);
+            });
+
+         
+
+            
+        });
+    </script>
+{% endblock %}

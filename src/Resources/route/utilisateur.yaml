@@ -1,0 +1,23 @@
+liste_utilisateur:
+    path: /liste
+    defaults:
+        _controller: App\Controller\Back\RegistrationController::listUtilisateur
+
+ajout_utilisateur:
+    path: /ajout
+    defaults:
+        _controller: App\Controller\Back\RegistrationController::ajoutUtilisateur
+
+modification_utilisateur:
+    path: /modification/{id}
+    defaults:
+        _controller: App\Controller\Back\RegistrationController::ajoutUtilisateur
+        requirements:
+            id: \d+
+
+supprimer_utilisateur:
+    path: /supprimer/{id}
+    defaults:
+        _controller: App\Controller\Back\RegistrationController::supprimerUtilisateur
+        requirements:
+            id: \d+

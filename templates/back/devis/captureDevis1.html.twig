@@ -1,0 +1,334 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="element-wrapper">
+                <div class="element-box ">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>Etape 2/3 : Choix des produits </h6>
+                        </div>
+                        <div class="col">
+                            <a href="{{ path('back_tous_les_produits', { id: client.id }) }}" class="btn btn-primary float-right">
+                                <i class="os-icon os-icon-eye"></i>
+                                Voir tous les produits
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <form action="{{path('back_capture_devis', {id: client.id})}}" method="POST">
+                        <div class="form-group">    
+                            <label> Veuillez choisir un produit</label>
+                            {% set count = 0 %}
+                            {% if choisis %}
+                                {% for choisi in choisis %}
+                                    {% set count = count + 1 %}
+                                    <div class="mt-3 {% if count > 1 %}add-produit{% endif %} row">
+
+                                        <div class=" {% if count == 1 %}col-sm-12{% else %}col-sm-11{% endif %} ">
+
+                                            <select class="form-control produit" name="produit-{{count}}" {% if count == 1 %} required {% endif %} required>
+                                                {% for produit in listeProduit %}
+                                                    {% set prix = null %}
+                                                    {% if produit.tarif %}
+                                                        {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                            {% set prix = produit.tarif.prixDeReferenceGrossiste %}
+                                                        {% else %}
+                                                            {% set prix = produit.tarif.prixDeReferenceDetaillant %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    <option value="{{produit.id}}" data-prix="{{prix}}" {% if produit.id == choisi %} selected {% endif %} >{{produit.reference}} - {{produit.getNomMarqueBlanche(client)}}</option>
+                                                {% endfor %}
+                                            </select>    
+                                        </div>
+                                        {% if count > 1 %}
+                                            <div class="col-sm-1">
+                                                <a href="" class="removeProduit btn btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                
+                                <select class="form-control produit" name="produit-1" required>
+                                    {% set count = 1 %}
+                                    <option></option>
+                                    {% for produit in listeProduit %}
+                                        {% set prix = null %}
+                                        {% if produit.tarif %}
+                                            {% if client.typeDeClient.nom|lower == "grossiste" %}
+                                                {% set prix = produit.tarif.prixDeReferenceGrossiste %}
+                                            {% else %}
+                                                {% set prix = produit.tarif.prixDeReferenceDetaillant %}
+                                            {% endif %}
+                                        {% endif %}
+                                        <option value="{{produit.id}}" data-prix="{{prix}}">{{produit.reference}} - {{ produit.getNomMarqueBlanche(client)}}</option>
+                                    {% endfor %}
+                                </select>    
+
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <div class="newRow"></div>
+                        </div>
+                        <div class="float-right">
+                            <a href="#" class="ajout-produit btn btn-secondary btn-sm" data-count='{{count}}'> <i class="os-icon os-icon-plus-circle"></i> Ajouter un produit </a>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Créer une commande</button>
+                    </form>
+            
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    
+                    <h6 class="mb-2">Liste des produits que le client à déjà commandé : </h6>
+                    
+                    {% set produitExist = [] %}
+                    <form action="{{path('back_capture_from_liste', {id: client.id})}}" method="POST">
+
+                        <table class="table mb-5" id="liste">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                {% set c = 0 %}
+
+                                {% if derniereCommandes %}
+                                
+                                    {% for commande in derniereCommandes %}
+                                        {% for prod in commande.devisProduits %}
+                                            {% if prod.produit.id not in produitExist %}
+                                                {% set c = c + 1 %}
+                                                {% if not prod.offert %}
+                                                
+                                                    <tr id="{{prod.produit.id}}">
+                                                        <th scope="row" width='90%'>
+                                                            {{prod.produit.getNomMarqueBlanche(client)}}
+                                                            <input type="hidden" name="produit-{{c}}" value="{{prod.produit.id}}">
+                                                        </th>
+                                                        <td width='10%'> 
+                                                            <a href="#" class="deleteFromListe btn btn-danger btn-sm" data-prod="{{prod.produit.id}}"> <i class="os-icon os-icon-ui-15"></i></a>
+                                                        </td>
+                                                    </tr>
+            
+                                                {% endif %}
+                                                {% set produitExist = produitExist|merge([prod.produit.id]) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                
+                                {% else %}
+                                    {% for custom in customListe %}
+                                        {% if custom.id not in produitExist %}
+                                            {% set c = c + 1 %}
+                                                    
+                                            <tr id="{{custom.id}}">
+                                                <th scope="row" width='90%'>
+                                                    {{custom.nom}}
+                                                    <input type="hidden" name="produit-{{c}}" value="{{custom.id}}">
+                                                </th>
+                                                <td width='10%'> 
+                                                    <a href="#" class="deleteFromListe btn btn-danger btn-sm" data-prod="{{custom.id}}"> <i class="os-icon os-icon-ui-15"></i></a>
+                                                </td>
+                                            </tr>
+
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                
+                            </tbody>
+                        </table>
+                        <div class="form-group">
+                            <div class="newListe"></div>
+                        </div>
+                        {% if derniereCommandes or customListe %}
+                            <div class="float-right">
+                                <a href="#" class="ajout-liste btn btn-secondary btn-sm" data-count="{{c}}"> <i class="os-icon os-icon-plus-circle"></i> Ajouter un produit à la liste </a>
+                            </div>
+                            <button type="submit" class="btn btn-success">Créer une commande <br> à partir de la liste</button>
+                        {% endif %}
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+<script type="text/javascript" src="{{ asset('assets/js/calcul.js') }}"></script>
+<script src="select2.min.js"></script>
+<script>
+    $(function(){
+
+        $(document).ready(function() {
+            $('#liste').DataTable({
+                "ordering": false,
+                "lengthMenu": [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, 'Tous'],
+                ],
+                "iDisplayLength": -1
+            });
+
+            let table = $('#liste').DataTable();
+
+            $('#liste').on('click', '.deleteFromListe', function () {
+                console.log()
+                let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit?');
+
+                if(confirmer){
+                    let produit = parseInt($(this).data('prod'));
+
+                    $('tr').each(function(){
+                        if( parseInt($(this).attr('id')) == produit){
+                            $(this).remove();
+                            table.rows(this).remove().draw(false);
+                        }
+                    })
+                }
+            } );
+        } );
+
+        /*$('.deleteFromListe').click(function(e){
+            console.log('ok');
+            e.preventDefault();
+
+            let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit?');
+
+            if(confirmer){
+                let produit = parseInt($(this).data('prod'));
+
+                $('tr').each(function(){
+                    if( parseInt($(this).attr('id')) == produit){
+                        $(this).remove();
+                    }
+                })
+            }
+        });*/
+
+        let count = $('.ajout-produit').data('count');
+        $(".ajout-produit").click(function(e){
+           
+            e.preventDefault();
+            count += 1;
+            let html = '';
+
+            html += '<div class=" row add-produit form-group">';
+            html += '<div class="col-sm-11">';
+            html += '<select class="form-control produit" name="produit-'+ count +'" required>';
+            html += '<option value=""></option>';
+            html += '{% for produit  in listeProduit %}';
+            html += '{% set prix = null %}';
+            html +=  '{% if produit.tarif %}';
+            html +=  '{% if client.typeDeClient.nom|lower == "grossiste" %}';
+            html +=  '{% set prix = produit.tarif.prixDeReferenceGrossiste %}';
+            html +=  '{% else %}';
+            html +=  '{% set prix = produit.tarif.prixDeReferenceDetaillant %}';
+            html +=  '{% endif %}';
+            html +=  '{% endif %}';
+            html += '<option value="{{produit.id}}" data-prix="{{prix}}">{{produit.reference}} - {{produit.getNomMarqueBlanche(client)}}</option>';
+            html += '{% endfor %}';
+            html += '</select>';
+            html += '</div>';
+            html += '<div class="col-sm-1">';
+            html += '<a href="" class="removeProduit btn btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+            html += '</div>';
+            html += '</div>';
+            $(".newRow").append(html);
+
+            $("select").select2( {
+                placeholder: "choisir un produit",
+                allowClear: true
+            } );
+
+        });
+
+        $(document).on('click', '.removeProduit', function(e){
+            e.preventDefault();
+
+            let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit?');
+
+            if(confirmer){
+                count -= 1;
+                $(this).closest('.add-produit').remove();
+                $('.amount_ht').text(0);
+                $('.total_ht').text(0);
+                $('.taxe').text(0);
+                $('.total_ttc').text(0);
+            }
+        });
+
+        $("select").select2( {
+            placeholder: "choisir un produit",
+            allowClear: true
+        } );
+
+
+        let c = parseInt($('.ajout-liste').data('count'));
+        
+        $(".ajout-liste").click(function(e){
+           
+            e.preventDefault();
+            c += 1;
+            let html = '';
+
+            html += '<div class=" row add-produit-liste form-group">';
+            html += '<div class="col-sm-11">';
+            html += '<select class="form-control produit" name="produit-'+ c +'" required>';
+            html += '<option value=""></option>';
+            html += '{% for produit  in listeProduit %}';
+            html += '{% set prix = null %}';
+            html +=  '{% if produit.tarif %}';
+            html +=  '{% if client.typeDeClient.nom|lower == "grossiste" %}';
+            html +=  '{% set prix = produit.tarif.prixDeReferenceGrossiste %}';
+            html +=  '{% else %}';
+            html +=  '{% set prix = produit.tarif.prixDeReferenceDetaillant %}';
+            html +=  '{% endif %}';
+            html +=  '{% endif %}';
+            html += '<option value="{{produit.id}}" data-prix="{{prix}}">{{produit.reference}} - {{produit.getNomMarqueBlanche(client)}}</option>';
+            html += '{% endfor %}';
+            html += '</select>';
+            html += '</div>';
+            html += '<div class="col-sm-1">';
+            html += '<a href="" class="removeFromListe btn btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+            html += '</div>';
+            html += '</div>';
+            $(".newListe").append(html);
+
+            $("select").select2( {
+                placeholder: "choisir un produit",
+                allowClear: true
+            } );
+
+        });
+
+        $(document).on('click', '.removeFromListe', function(e){
+            e.preventDefault();
+            
+            let confirmer = confirm('Etes-vous sur de vouloir supprimer ce produit?');
+
+            if(confirmer){
+                c -= 1;
+                $(this).closest('.add-produit-liste').remove();
+                $('.amount_ht').text(0);
+                $('.total_ht').text(0);
+                $('.taxe').text(0);
+                $('.total_ttc').text(0);
+            }
+        });
+            
+    });
+</script>
+
+{% endblock %}

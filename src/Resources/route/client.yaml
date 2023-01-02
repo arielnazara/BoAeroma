@@ -1,0 +1,125 @@
+back_client_list:
+    path: /liste
+    defaults:
+        _controller: App\Controller\Back\ClientController::list
+
+back_client_delete:
+    path: /delete/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::delete
+        requirements:
+            id: \d+
+
+back_client_create:
+    path: /client/create
+    defaults:
+        _controller: App\Controller\Back\ClientController::create
+
+
+back_voir_catalogue_client:
+    path: /catalogue/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::catalogueClient
+        id: \d+
+
+
+back_client_edit:
+    path: /voir/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::voir
+        requirements:
+            id: \d+
+
+back_client_info:
+    path: /info/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::info
+        requirements:
+            id: \d+
+
+back_client_adresse:
+    path: /ajout-adresse/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::adresse
+        requirements:
+            id: \d+
+
+back_client_adresse_list:
+    path: /liste/adresse/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::listeAdresse
+        requirements:
+            id: \d+
+
+back_client_contact_list:
+    path: /liste/contact/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::listeContact
+        requirements:
+            id: \d+
+
+back_client_contact:
+    path: /contact/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::contact
+        requirements:
+            id: \d+
+
+back_modif_client:
+    path: /modification/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::editClient
+        requirements:
+            id: \d+
+
+back_commade_client:
+    path: /listes_commandes/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::listCommande
+        requirements:
+            id: \d+
+
+back_supprime_adresse_client:
+    path: /supprimer/adresse/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::supprimeAdresse
+        requirements:
+            id: \d+
+
+back_modification_adresse_client:
+    path: /modification/adresse/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::modificationAdresse
+        requirements:
+            id: \d+
+
+back_modification_contact_client:
+    path: /modification/contact/client/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::modificationContact
+        requirements:
+            id: \d+
+
+back_supprime_contact_client:
+    path: /supprimer/contact/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::supprimeContact
+        requirements:
+            id: \d+
+
+back_client_facture:
+    path: /factures/client/{id}
+    defaults:
+        _controller: App\Controller\Back\ClientController::facture
+        requirements:
+            id: \d+
+
+back_client_add_shop:
+    path: /ajout_boutique/client/
+    defaults:
+        _controller: App\Controller\Back\ClientController::ajoutShop
+
+back_client_delete_shop:
+    path: /supprimer_boutique/client/
+    defaults:
+        _controller: App\Controller\Back\ClientController::deleteShop

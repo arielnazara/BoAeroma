@@ -1,0 +1,168 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Création marque{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title">Créer une marque</h4>
+                    <div class="mt-4">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                {{form_errors(form)}}
+                            
+                                <div class="form-group">
+                                    {{ form_row(form.nom, {'label': 'Nom ', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.proprietaire, {'label': 'Propriétaire: ', 'attr':{'class': 'form-check form-check-inline'}}) }}
+                                </div>
+
+                                <div class="form-group client" style="display: none;">
+                                    {{ form_row(form.client, {'label': 'Client', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group fournisseur " style="display: none;">
+                                    {{ form_row(form.fournisseur, {'label': 'Fournisseur', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.avecGamme, {'label': 'Ajouter une gamme: ', 'attr':{'class': 'form-check form-check-inline'}}) }}
+                                </div>
+
+                                <div class="form-group gamme" style="display: none;">
+                                    <label for="gamme">Gamme</label>
+                                    <select class="form-control" name="gamme-1">
+                                        {% for gamme in listeGamme %}
+                                            <option value="{{gamme.id}}">{{ gamme.nom }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <div class="gamme-supp mt-2"></div>
+                                    <a href="" class="btn btn-secondary btn-sm mt-2 ajout-gamme"><i class="os-icon os-icon-plus-circle"></i>Ajouter une gamme</a>
+                                </div>
+                                
+                                <div class="form-group">
+                                    {{ form_row(form.exclusivite, {'label': 'Exclusivité: ', 'attr':{'class': 'form-check form-check-inline'}}) }}
+                                </div>
+
+                                <div class="form-group client-exclusif" style="display: none;">
+                                    <select class="form-control" name="client-1">
+                                        {% for client in listeClient %}
+                                            <option value="{{client.id}}">{{ client.firstname }}  {{client.lastname}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <div class="client-supp mt-2"></div>
+                                    <a href="" class="btn btn-secondary btn-sm mt-2 ajout-client"><i class="os-icon os-icon-plus-circle"></i>Ajouter un client</a>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.description, {'label': 'Description', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <button class="btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+                                
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            $('.client').hide();
+            $('.fournisseur').hide();
+            $('.client-exclusif').hide();
+            $('#marque_proprietaire_0').click(function(){
+                $('.client').hide('slow');
+                $('.fournisseur').hide('slow');
+            });
+
+            $('#marque_avecGamme_0').click(function(){
+                $('.gamme').show('slow');
+            });
+
+            $('#marque_avecGamme_1').click(function(){
+                $('.gamme').hide('slow');
+            });
+
+            $('#marque_proprietaire_1').click(function(){
+                $('.client').show('slow');
+                $('.fournisseur').hide('slow');
+            });
+
+            $('#marque_proprietaire_2').click(function(){
+                $('.client').hide('slow');
+                $('.fournisseur').show('slow');
+            });
+
+            $('#marque_exclusivite_0').click(function(){
+                $('.client-exclusif').hide('slow');
+            });
+
+            $('#marque_exclusivite_1').click(function(){
+                $('.client-exclusif').show('slow');
+            });
+            let count = 1;
+            $(".ajout-client").click(function(e){
+                count += 1;
+                e.preventDefault();
+                let html = '';
+                html += '<div class=" row add-client form-group">';
+                html += '<div class="col-sm-11">';
+                html += '<select class="form-control" name="client-'+ count +'">';
+                html += '<option value=""></option>';
+                html += '{% for client in listeClient %}';
+                html += '<option value="{{client.id}}">{{ client.firstname }}  {{client.lastname}}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removeClient btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".client-supp").append(html);
+            });
+
+            $(document).on('click', '.removeClient', function(e){
+                count -= 1;
+                e.preventDefault();
+                $(this).closest('.add-client').remove();
+            });
+
+            let countGamme = 1;
+            $(".ajout-gamme").click(function(e){
+                countGamme += 1;
+                e.preventDefault();
+                let html = '';
+                html += '<div class=" row add-gamme form-group">';
+                html += '<div class="col-sm-11">';
+                html += '<select class="form-control" name="gamme-'+ countGamme +'">';
+                html += '<option value=""></option>';
+                html += '{% for gamme in listeGamme %}';
+                html += '<option value="{{gamme.id}}">{{ gamme.nom }}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1">';
+                html += '<a href="" class="removeGamme btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".gamme-supp").append(html);
+            });
+
+            $(document).on('click', '.removeGamme', function(e){
+                countGamme -= 1;
+                e.preventDefault();
+                $(this).closest('.add-gamme').remove();
+            });
+        });
+    </script>
+{% endblock %}

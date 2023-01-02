@@ -1,0 +1,17 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+
+{% block title %} Laboratoires Aeroma  {% endblock %}
+
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+
+    Vous pouvez suivre notre colis avec le numéro suivant : <strong>{{lotOrder.numeroSuivi}}</strong> <br><br>
+
+    Nous sommes à votre  disposition pour tout renseignement complémentaire <br>
+    L’Equipe Aeroma
+
+    </div>
+{% endblock %}

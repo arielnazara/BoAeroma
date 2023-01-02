@@ -1,0 +1,229 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="padded-lg">
+                <a href="{{path('back_devis_edit', {id: devis.id})}}" class="btn mb-3 btn-success">
+                    <i class="os-icon os-icon-edit"></i>
+                    Modifier
+                </a>
+                <div class="projects-list">
+                    <div class="project-box">
+                        <div class="project-head">
+                            <div class="project-title">
+                                <h5>
+                                    {{ devis.client.raisonSocial }} - ID: {{ devis.id }}
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="project-info">
+                            <div class="row align-items-center mb-2">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        {% for message in app.flashes('modificationFraisEffectuer') %}
+                                            <div class="alert alert-success col-md-12 mt-2">
+                                                {{message}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-7">
+                                    <div class="table-responsive">
+                                        <table class="table table-lightborder" style="text-transform: uppercase; font-size: 80%; border: solid grey thin !important;">
+                                           
+                                            <tr>
+                                                <td>SIREN</td>
+                                                <td>{{ devis.client.Siren }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Numéro TVA</td>
+                                                <td>{% if devis.client.noTva %}{{ devis.client.noTva }}{% else %}NONE{% endif %}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Identité</td>
+                                                <td><span>{{ devis.client.firstName }}</span><br> <span>{{ devis.client.lastName }}</span></td>
+                                            </tr>
+                                          
+                                            <tr>
+                                                <td>Adresse</td>
+                                                <td>
+                                                    {{ devis.client.adresseFacturation }} <br>
+                                                    {{ devis.client.villeFacturation }} {{ devis.client.codePostalFacturation }} <br>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td> Email</td>
+                                                <td> {{ devis.client.email }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td> Téléphone</td>
+                                                <td>{{ devis.client.telephone }}</td>
+                                            </tr>
+                                            {#% if devis.client.deliveryAddresses() is not empty %}
+                                                {% for da in devis.client.deliveryAddresses %}
+                                                    <tr>
+                                                        <td>{{ da.name }} <br> {{ da.denomination }}</td>
+                                                        <td>
+                                                            A l'attention de {{ da.toTheAttentionOf }} <br>
+                                                            {{ da.tel }} {{ da.email }} <br>
+                                                            {{ da.address }} <br>
+                                                            {{ da.city }} {{ da.postalCode }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %#}
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5" style="text-transform: uppercase;">
+                                    <div class="table-responsive">
+                                        
+                                        <table class="table table-striped table-bordered">
+                                            <tr>
+                                                <td>Prix</td>
+                                                <td><span class="price">{{ devis.montant|number_format(2, ',', ' ') }}</span>€</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Frais de <br>port HT</td>
+                                                <td class="align-middle">
+                                                    {% if devis.fraisExpedition and devis.fraisExpedition > 0 %}
+                                                        {{ devis.fraisExpedition|number_format(2, ',', ' ') }}€
+                                                           
+                                                    {% else %}
+                                                        <span class="text-success">Gratuit</span>
+                                                    {% endif %}
+
+                                                    <!-- Button trigger modal -->
+                                                    <button type="button" style="margin-top:  -7px;" class="btn btn-link text-success" data-toggle="modal" data-target="#exampleModalCenter">
+                                                        <i class="os-icon os-icon-edit"></i>
+                                                    </button>
+
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="exampleModalLongTitle">Modifier le frais de port</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="{{path('back_devis_change_shipping_fee', {id: devis.id})}}" method="POST">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" required value="{{devis.fraisExpedition}}"  min="0" step=".01" type="number" name="fraisDeLivraison">
+                                                                        </div>
+                                                                        <button class="btn btn-primary">Valider</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>total ht</td>
+                                                <td>{{ devis.totalHt|number_format(2, ',', ' ') }}€</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Tva 20%</td>
+                                                <td>{{ devis.taxe|number_format(2, ',', ' ') }}€</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><strong style="font-weight: bold;">total ttc</strong></td>
+                                                <td><strong style="font-weight: bold;">{{ devis.totalTtc|number_format(2, ',', ' ') }}€</strong></td>
+                                            </tr>
+
+                                          
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!--END - DEVIS -->
+            </div>
+        </div>
+
+        <div class="col-lg-5 b-l-lg">
+            <div class="padded-lg">
+                <div class="element-wrapper">
+
+                    <div class="element-box">
+                        <div class="padded m-b">
+                            <form enctype="multipart/form-data" autocomplete="off" method="post" action="{{ url_processing }}">
+                                <h5 class="form-header">
+                                    Etape 3/3 : Spécificités de la commande
+                                </h5>
+
+                                <div class="form-group">
+                                    <label for="state_progress">Choisir l’état d’avancement</label>
+                                    <select data-url="{{ url }}" id="state_progress" name="state_progress" class="form-control">
+                                        <option selected value="1"> Bon de commande non signé </option>
+                                        <option  value="2"> Bon de commande signé </option>
+                                        <option  value="3"> Bon de commande émis </option>
+                                        <!--<option  value="4"> Acompte reçu </option>-->
+                                    </select>
+                                </div>
+
+                                <div id="form-container">
+                                    {{ include('back/form/devis-non-signer.html.twig') }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!--END - Projects Statistics-->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script>
+        $(function () {
+            let $stateProgress = $('#state_progress');
+            let $formContainer = $('#form-container');
+
+            $stateProgress.on('change', function () {
+                const url = $(this).attr('data-url');
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {'indice' : $(this).val()},
+                    dataType: 'json',
+                    error: function (data) { alert(data); },
+                    success: function (data) {
+                        $formContainer.html(data.content);
+
+                        $('input.single-daterange').daterangepicker({
+                            "singleDatePicker": true,
+                            locale: {
+                                format: 'DD/MM/YYYY'
+                            }
+                        });
+
+                        if ($(".custom-file-input")) {
+                            $(".custom-file-input").on("change", function() {
+                                let fileName = $(this).val().split("\\").pop();
+                                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

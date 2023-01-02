@@ -1,0 +1,144 @@
+<table class="table table-padded animate-bottom">
+    <thead>
+        <tr>
+            <th> Date </th>
+            <th> Numero</th>
+            <th class=""> Entreprise</th>
+            <th> Etape</th>
+            <th> Infos validées</th>
+            <th> Action </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for d in liste_devis %}
+    <tr>
+        <td data-source="{{ d.client.raisonSocial }} {{ d.code }} {{ d.client.firstname }} {{ d.client.lastname }}">
+            <div class="smaller lighter">
+                {{ d.date|date('d.m.Y')}}
+            </div>
+        </td>
+
+        <td>
+            <button type="button" class="btn btn-white" data-target="#onboardingWideFeaturesModal" data-toggle="modal">{{ d.code }}</button>
+        </td>
+
+        <td>
+            {% if d.boutique %}
+                <span>{{d.boutique.nomShop}}</span> <br>
+                <small>{{ d.boutique.prenom ~ ' ' ~ d.boutique.nom }}</small>
+            {% else %}
+                
+                {% if d.client.raisonSocial|split('-')[0] == 'n' %}
+                    <span>NA</span> <br>
+                {% else %}
+                    <span> {{ d.client.raisonSocial }}</span> <br>
+                {% endif %}
+                <small>{{ d.client.lastname ~ ' ' ~ d.client.firstname }}</small>
+
+            {% endif %}
+        </td>
+
+        <td class="">
+            {% if d.abandonner %}
+                <a class="badge badge-danger-inverted" href="">
+                    
+                    {% if d.status == "Devis annuler" %}
+                        {{ "Devis annulé" }}
+                    {% else %}
+                        {{ d.status }}
+                    {% endif %}
+                    
+                </a>
+            {% else %}
+                {% if d.signeParClient %}
+                    <a class="badge badge-success-inverted" href="">Devis signé le {{ d.dateSignature|date('d.m.Y') }}</a>
+                {% else %}
+                    <a class="badge badge-warning" href="">Devis créé</a>
+                {% endif %}
+            {% endif%}
+        </td>
+        <td class="nowrap">
+            {% if d.valider %}
+                <span class="status-pill smaller green"></span><span> Validées</span>
+            {% else %}
+                <span class="status-pill smaller red"></span><span>Non validées</span>
+            {% endif %}
+        </td>
+        <td class="row-actions">
+            
+            <a data-placement="top" data-toggle="tooltip" title="Editer le devis" href="{{ path('back_devis_edit', {id:d.id}) }}"><i class="os-icon os-icon-edit"></i></a>
+            {% if not d.signeParClient %}
+                {% if d.abandonner %}
+                {% else %}
+                    <a data-placement="top" data-toggle="tooltip" title="Envoyer lien pour signature" href="{{ path('back_devis_handler_send_signature_link', {id:d.id}) }}"><i class="os-icon os-icon-edit-32"></i></a>
+                {% endif %}
+                {#<a data-placement="top" data-toggle="tooltip" title="Supprimer ce devis" class="danger" href="#"><i class="os-icon os-icon-ui-15"></i></a>#}
+                {% if not d.valider %}
+                
+                    <form method="post" class="d-inline" action="{{ path('back_supprime_devis', {'id': d.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer ce devis?');">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ d.id) }}">
+                        <button data-placement="top" data-toggle="tooltip" style="padding: 0; margin-top: -4px;" title="Supprimer ce devis" class="text-danger btn btn-link"><i class="os-icon os-icon-ui-15"></i></button>
+                    </form> 
+                {% endif %}
+            {% endif %}
+
+            <form method="post" action="{{ path('back_supprime_devis', {'id': d.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer ce devis?');" style="display:none;">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ d.id) }}">
+                <button data-placement="top" data-toggle="tooltip" style="padding: 0; margin-top: -4px;" title="Supprimer ce devis" class="text-danger btn btn-link"><i class="os-icon os-icon-ui-15"></i></button>
+            </form> 
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div aria-hidden="true" class="onboarding-modal modal fade animated" id="" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-centered" role="document">
+        <div class="modal-content text-center">
+            <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span class="close-label"></span><span class="os-icon os-icon-close"></span></button>
+            <div class="onboarding-side-by-side">
+                <div class="onboarding-media">
+                    <img alt="" src="{{ asset('back/img/bigicon6.png') }}" width="200px">
+                </div>
+                <div class="onboarding-content with-gradient">
+                    <h4 class="onboarding-title">
+                        Showcase App Features
+                    </h4>
+                    <div class="onboarding-text">
+                        In this example you can showcase some of the features of your application, it is very handy to make new users aware of your hidden features. You can use boostrap columns to split them up.
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <ul class="features-list">
+                                <li>
+                                    Fully Responsive design
+                                </li>
+                                <li>
+                                    Pre-built app layouts
+                                </li>
+                                <li>
+                                    Incredible Flexibility
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <ul class="features-list">
+                                <li>
+                                    Boxed & Full Layouts
+                                </li>
+                                <li>
+                                    Based on Bootstrap 4
+                                </li>
+                                <li>
+                                    Developer Friendly
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

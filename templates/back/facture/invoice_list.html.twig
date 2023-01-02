@@ -1,0 +1,69 @@
+{% extends 'back-base.html.twig' %}
+
+{% block custom_css %}
+    <style>
+        .stop{
+            -webkit-transform: none !important;
+            transform: none !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% for message in app.flashes('success') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="element-wrapper">
+                <h6 class="element-header">Liste des factures</h6>
+
+                <div class="element-box-tp">
+                    <div class="controls-above-table">
+                        <div class="row">
+                            <div class="col-sm-6">
+                            </div>
+                            <div class="col-sm-6">
+                                <form autocomplete="off" method="post" action="{{ path('back_liste_facture') }}" class="form-inline justify-content-sm-end filter-form">
+                                    <input autocomplete="off" onkeyup="tabFilter()" id="search-input" class="form-control form-control-sm rounded bright" placeholder="Recherche" type="text">
+                                    <select name="state_" class="form-control form-control-sm rounded bright">
+                                        <option selected="selected" value="all">
+                                            Selectionner le filtre
+                                        </option>
+                                        <option value="paid">
+                                            Facture payé
+                                        </option>
+                                        <option value="notpaid">
+                                            Facture non payé
+                                        </option>
+                                        <option value="asc">
+                                            par date croissant
+                                        </option>
+                                        <option value="desc">
+                                            par date décroissant
+                                        </option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tablecontent" class="table-responsive">
+                        {#<a href="{{ path('back_logistique_creation_facture_extravape') }}" class="btn mb-5 btn-primary"><i class="os-icon os-icon-plus-circle"></i> Créer une facture</a>#}
+
+                        <div style="margin: auto; display: none" class="loader"></div>
+                        {{ include('back/facture/tab_list.html.twig') }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" src="{{ asset('assets/js/function.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/app.js') }}?version=1.2"></script>
+{% endblock %}

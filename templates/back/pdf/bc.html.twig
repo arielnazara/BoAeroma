@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <style>
+        div, p, h3, address, body, h2, th, td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 95%;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        table { page-break-inside:auto; }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+
+        .etiquette {
+            font-weight: bolder;
+            height: 35px;
+            vertical-align: bottom;
+            background-color: #ddf0f2;
+            padding: 5px;
+            border-top: #58b6c0 2px solid;
+        }
+    </style>
+</head>
+<body>
+    <div style="overflow: hidden;">
+        <table style="width: 100%;  border-collapse: collapse; border-bottom: 2px solid rgb(121,165,52); margin-top: -35px">
+            <tr style="padding: 5px;">
+                <td >
+                    <img  style="width: 200px;" src="{{ app.request.schemeAndHttpHost ~ asset('assets/images/logoAeroma.jpg') }}"><br>
+                    
+                </td>
+
+                <td>
+                    <h2  style="float: right; Font-size: 20px;">
+                        
+                        BON DE COMMANDE<br>
+                        N° {{devis.code}}<br>
+                        {% if devis.signeParClient %}
+                            {% if devis.codeDeValidation %}
+                                SIGNÉ LE {{ devis.dateSignature|date('d/m/Y') }} à  {{ devis.dateSignature|date('H') }}h{{ devis.dateSignature|date('i') }} <br>
+                                Code électronique: {{devis.codeDeValidation}}
+                            {% endif %}
+                        {% endif %}<br>
+                    </h2>
+
+                </td>
+                
+            </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; margin-top: 20px">
+            <tr>
+                <td colspan="2" style=" vertical-align: bottom;">
+                    
+                    <address style="padding: 20px; font-style: normal; font-size: 100%; margin-top: 10px;">
+
+                        {% if devis.client.raisonSocial %}
+                            Client: {{devis.client.raisonSocial}} <br>
+                        {% endif %}
+
+                        {% if devis.boutique %}
+                            Client: {{devis.boutique.nomShop}} <br>
+                            Nom: {{devis.boutique.nom}} <br>
+                            Prénom(s): {{devis.boutique.prenom}} <br>
+
+                            {{devis.boutique.adresse}} <br>
+                            {{devis.boutique.codePostal}} <br>
+                            {{devis.boutique.ville}} <br>
+
+                            {% if devis.boutique.commune %}
+                                {{devis.boutique.commune}} <br>
+                            {% endif %}
+
+                            {{devis.client.pays}} <br>
+
+                            email: {{devis.boutique.email }} <br>
+                            Téléphone: {{devis.boutique.telephone }} <br>
+
+                        {% else %}
+
+                            Nom: {{devis.client.lastName }} <br>
+                            Prénom(s): {{devis.client.firstname }}<br>
+
+                            {{devis.client.adresseServiceAchats }} <br>
+                            {{ devis.client.codePostalServiceAchat}} <br>
+                            {{devis.client.villeServiceAchat}} <br>
+                            {% if devis.client.communeServiceAchat %}
+                                {{devis.client.communeServiceAchat}} <br>
+                            {% endif %}
+                            {{devis.client.pays}}<br>
+                            email: {{devis.client.email }} <br>
+                            Téléphone: {{devis.client.telephone }} <br>
+                        {% endif %}
+                    
+    
+                    </address>
+                   
+                </td>
+    
+               
+            </tr>
+            
+        </table>
+    
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
+            <thead style="color: black; width: 100%; background-color: #DCDCDC; ">
+                <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">CODE</th>
+                <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">DESIGNATION</th>
+                <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">PRIX HT €</th>
+                <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">
+                    PRIX DE <br>
+                    VENTE PUBLIC <br>
+                    CONSEILLÉ €
+                </th>
+                <th style="text-align: center;  border: 1px solid #696969; padding: 10px">QTÉ</th>
+                <th style="text-align: center;  border: 1px solid #696969; padding: 10px">TOTAL</th>
+            </thead>
+
+            <tbody>
+                {% set client = devis.client %}
+                {% set exist = null %}
+                {% set count = 0 %}
+                {% set commandeTrier = devis.devisProduits|trier(client) %}
+                
+                {% for prod in commandeTrier %}
+                    {% set produit = prod.produit.reference %}
+                    {% if produit != exist %}
+                        {% set exist = prod.produit.reference %}
+                        {% set count = count + 1 %}
+                        {#% if count % 2 == 0 %}
+                            {% set couleur = "#98ba63" %}
+                        {% else %}
+                            {% set couleur  = '#ffffff' %}
+                        {% endif %#}
+                    {% endif %}
+
+                    {% set tarif = prod.produit.tarif %}
+
+                    {% set offert = false %}
+                    {% if prod.offert %}
+                        {% set offert = true %}
+                    {% endif %}
+                    
+                    {% for mb in marqueBlanches %}
+                        {% if prod.produit == mb.produit %}
+                            {% set tarif = mb.tarif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <tr>
+                        {% set prix = 0 %}
+                        <td style="padding: 10px; border: 1px solid #696969; text-align: center;  ">{{prod.produit.reference}} <br> {% if prod.produit.contenant %} {{prod.produit.contenant.nom}} {% endif %}</td>
+                        <td style="padding: 10px; border: 1px solid #696969; text-align: center;  ">
+                            {% if prod.declineAvec %}
+                                {{prod.declineAvec}}
+                                {{prod.declinaison}}-
+                            {% endif %}
+                            {{ prod.produit.getNomMarqueBlanche(client) }}
+                        </td>
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #696969; text-align: center;">
+                            
+                            {% if offert %}
+                                <span style="color: green;">Offert</span>
+                                {% set prix = 0 %}
+                            {% else %}
+
+                                {% if prod.prixSpecial %}
+                                    {{prod.prixSpecial|number_format(2, '.', ',')}}€
+
+                                    {% set prix = prod.prixSpecial %}
+                                {% else %}
+                                    {{prod.prix|number_format(2, '.', ',')}}€
+                                    {% set prix = prod.prix %}
+                                
+                                {% endif %}
+                            {% endif %}
+                                    
+
+        
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #696969; text-align: center; "></td>
+                        <td style="padding: 10px; border: 1px solid #696969; text-align: center; ">{{prod.quantite}}</td>
+
+                        {% set total = prix *  prod.quantite %}
+                        <td style="padding: 10px; border: 1px solid #696969; text-align: center; ">{{ total|number_format(2, '.', ',') }}€ </td>
+                    </tr>
+                   
+                {% endfor %}
+
+                <tr>
+                    <td style="padding-top: 10px;"></td>
+                    <td style="padding-top: 10px;"></td>
+                    <td style="padding-top: 10px;"></td>
+                    <td colspan="2" style="text-align: right; padding-top: 10px; Font-weight: bold;">Frais de livraison:</td>
+                    <td style="text-align: center; padding-top: 10px; Font-weight: bold;"> 
+                        {% if devis.fraisExpedition and devis.fraisExpedition > 0  %}
+                            {{devis.fraisExpedition|number_format(2, '.', ',')}}€
+                        {% else %}
+                            <small>Gratuite</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 7px;"></td>
+                    <td style="padding-top: 7px;"></td>
+                    <td style="padding-top: 7px;"></td>
+                    <td colspan="2" style="text-align: right; padding-top: 7px; Font-weight: bold;">  Total HT :</td>
+                    <td style="text-align: center; padding-top: 7px; Font-weight: bold;"> {{devis.totalHt|number_format(2, '.', ',')}}€ <br></td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 7px;"></td>
+                    <td style="padding-top: 7px;"></td>
+                    <td style="padding-top: 7px;"></td>
+                    <td colspan="2" style="text-align: right; padding-top: 7px; Font-weight: bold;"> TVA 20%:</td>
+                    <td style="text-align: center; padding-top: 7px; Font-weight: bold;">{{devis.taxe|number_format(2, '.', ',')}}€ <br></td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 7px;"></td>
+                    <td style="padding-top: 7px;"></td>
+                    <td style="padding-top: 7px;"></td>
+                    <td colspan="2" style="text-align: right; padding-top: 7px; Font-weight: bold;"> Total TTC:</td>
+                    <td style="text-align: center; padding-top: 7px; Font-weight: bold;">{{devis.totalTtc|number_format(2, '.', ',')}}€ </td>
+                </tr>
+                
+            </tbody>
+        </table>
+
+        <table style="width: 100%;">
+            <tbody>
+                <tr>
+                    <td style="width: 50%;">
+                        <table style="width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td> 
+                                        <h3>ADRESSE DE LIVRAISON</h3> 
+                                        {{devis.client.adresseFacturation}} <br>
+                                        {{devis.client.codePostalFacturation}} <br>
+                                        {{devis.client.villeFacturation}}
+                                    </td>
+                                    
+                                    <td >
+                                        <h3>ADRESSE DE FACTURATION</h3> 
+                                        {{devis.client.adresseFacturation}} <br>
+                                        {{devis.client.codePostalFacturation}} <br>
+                                        {{devis.client.villeFacturation}}
+                                    </td>
+                                   
+                                </tr>
+                
+                            </tbody>
+                        </table>
+
+                    </td>
+
+                    <td style="width: 50%;">
+
+                        <table style="float: right;">
+                           
+                            
+                        </table>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+       
+
+      
+        
+    </div>
+    </body>
+</html>
+

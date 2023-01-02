@@ -1,0 +1,176 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Création catalogue client{% endblock %}
+
+{% block custom_css %}
+    <style>
+        
+        fieldset
+        {
+            margin-top: 0 !important;
+        }
+    </style>
+{% endblock %}
+
+
+{% form_theme form "back/gammeClient/_form_marque_blanche.html.twig" %}
+
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title mb-5">Catalogue client</h4>
+                    <div class="mt-8">
+                        
+                        {{ form_start(form) }}
+                           
+                            <div class="row">
+
+                                
+                                <div class="col-md-6">
+                                    {{ form_row(form.client, {'attr': {'class': 'search'}}) }}
+                                </div>
+                                
+
+                                <div class="col-md-6">
+                                    <label for="">Choisir une gamme principale</label>
+                                    {{ form_row(form.gammeParDefaut) }}
+
+                                </div>
+
+                                <div class="col-md-6">
+                                    {{ form_row(form.position, {'attr': {'min': 1, 'step': 1}}) }}
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    {% set showDefaultGamme = false %}
+                                    {% set showCustomGamme = false %}
+
+                                    {% if catalogue.gammeParDefaut is not null and catalogue.gammeParDefaut == true  %}
+                                        {% set showDefaultGamme = true %}
+                                    {% endif %}
+
+                                    {% if catalogue.gammeParDefaut is not null and catalogue.gammeParDefaut == false  %}
+                                        {% set showCustomGamme = true %}
+                                    {% endif %}
+                                    
+                                    <div class="gammeOptions1" {% if not showDefaultGamme %} style="display: none ;" {% endif %} >
+                                        {{ form_row(form.gammePrincipale, {'label': 'Gamme principale', 'attr' : {'class': 'js_select_gamme search'}}) }}
+                                    </div>
+
+                                    <div class="gammeOptions2" {% if not showCustomGamme %} style="display: none ;" {% endif %}>
+                                        {{ form_row(form.customGamme, {'label': 'Gamme client', 'attr' : {'class': 'js_select_gamme search'}}) }}
+                                    </div>
+
+                                </div>
+                               
+                            </div>
+
+                           
+                            {{ form_row(form.marqueBlanches) }}
+
+                            <div class="js-add">
+                                
+                            </div>
+                            <button class="btn btn-primary" type="submit">Enregistrer</button>
+                            <a href="" class="btn btn-secondary js-add-products" data-nummb ="0">Ajouter un produit à cette Gamme</a>
+                        {{ form_end(form) }}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        
+        $(function(){
+
+            $(".search").select2( {
+                allowClear: true
+            } );
+
+
+            $('.js_select_gamme').each(function(i, element){
+                if($(this).is(':visible'))
+                {
+                    $(this).attr('required', true)
+                }
+                else
+                {
+                    $(this).attr('required', false)
+                }
+            })
+
+            $('input[name="catalogue_client[gammeParDefaut]"]').change(function(){
+                $('.select2-container').css('width', '100%')
+                if($(this).val() == 1)
+                {
+                    $('.gammeOptions1').show()
+                    $('.gammeOptions1').find('.js_select_gamme').attr('required', true)
+
+                    $('.gammeOptions2').hide()
+                    $('.gammeOptions2').find('.js_select_gamme').attr('required', false)
+
+                }
+                else
+                {
+                    $('.gammeOptions1').hide()
+                    $('.gammeOptions1').find('.js_select_gamme').attr('required', false)
+
+                    $('.gammeOptions2').show()
+                    $('.gammeOptions2').find('.js_select_gamme').attr('required', true)
+
+                }
+            })
+
+            let count = $('.js-add-products').data('nummb') + 1;
+           
+
+            deleteBlock()
+
+            $('.js-add-products').click(function (e) {
+
+                e.preventDefault()
+
+                const template = $('#catalogue_client_marqueBlanches').data('prototype').replace(/__name__/g, `type${count}`)
+
+                $('#catalogue_client_marqueBlanches').append(template)
+               
+                count++
+
+                deleteBlock()
+
+                $(".search").select2( {
+                    allowClear: true
+                } );
+            })
+
+            
+
+            function deleteBlock()
+            {
+                $('[data-action="delete"]').click(function(e){
+                    e.preventDefault()
+                    e.stopImmediatePropagation()
+                    
+                    const ok = confirm('Voulez vous vraiment éfféctué cette action?')
+                    
+                    if(ok)
+                    {
+
+                        const div = $(this).data('target')
+    
+                        $(div).remove()
+                    }
+                })
+            }
+
+        })
+    
+    </script>
+{% endblock %}

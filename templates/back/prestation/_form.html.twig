@@ -1,0 +1,20 @@
+{{ form_start(form) }}
+    {{ form_row(form.client, {'attr': {'class' : 'search'}}) }}
+    {{ form_row(form.typePrestations) }}
+
+    <div class="row mb-3">
+        <div class="col">
+            <button type="button" class="btn calculer btn-success btn-sm float-left">Calculer</button>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-secondary btn-sm float-right mb-3" id="ajoutType"><i class="os-icon os-icon-plus-circle"></i> Ajouter</button>
+        </div>
+    </div>
+
+    {{ form_row(form.montant, {'attr': {'class': 'js-customizeInput'}}) }}
+    {{ form_row(form.tva, {'attr': {'class': 'js-customizeInput'}}) }}
+    {{ form_row(form.totalTtc, {'attr': {'class': 'js-customizeInput'}}) }}
+
+
+    <button class="btn btn-primary btn-block mb-3" >{{ button_label|default('Enregister') }}</button>
+{{ form_end(form) }}

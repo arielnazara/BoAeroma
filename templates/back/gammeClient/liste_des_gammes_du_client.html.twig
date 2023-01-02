@@ -1,0 +1,158 @@
+{% extends 'back/produit/index.html.twig' %}
+{% block title %} Liste gamme client{% endblock %}
+{% block produits %}
+    {% for message in app.flashes('successGammeClient') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h6 class="element-header">Liste gamme client</h6>
+
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{message}}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('successCatalogue') %}
+            <div class="alert alert-success">
+                {{message}}
+            </div>
+        {% endfor %}
+        <a href="{{path('back_gamme_client_creation')}}" class="btn btn-sm btn-primary mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer un catalogue client</a>
+        <table class="table table-striped table-lightfont table-hover dataTable1">
+            <thead>
+                <tr>
+                    <th>Gamme</th>
+                    <th>Position</th>
+                    <th>Client</th>
+                    <th>Produit</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if gammeListe %}
+                    {% for gamme in gammeListe %}
+                        <tr>
+                            <td>
+                                {% if gamme.gammeParDefaut %}
+                                    {{ gamme.gammePrincipale }}
+                                {% else %}
+                                    {{ gamme.customGamme }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-success">{{ gamme.position }}</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-info">
+
+                                    {% if gamme.client %}
+                                    
+                                        {% if gamme.client.raisonSocial %}
+                                            
+                                            {{ gamme.client.raisonSocial }}
+        
+                                        {% else %}
+                                            
+                                            {{gamme.client.fullName}}
+        
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                </span>
+                            </td>
+                        
+                            <td>
+                                {% if gamme.marqueBlanches|length > 0 %}
+                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#produit{{gamme.id}}"> <i class="os-icon os-icon-eye"></i> </button>
+
+                                    <div class="modal fade" id="produit{{gamme.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Liste des produits dans le catalogue</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body p-4">
+                                                    <table width="100%" class="table table-striped table-lightfont table-hover dataTable1">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Position</th>
+                                                                <th scope="col">Référence</th>
+                                                                <th scope="col">Nom commercial interne</th>
+                                                                <th scope="col">Decliné avec</th>
+                                                                <th scope="col">Déclinaison</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for catalo in gamme.marqueBlanches %}
+                                                                {% if catalo.produit %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span class="badge badge-success">{{ catalo.position }}</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            {{catalo.reference}}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{catalo.produit.getNomMarqueBlanche(gamme.client)}}
+                                                                        </td>
+                                                                        <td>
+                                                                            {% if catalo.produit.principeActif %}
+                                                                                {{catalo.produit.principeActif.principeActif}}
+                                                                            {% else %}
+                                                                                Sans déclinaison
+                                                                            {% endif %}
+                                                                        </td>
+                                                                        <td>
+                                                                            {% if catalo.produit.declinaison %}
+                                                                                {% for declinaison in catalo.produit.declinaison %}
+                                                                                
+                                                                                    <span class="mr-1">{{declinaison}}</span>
+                                                                                
+                                                                                {% endfor %}
+                                                                            {% else %}
+                                                                                {% for declinaison in catalo.produit.declinaison %}
+                                                                                    <span class="mr-1">{{declinaison}}</span>
+                                                                                {% endfor %}
+                                                                            {% endif %}
+                                                                        </td>
+                                                                    </tr>  
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                
+                                <a href="{{path('back_gamme_catalogue_client_modification', {id: gamme.id})}}" class="btn btn-sm btn-success"><i class="os-icon os-icon-edit"></i></a>  
+                                
+                                
+                                <form method="post" class="d-inline" action="{{ path('back_supprimer_gamme_catalogue_client', {'id': gamme.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet catalogue?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ gamme.id) }}">
+                                    <button style="padding-top: 0;" class="btn btn-sm btn-danger ml-1"><i class="os-icon os-icon-ui-15"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+                

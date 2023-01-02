@@ -1,0 +1,27 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+{% block title %} Laboratoires Aeroma - devis validé {% endblock %}
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        Nous venons de valider votre devis et avons le plaisir de vous adresser le bon de commande <strong>{{ purchaseOrder.code }}</strong>  relatif à l’achat de  :
+        {% set client = devis.client %}
+        <ul>
+            {% set commandeTrier = devis.devisProduits|trier(client) %}
+            
+            {% for produit in commandeTrier %}
+                {% set nom = produit.produit.getNomMarqueBlanche(client) %}
+                <li>{{produit.quantite}} {{ nom }} {{produit.declineAvec}} {{produit.declinaison}} {% if produit.offert %}(Offert){% endif %}</li>
+            {% endfor %}
+        </ul>
+
+        <br>
+        {#<p>
+            Pour faciliter votre paiement, vous trouverez ci-dessous le lien permettant de payer par carte bancaire. <br>
+            <a href="">https://liendepaiement</a>
+        </p>#}
+        Nous sommes à votre disposition pour toute information complémentaire.<br><br>
+        Bien cordialement,
+    </div>
+{% endblock %}

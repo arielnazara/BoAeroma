@@ -1,0 +1,84 @@
+{% extends 'back-base.html.twig' %}
+
+{% block custom_css %}
+
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-6 mx-auto">
+
+    {% for message in app.flashes('success') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    
+    <div class="order-box element-wrapper ">
+        
+        <h6 class="element-header">Facture d'avoir </h6>
+        
+        {{ form_start(form) }}
+            <div class="form-group">
+                <label for="facture">Choisir une facture</label>
+
+                {% set fact = false %}
+
+                {% set info = 'creation' %}
+                {% if not creation %}
+                    {% set info = 'modification' %}
+                    {% if avoir.facture %}
+                        {% set fact = avoir.facture %}
+                    {% else %}
+                        {% set fact = avoir.factureMaitre %}
+                    {% endif %}
+                {% endif %}
+
+                <select class="form-control search js-facture" data-info ='{{ info }}' required name="facture" id="facture" data-target = "{{ path('back_ajax_facture_info') }}">
+                    <option></option>
+                    {% for invoice in invoices %}
+                        <option value="{{ invoice.getInvoiceType ~ "_" ~ invoice.id }}" {% if not creation and fact == invoice %} selected {% endif %}
+                         >{{ invoice.numero }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="js-info" style="display: none ;">
+                <hr class="my-3">
+                <h6> Information sur la facture n° <span class="js-numero"></span> </h6>
+                <table class="table table-striped table-hover">
+                   
+                    <tbody>
+                        <tr>
+                            <th scope="row">Total HT</th>
+                            <td><span class="js-ht"></span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">TVA</th>
+                            <td><span class="js-tva"></span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Total TTC</th>
+                            <td><span class="js-ttc"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {{ form_widget(form) }}
+            <button class="btn btn-primary" type="submit">Enregistrer</button>
+        {{ form_end(form) }}
+       
+    </div>
+    
+</div>
+  
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{{ asset('assets/js/invoiceProcessing.js') }}?version=1.0"></script>
+{% endblock %}

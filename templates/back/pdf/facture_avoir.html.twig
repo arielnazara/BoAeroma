@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <style>
+        div, p, h3, address, body, h2, th, td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 93%;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        table { page-break-inside:auto; }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        .tr:nth-child(even) {background-color: #f2f2f2;}
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+
+        .etiquette {
+            font-weight: bolder;
+            height: 35px;
+            vertical-align: bottom;
+            background-color: #ddf0f2;
+            padding: 5px;
+            border-top: #58b6c0 2px solid;
+        }
+
+     
+    </style>
+</head>
+<body>
+<div class="body" style="overflow: hidden;">
+
+    
+    {% if facture.facture %}
+        {% set fact =  facture.facture %}
+    {% elseif facture.factureMaitre %}
+        {% set fact =  facture.factureMaitre %}
+    {% elseif facture.prestation %}
+        {% set fact =  facture.prestation %}
+    {% endif %}
+
+    <table style="width: 100%; border-collapse: collapse; ">
+        <tr>
+            <td style="width: 65%;">
+                <div>
+                    <p style="margin-left: -22px; margin-bottom: 0; font-size: 125%">
+                        <img  style="width: 550px;" src="{{ app.request.schemeAndHttpHost ~ asset('assets/images/logoAeroma.jpg') }}"><br>
+                    </p>
+                </div>
+            </td>
+
+            <th  style="width: 35%;">
+
+                {% if client.raisonSocial %}
+                    Client: {{client.raisonSocial}} <br>
+                {% endif %}
+                Nom: {{client.lastName }} <br>
+                Prénom(s): {{client.firstname }}<br>
+                {{client.adresseServiceAchats }} <br>
+                {{ client.codePostalServiceAchat}} <br>
+                {{client.villeServiceAchat}} <br>
+                {% if client.communeServiceAchat %}
+                    {{client.communeServiceAchat}} <br>
+                {% endif %}
+                {{client.pays}}<br>
+                email: {{client.email }} <br>
+                Téléphone: {{client.telephone }} <br>
+                Numéro TVA : {{ client.noTva }}
+
+            </th>
+        </tr>
+    </table>
+
+    <br><br>
+
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+           
+            
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                   
+                    {#% if devis.boutique %}
+                    
+                        Client: {{devis.boutique.nomShop}} <br>
+                        Nom: {{devis.boutique.nom}} <br>
+                        Prénom(s): {{devis.boutique.prenom}} <br>
+                        {{devis.boutique.adresse}} <br>
+                        {{devis.boutique.codePostal}} <br>
+                        {{devis.boutique.ville}} <br>
+                        {% if devis.boutique.commune %}
+                            {{devis.boutique.commune}} <br>
+                        {% endif %}
+                        {{client.pays}} <br>
+                        email: {{devis.boutique.email }} <br>
+                        Téléphone: {{devis.boutique.telephone }} <br>
+
+                    {% else %}
+
+                        {% if client.raisonSocial %}
+                            Client: {{client.raisonSocial}} <br>
+                        {% endif %}
+                        Nom: {{client.lastName }} <br>
+                        Prénom(s): {{client.firstname }}<br>
+                        {{client.adresseServiceAchats }} <br>
+                        {{ client.codePostalServiceAchat}} <br>
+                        {{client.villeServiceAchat}} <br>
+                        {% if client.communeServiceAchat %}
+                            {{client.communeServiceAchat}} <br>
+                        {% endif %}
+                        {{client.pays}}<br>
+                        email: {{client.email }} <br>
+                        Téléphone: {{client.telephone }} <br>
+
+                    {% endif %#}
+                    
+                </td>
+                <td>
+
+                    {#% if adresseFacturation %}
+
+                        {% if adresseFacturation.raisonSocial %}
+                            Client: {{adresseFacturation.raisonSocial}} <br>
+                        {% endif %}
+                        Nom: {{adresseFacturation.lastName }} <br>
+                        Prénom(s): {{adresseFacturation.firstname }}<br>
+                        {{adresseFacturation.adresseFacturation }} <br>
+                        {{ adresseFacturation.codePostalFacturation}} <br>
+                        {{adresseFacturation.villeFacturation}} <br>
+                        {% if adresseFacturation.communeFacturation %}
+                            {{adresseFacturation.communeFacturation}} <br>
+                        {% endif %}
+                        {{adresseFacturation.pays}}<br>
+                        email: {{adresseFacturation.email }} <br>
+                        Téléphone: {{adresseFacturation.telephone }} <br>
+
+                    
+                    {% else %}
+                    
+                        {% if client.raisonSocial %}
+                            Client: {{client.raisonSocial}} <br>
+                        {% endif %}
+                        
+                        Nom: {{client.lastName }} <br>
+                        Prénom(s): {{client.firstname }}<br>
+                        {{client.adresseFacturation }} <br>
+                        {{ client.codePostalFacturation}} <br>
+                        {{client.villeFacturation}} <br>
+                        {% if client.communeFacturation %}
+                            {{client.communeFacturation}} <br>
+                        {% endif %}
+                        {{client.pays}}<br>
+                        email: {{client.email }} <br>
+                        Téléphone: {{client.telephone }} <br>
+
+                    {% endif %#}
+
+                    
+                  
+                </td>
+            </tr>
+        </tbody>
+    </table>
+   
+   
+    <table style="width: 100%; border-collapse: collapse; margin-top: -45px; ">
+        <tr>
+            <td style="width: 100%; text-align: center;">
+                <h1 >
+            
+                    Avoir N° {{facture.numero}} 
+                    {% if facture.payer == true %}
+                        <span style="color: #0d3b96">Acquittée</span>
+                    {% endif %}
+            
+                </h1> 
+                <h2>
+                    Avoir sur la facture N° {{ fact.numero }}
+                </h2>
+
+        
+            </td>
+        </tr>
+    </table>
+    
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse;  ">
+        <thead style="background-color: rgb(240,240,240); border-top: red;" >
+            <th style=" text-align: center;  padding: 7px;">Description</th>
+            <th style="  padding: 7px; text-align: right;">Total(HT)</th>
+        </thead>
+
+        <tbody>   
+            <tr style=" border-bottom: 1pt solid #E0E0E0;">
+                <td style=" text-align: center;  padding: 5px;">
+                    {{facture.description}}
+                </td>
+                <td style=" text-align: center;  padding: 5px ; text-align: right;">
+                    {{ facture.totalHt }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 25px; float:right;">
+        <tr>
+            <td style="background-color: rgb(240,240,240);  padding: 5px; text-align: right;">Montant total HT</td>
+            <td style="text-align: right;">
+                {{facture.totalHt|number_format(2, ',', ' ') }}€
+            </td>
+        </tr>
+
+        <tr>
+            <td style="background-color: rgb(240,240,240); padding: 5px;  text-align: right;"> <strong>Taxe</strong> </td>
+            <td style="text-align: right;"> <strong>{{facture.tva|number_format(2, ',', ' ') }}€</strong> </td>
+        </tr>
+
+        <tr>
+            <td style="background-color: rgb(240,240,240);  padding: 5px; text-align: right;"> <strong>Total TTC </strong>  </td>
+            <td style="text-align: right;"> <strong>{{facture.totalTtc|number_format(2, ',', ' ') }}€</strong> </td>
+        </tr>
+
+        {% if facture.payer %}
+            <tr>
+                <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Montant réglé </strong>  </td>
+                <td style="text-align: right;"> <strong>{{facture.montantPayer|number_format(2, ',', ' ') }}€</strong> </td>
+            </tr>
+        {% endif %}
+       
+    </table>
+   
+    <div style="width: 100%; margin-top: 50px;">
+        {% if facture.payer %}
+            <p style="width: 100%; text-align: right">
+                <strong>
+                    {% if facture.balance != 0 %}
+                        {% if facture.balance < 0 %}
+                            Montant à rajouter sur la prochaine facture : {{ facture.balance|abs|number_format(2, ',', ' ') }}€
+                        {% else %}
+                            Montant à déduire sur la prochaine facture : {{ facture.balance|number_format(2, ',', ' ') }}€
+                        {% endif %}
+                    {% endif %}
+                </strong>
+            </p>
+            <h2>
+                <strong>
+                    Date de paiement {{ facture.datePaiement|date('d-m-Y') }}
+                </strong>
+            </h2>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

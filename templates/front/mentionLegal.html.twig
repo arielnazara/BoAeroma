@@ -1,0 +1,49 @@
+{% extends 'front-base.html.twig' %}
+
+{% block title "Mentions légales"%}
+{% block classBody "bg-light"%}
+{% block custom_css %}
+    <style>
+        .bareme:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row card">
+            <div class="col-12">
+                {{ include('front/header.html.twig') }}
+            </div>
+            <div class="col-12">
+                <div class="p-3">
+                    <strong><h2>Mentions légales</h2> </strong>
+                    <ol>
+                        <strong><li>NOTRE SERVICE</li></strong>
+                        Shop.elican.fr est un site de vente en ligne de produits à base d’huile de chanvre, de CBD, et tout dérivés autorisés par la loi du chanvre. Il est réservé aux professionnels. <br> L’utilisation du Site est soumise aux Conditions Générales de vente du Site.
+                        <br> <br>
+                        <strong><li>INFORMATIONS SUR LE SITE</li></strong>
+                        Le site shop.elican.fr  est opéré par la société Laboratoires Aeroma, RCS 800847204, TC Lille Métropole, TVA FR34800847204, 76 rue des frères Lumières <br>
+                        59560 Comines et utilise la marque Elican Biotech en licence de marque. Le directeur de publication est Patrice HENNION/ Le Site est hébergé par OVH, 2 rue Kellermann, 59100 Roubaix, France.
+                        <br><br> 
+
+                        <strong><li>AVERTISSEMENTS</li></strong>
+                        Shop.elican.fr décline toute responsabilité pour toute imprécision, inexactitude ou omission portant sur des informations disponibles sur le Site. <br> Shop.elican.fr ne peut être tenu pour responsable de la modification des dispositions administratives et juridiques survenant après leur publication sur le Site. Les informations présentes sur le Site peuvent être corrigées, modifiées ou mises à jour à tout moment sans préavis.
+                    </ol>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ include('front/footer.html.twig') }}
+{% endblock %}
+
+{% block custom_js %}
+
+    <script type="text/javascript" src="{{ asset('assets/js/calcul.js') }}"></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/calculGrossisteCentrale.js') }}"></script>
+
+{% endblock %}

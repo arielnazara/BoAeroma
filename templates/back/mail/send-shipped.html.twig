@@ -1,0 +1,47 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+{% block title %}Laboratoires Aeroma {% endblock %}
+
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+
+        {% set bdc = devis.bonDeCommande %}
+        {% set client = devis.client %}
+
+        Nous venons de procéder à l'expédition
+
+        {% if bdc.resteALivrer <= 0 and bdc.lotCommandes|length == 1 %}
+            complète
+        {% else %}
+            partielle 
+        {% endif %}
+
+        de la commande n° {{devis.code}}
+
+        {% if client.extravape %}
+            {% if devis.boutique %}
+                pour la boutique {{ devis.boutique.nomShop }} 
+            {% endif %}
+        {% endif %}
+        .
+        {#<ul>
+            {% for lq in lotQuantity %}
+                <li> <strong>{{ lq.quantite }}</strong> {{ lq.produit.nom }} 
+                    {% if lq.produit.principeActif %}
+                        {{lq.produit.principeActif.principeActif}} {{lq.declinaison}} {% if lq.offert %}(Offert){% endif %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>#}
+
+        {% if invoiceOrder %}
+            Vous trouverez en PJ la facture relative à cette commande.
+        {% endif %}
+
+        <br><br>
+        Nous sommes à votre disposition pour toute information complémentaire.<br><br>
+        Bien cordialement,
+    </div>
+{% endblock %}

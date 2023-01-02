@@ -1,0 +1,21 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+
+{% block title %} Laboratoire Aeroma – Bon de Commande n°{{devis.code}} {% endblock %}
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        Nous vous remercions pour votre commande numéro <strong>{{ devis.code }}</strong>. Vous trouverez en pièce jointe votre bon de commande <strong>à valider</strong>.
+        <br><br>
+        Afin de confirmer votre intérêt, Vous pouvez cliquer sur le lien suivant, et valider le bon de commande en ligne : <br>
+        <a target="_blank" href="{{ app.request.scheme ~ '://' ~ app.request.getHttpHost() ~ '' ~  path('front_send_code', {token:devis.token}) }} ">{{ app.request.scheme ~ '://' ~ app.request.getHttpHost() ~ '' ~  path('front_send_code', {token:devis.token}) }}</a>
+        <br><br>
+        Vous pourrez nous retourner le document signé par e-mail à <a href="mailto:gestion@aeroma.fr">gestion@aeroma.fr</a>
+        <br><br>
+        A réception de ce de document, votre commande sera traitée et vous serez informé de l’expédition de la commande en recevant un e-mail contenant la facture associée à cette commande. 
+        <br><br>
+        Nous vous prions d’agréer, Madame, Monsieur, nos salutations les meilleures<br>
+        L’équipe laboratoire Aeroma
+    </div>
+{% endblock %}

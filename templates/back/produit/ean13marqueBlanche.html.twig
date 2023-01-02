@@ -1,0 +1,229 @@
+{% extends 'back/produit/index.html.twig' %}
+
+{% block title %}Créer un produit{% endblock %}
+
+{% block produits %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="mb-3" >Configuration code Ean 13 pour les marques blanches</h4>
+                    <div class="col-md-12 mt-3">
+                        <div class="message alert alert-success" style="display: none;"></div>
+                    </div>
+                    
+                    {% for mb in listeMB %}
+                        
+                        <div class="d-flex justify-content-center ">
+                            <div class=" rounded border shadow text-center my-2 col-md-4 p-3 bg-light">
+                                <div class="info"></div>
+                                
+                                Propriétaire de la marque blanche: {{mb.client.lastname}} {{mb.client.firstname}} <br>
+                                Référence: {% if mb.reference %}{{mb.reference}} {% endif %}<br>
+                                
+                                Prix {% if mb.client.typeDeClient.nom|lower == "grossiste" %} grossiste {% else %} détaillant {% endif %} : 
+                                {% if mb.tarif %}
+                                    {% if mb.tarif.memeTarif %}
+                                    
+                                        {% if mb.client.typeDeClient.nom == "grossiste" %}
+                                            {{mb.tarif.prixDeReferenceGrossiste}}€ 
+                                        {% else %}
+                                            {{mb.tarif.prixDeReferenceDetaillant}}€ 
+                                        {% endif %}
+
+                                    {% else %}
+                                        <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#exampleModal">
+                                            <i class="os-icon os-icon-eye"></i> Prix par déclinaison
+                                        </button>
+                                        
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <th>Déclinaisons</th>
+                                                                <th>Prix</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for prixDecl in mb.tarif.prixDeclinaisons %}
+                                                                    {% for decl in produit.declinaison %}
+                                                                        {% if decl == prixDecl.declinaison %}
+                                                                        
+                                                                            {% if prixDecl.actif %}
+                                                                                {% if prixDecl.typeDeClient == mb.client.typeDeClient %}
+                                                                                    <tr>
+                                                                                        <td>{{decl}}</td>
+                                                                                        <td>{{prixDecl.prix|number_format(2, '.', ',')}}€</td>
+                                                                                    </tr>
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                        {% endif %}
+                        
+                                                                    {% endfor %}
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    {% endif %}
+                                {% endif %} <br>
+                                
+                            </div>
+                        </div>
+                        
+                        <form action="{{path('back_produit_ajout_codeEan13_mb', {id: mb.id})}}" method="POST" data-idmb="{{mb.id}}">
+                                
+                            <label for="">Même code ean13 que le produit</label>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input oui" type="radio" name="ean" data-id="{{mb.id}}" value="Oui" {% if mb.memeEan13 == true %} checked {% endif %}>
+                                <label class="form-check-label" for="{{mb.id}}">
+                                    Oui
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input non" type="radio" data-id="{{mb.id}}" name="ean" value="Non" {% if mb.memeEan13 == false %} checked {% endif %}>
+                                <label class="form-check-label" for="{{mb.id}}">
+                                    Non
+                                </label>
+                            </div>
+                        
+                            <div class="{{mb.id}} " style="display: none;">
+                                <div class="row">
+                                    {% if mb.codeEAN13 %}
+                                        {% for eanMb, codeMb in mb.codeEAN13 %}
+                                            <div class="col-md-3 mt-2">
+                                                <label>Code EAN13 {{eanMb}}</label>
+                                                <input type="text" class="form-control" name="{{eanMb}}" value="{{codeMb}}">
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for ean, code in mb.produit.codeEAN13 %}
+                                            <div class="col-md-3 mt-2">
+                                                <label>Code EAN13 {{ean}}</label>
+                                                <input type="text" class="form-control" name="{{ean}}" value="{{code}}">
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm valider mt-2" >Enregistrer</button>
+                                
+                            </div>
+                        </form>
+                        <hr class="mt-2">
+                        
+                    {% endfor %}    
+
+                    <a href="{{path('back_produit_affichage', {id: produit.id})}}" class="btn btn-primary mt-2 terminer"> Terminer </a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+        $(function(){
+            $('.message').hide();
+
+            $('input[type=radio]:checked').each(function(){
+                let form = $(this).closest('form');
+                let id = form.attr('data-idmb');
+                
+                if($(this).val() == "Non"){
+                    $('.'+ id + '').show();
+                }
+            });
+
+            $(".non").click(function(){
+                let form = $(this).closest('form');
+                let id = form.attr('data-idmb');
+                $('.terminer').hide('slow');
+                $('.'+ id + '').show('slow');
+            });
+
+            $('.oui').click(function(){
+                let form = $(this).closest('form');
+                let id = form.attr('data-idmb');
+                
+                $('.'+ id + '').hide('slow');
+
+                if($('.terminer').is(':hidden')){
+                    $('.terminer').show('slow');
+                }
+            });
+
+            $('.valider').click(function(e){
+                
+                e.preventDefault();
+                let form = $(this).closest("form");
+                
+                $.ajax({
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: form.serialize(),
+                    success: function(data) {
+
+                        if($('.terminer').is(':hidden')){
+                            $('.terminer').show('slow');
+                        }
+
+                        form.find(".message").show('slow').html("Operation éffectué avec succès").css('color', 'green').delay(3000).slideUp("slow");
+                        form.find(":submit").addClass('btn btn-success').text('Effectué');
+                        
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            })
+
+            $('.terminer').click(function(e){
+                e.preventDefault();
+                let result = [];
+                let comptMB = 1;
+                $('form').find(':input[name = "ean"]').each(function(){
+                    if($(this).is(':checked')){
+                        let mb = {};
+
+                        mb[$(this).attr('data-id')] = $(this).val();
+                    
+                        result.push(mb);
+                    }
+                });
+
+                $.ajax({
+                    url: "{{path('back_produit_ajout_codeEan13_terminer', {id: produit.id })}}",
+                    type: 'POST',
+                    data: {result : result },
+                    success: function(data) {
+                        $('.message').show('slow').html('<p>Configuration code EAN13 marque blanche effectuée avec succès </p>').css('color', 'green').delay(3000).slideUp("slow");
+
+                        window.setTimeout(function(){
+
+                        // Move to a new location or you can do something else
+                            window.location.href = "{{path('back_produit_affichage', {id: produit.id})}}";
+
+                        }, 3000);
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,419 @@
+#produit
+back_produit_list:
+    path: /liste/produit
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeProduit
+
+back_produit_creation:
+    path: /creation/produit
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationProduit
+
+back_produit_creation_etape_2:
+    path: /etape-2/creation/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::secondEtapeModification
+        id: \d+
+
+back_produit_modificatio_etape_2:
+    path: /etape-2/modification/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::secondEtapeModification
+        id: \d+
+
+back_produit_supprime:
+    path: /supprimer/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerProduit
+        requirements:
+            id: \d+
+
+back_produit_ajout_codeEan13_mb:
+    path: /ajout/code_ean13/marque_blanche/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::ajoutCodeMB
+        requirements:
+            id: \d+
+
+back_produit_ajout_codeEan13_terminer:
+    path: /code_ean13/marque_blanche/terminer/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::configMBterminer
+        requirements:
+            id: \d+
+
+back_produit_modification:
+    path: /modification/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationProduit
+        requirements:
+            id: \d+
+
+back_produit_suggestion_tarif:
+    path: /suggestion/tarif
+    defaults:
+        _controller: App\Controller\Back\ProduitController::suggestionTarif
+       
+
+back_produit_affichage:
+    path: /fiche/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::ficheProduit
+        requirements:
+            id: \d+
+
+back_produit_reference_marque_blanche:
+    path: /code_ean/marque_blanche/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::codeEan13MarqueBlanche
+        requirements:
+            id: \d+
+
+back_produit_creation_ean:
+    path: /creation/ean/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationEAN
+        requirements:
+            id: \d+
+
+back_produit_modification_ean:
+    path: /modification/ean/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationEAN
+        requirements:
+            id: \d+
+back_produit_modification_arome_supplementaire:
+    path: /supprime/arome/supplementaire
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimeAromeSupplementaire
+
+back_produit_modification_base_supplementaire:
+    path: /supprime/base/supplementaire
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimeBaseSupplementaire
+
+back_produit_supprime_composant_supplementaire:
+    path: /supprime/composant/supplementaire
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimeComposantSupplementaire
+
+#arome
+back_produit_list_arome:
+    path: /liste/arome
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeArome
+
+back_produit_creation_arome:
+    path: /creation/arome
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationArome
+
+back_produit_supprime_arome:
+    path: /supprimer/arome/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerArome
+        requirements:
+            id: \d+
+
+back_produit_modification_arome:
+    path: /modification/arome/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationArome
+        requirements:
+            id: \d+
+
+#contenant
+back_produit_list_contenant:
+    path: /liste/contenant
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeContenant
+
+back_produit_creation_contenant:
+    path: /creation/contenant
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationContenant
+
+back_produit_supprime_contenant:
+    path: /supprimer/contenant/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerContenant
+        requirements:
+            id: \d+
+
+back_produit_modification_contenant:
+    path: /modification/contenant/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationContenant
+        requirements:
+            id: \d+
+
+
+#fournisseur
+back_produit_creation_fournisseur:
+    path: /creation/fournisseur
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationFournisseur
+
+back_produit_list_fournisseur:
+    path: /liste/fournisseur
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeFournisseur
+
+back_produit_supprime_fournisseur:
+    path: /supprimer/fournisseur/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerFournisseur
+        requirements:
+            id: \d+
+
+back_produit_modification_fournisseur:
+    path: /modification/fournisseur/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationFournisseur
+        requirements:
+            id: \d+
+
+
+#Reference
+back_produit_creation_reference:
+    path: /creation/reference
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationReference
+
+back_produit_list_reference:
+    path: /liste/reference
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeReference
+
+back_produit_supprime_reference:
+    path: /supprimer/reference/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerReference
+        requirements:
+            id: \d+
+
+back_produit_modification_reference:
+    path: /modification/reference/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationReference
+        requirements:
+            id: \d+
+
+#marque
+
+back_produit_list_marque:
+    path: /liste/marque
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeMarque
+
+back_produit_marque:
+    path: /voir/produit/marque/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::produitMarque
+        requirements:
+            id: \d+
+
+back_produit_creation_marque:
+    path: /creation/marque
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationMarque
+
+back_produit_supprime_marque:
+    path: /supprimer/marque/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerMarque
+        requirements:
+            id: \d+
+
+back_produit_modification_marque:
+    path: /modification/marque/{id}/{pr}
+    defaults:
+        pr: null
+        _controller: App\Controller\Back\ProduitController::modificationMarque
+        requirements:
+            id: \d+
+            pr: \d+
+
+back_produit_supprime_client_exclusif:
+    path: /supprime/client/exlusif
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimeClientExclusif
+
+back_produit_supprime_gamme_marque:
+    path: /supprime/gamme/marque
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimeGammeMarque
+
+#gamme
+back_produit_list_gamme:
+    path: /liste/gamme
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeGamme
+
+back_produit_creation_gamme:
+    path: /creation/gamme
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationGamme
+
+back_produit_supprime_gamme:
+    path: /supprimer/gamme/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerGamme
+        requirements:
+            id: \d+
+
+back_produit_modification_gamme:
+    path: /modification/gamme/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationGamme
+        requirements:
+            id: \d+
+
+#categorie
+back_produit_list_categorie:
+    path: /liste/categorie
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeCategorie
+
+back_produit_creation_categorie:
+    path: /creation/categorie
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationCategorie
+
+back_produit_supprime_categorie:
+    path: /supprimer/categorie/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerCategorie
+        requirements:
+            id: \d+
+
+back_produit_modification_categorie:
+    path: /modification/categorie/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationCategorie
+        requirements:
+            id: \d+
+
+#base
+
+back_produit_list_base:
+    path: /liste/support
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeBase
+
+back_produit_creation_base:
+    path: /creation/support
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationBase
+
+back_produit_supprime_base:
+    path: /supprimer/support/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerBase
+        requirements:
+            id: \d+
+
+back_produit_modification_base:
+    path: /modification/support/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationBase
+        requirements:
+            id: \d+
+
+#declinaison
+
+back_produit_declinaison:
+    path: /declinaison
+    defaults:
+        _controller: App\Controller\Back\DeclinaisonController::index
+
+back_produit_list_declinaison:
+    path: /liste/declinaison/{id}
+    defaults:
+        _controller: App\Controller\Back\DeclinaisonController::listeDeclinaison
+        requirements:
+            id: \d+
+
+back_produit_ajout_declinaison:
+    path: /ajout/declinaison
+    defaults:
+        _controller: App\Controller\Back\DeclinaisonController::ajoutDeclinaison
+
+
+back_produit_modification_declinaison:
+    path: /modification/principe_actif/{id}
+    defaults:
+        _controller: App\Controller\Back\DeclinaisonController::modification
+        requirements:
+            id: \d+
+
+back_produit_supprime_declinaison:
+    path: /supprimer/principe_actif/{id}
+    defaults:
+        _controller: App\Controller\Back\DeclinaisonController::supprimePrincipeActif
+        requirements:
+            id: \d+
+
+back_produit_supprime_marque_blanche:
+    path: /supprimer/marque_blanche/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimeMarqueBlanche
+        requirements:
+            id: \d+
+
+#composant
+back_produit_list_composant:
+    path: /liste/composant
+    defaults:
+        _controller: App\Controller\Back\ProduitController::listeComposant
+
+back_produit_creation_composant:
+    path: /creation/composant
+    defaults:
+        _controller: App\Controller\Back\ProduitController::creationComposant
+
+back_produit_supprime_composant:
+    path: /supprimer/composant/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::supprimerComposant
+        requirements:
+            id: \d+
+
+back_produit_modification_composant:
+    path: /modification/composant/{id}
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modificationComposant
+        requirements:
+            id: \d+
+
+back_produit_csv:
+    path: /csv/products/
+    defaults:
+        _controller: App\Controller\Back\ProduitController::getProducts
+
+
+back_modification_produit_excel:
+    path: /excel/modif-produit/
+    defaults:
+        _controller: App\Controller\Back\ProduitController::modifListeProduits
+
+back_test_csv:
+    path: /csv/test/
+    defaults:
+        _controller: App\Controller\Back\ProduitController::testCsv
+       
+
+back_export_excel:
+    path: /test/export
+    defaults:
+        _controller: App\Controller\Back\ProduitController::exportMb
+       
+back_import_excel:
+    path: /test/import
+    defaults:
+        _controller: App\Controller\Back\ProduitController::importExcel
+
+back_import_prix:
+    path: /test/prix
+    defaults:
+        _controller: App\Controller\Back\ProduitController::testPrix

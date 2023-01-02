@@ -1,0 +1,100 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% for message in app.flashes('modificationTarifOk') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-10 offset-2 mb-2">
+            <a href="{{ path('back_commande') }}" class="btn btn-primary"><i class="os-icon os-icon-corner-down-left"></i> Revenir a la liste</a>
+            <a href="{{path('back_telecharger_bdc', {id:devi.id})}}" class="btn btn-info"> <i class="os-icon os-icon-download"></i> Bon de commande </a>
+            {% if commande.envoyerAuLogistique %}
+                <button type="button" class="btn badge badge-info-inverted text-left">Disponible en logistique</button>
+            {% endif %}
+
+            {% if commande.envoyerAuLogistique and commande.codeInterne  %}
+                <a href="{{path('back_modification_logistique', {id: commande.id})}}" class="btn btn-outline-success">Aller à la logistique <i class="os-icon os-icon-corner-down-right"></i> </a>
+            {% endif %}
+
+            <form class="form-inline float-right" action="{{path('back_commande_code_interne', { number: commande.code, id: commande.id})}}" method="POST">
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="numeroCommandeInterne" class="text-center"><span>Numéro de commande <br> interne</span></label>
+                    <input type="text" class="form-control" required id="numeroCommandeInterne"  name="numCommandeInterne" {% if commande.codeInterne %} value="{{commande.codeInterne}}" {% endif %}>
+                </div>
+                <button type="submit" class="btn btn-success mb-2">Editer</button>
+            </form>
+            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="element-box-tp">
+                <div class="el-buttons-list full-width">
+                    <a class="btn btn-white btn-sm {% if home is defined %}active{% endif %}" href="{{ path('back_modification_commande', {number:commande.code,id:commande.id}) }}"><i class="os-icon os-icon-home"></i><span>Accueil</span></a>
+                    <a class="btn btn-white btn-sm {% if client is defined %}active{% endif %}" href="{{ path('back_commande_edit_client', {number:commande.code,id:commande.id}) }}"><i class="os-icon os-icon-user"></i><span>Infos clients</span></a>
+                    {#% if order.isSendTologistics %}
+                        <a class="btn btn-white btn-sm {% if lots is defined %}active{% endif %}" href="{{ path('back_order_create_delivery_priority', {number:order.codeNumber,id:order.id}) }}"><i class="os-icon os-icon-delivery-box-2"></i><span>Créer une livraison prioritaire</span></a>
+                    {% endif %#}
+                    <a class="btn btn-white btn-sm {% if invoices is defined %}active{% endif %}" href="{{ path('back_commande_modification_facture', {number:commande.code,id:commande.id}) }}"><i class="os-icon os-icon-wallet-loaded"></i><span>Factures et paiements</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="order-box">
+
+                {% if not commande.envoyerAuLogistique %}
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Warning! </strong> Vous devez envoyer cette commande en traitement à la logistique pour avoir le suivie.
+                    </div>
+                {% endif %}
+                    
+                {% for message in app.flashes('codeInterneSuccess') %}
+                    <div class="alert alert-success">
+                        {{message}}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        {{message}}
+                    </div>
+                {% endfor %}
+
+                {% include "back/commande/_recap_price.html.twig" with {'commande': commande, 'editOrder': true }  %}
+                
+                {% block modification_commande %}
+                
+                {% include "back/commande/_order_list.html.twig"  with {'commande': commande } %}
+                  
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    $(function(){
+        $('.sendmail').prop('checked', false);
+        $('.envoyer').click(function(e){
+            e.preventDefault();
+            let ok = false;
+            
+            ok = confirm('Renvoyer le bon de commande modifié au client ?');
+
+            if(ok){
+                $(this).closest('form').find('.sendmail').prop('checked', true);
+            }else{
+                $(this).closest('form').find('.sendmail').prop('checked', false);
+            }
+            $(this).next(".edit").click();
+            
+            
+        });
+    });
+</script>
+{% endblock %}

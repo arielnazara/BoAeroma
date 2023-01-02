@@ -1,0 +1,30 @@
+{% extends 'back-base.html.twig' %}
+
+{% block title %}TypePrestation{% endblock %}
+
+{% block content %}
+    <h1>TypePrestation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ type_prestation.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ type_prestation.nom }}</td>
+            </tr>
+            <tr>
+                <th>Prix</th>
+                <td>{{ type_prestation.prix }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('type_prestation_index') }}">back to list</a>
+
+    <a href="{{ path('type_prestation_edit', {'id': type_prestation.id}) }}">edit</a>
+
+    {{ include('type_prestation/_delete_form.html.twig') }}
+{% endblock %}

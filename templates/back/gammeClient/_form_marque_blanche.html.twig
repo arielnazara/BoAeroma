@@ -1,0 +1,64 @@
+{% block _catalogue_client_marqueBlanches_widget %}
+    
+    {{ form_widget(form) }}
+    
+{% endblock %}
+
+{% block _catalogue_client_marqueBlanches_entry_label %}
+    
+    {{ form_label(form) }}
+    
+{% endblock %}
+
+{% block form_errors %}
+    
+    {% for error in errors %}
+        <div class="text-danger mb-2">
+            <span class='badge badge-danger'>ERREUR </span> {{ error.message|raw }}
+        </div>
+    {% endfor %}
+
+{% endblock %}
+
+{% block _catalogue_client_marqueBlanches_entry_row %}
+    
+    <div id="block_{{id}}">
+
+        <div class="border shadow px-3 pb-3 mb-3">
+            <div class="row mt-3">
+            
+                <div class="col-md-12">
+                    <a href="" data-action="delete" data-target="#block_{{id}}" class=" float-right btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(form.produit, {'attr':{'class' : 'search', 'required': true}} ) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.position, {'label':'Position du produit', 'attr':{'class' : 'form-control form-sm', 'min' : 1 , 'step' : 1, 'required': true }} ) }}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(form.nom, {'attr':{'class' : 'form-sm', 'required': true}} ) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.reference, {'attr':{'class' : 'form-sm', 'required': true}} ) }}
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-md-12">
+                    {{ form_row(form.tarif, {'attr':{'class' : 'search', 'required': true}} ) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+

@@ -1,0 +1,62 @@
+<table class="table">
+    <thead>
+    <tr class="bg-danger" style="color: white">
+        <th>Objet</th>
+        <th>Date</th>
+        <th>Quantité préparée</th>
+        <th>Priorité</th>
+        <th>Statut</th>
+        <th>Date expédition prévue</th>
+        <th>Message</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for lp in lotPriority %}
+        <tr>
+            <td>{{ lp.name }}</td>
+
+            <td>
+                <div class="smaller lighter">
+                    Crée le {{ lp.date|date('d/m/Y') }}
+                </div>
+            </td>
+
+            <td>
+                {% for lq in lp.lotQuantities %}
+                    <small>{{ lq.product.taille }} : {{ lq.quantity }}</small> <br>
+                {% endfor %}
+            </td>
+
+            <td>
+                {% if lp.isPriority %}
+                    Prioritaire
+                {% else %}
+                    Normal
+                {% endif %}
+            </td>
+
+            <td>
+                {% if lp.isShipped %}
+                    <a class="badge badge-success-inverted text-left" href="javascript:void(0)">
+                        Expédier le {{ lp.shippingDate|date('d/m/Y') }}
+                    </a>
+                {% else %}
+                    {{ lp.status }}
+                {% endif %}
+            </td>
+
+            <td>{{ lp.desiredShippingDate|date('d/m/Y') }}</td>
+
+            <td>{{ lp.message }}</td>
+            <td>
+                <form method="post" action="{{ path('back_logistique_prepare', {id:lp.id}) }}">
+                    <button type="submit" class="btn btn-info">
+                        <i class="os-icon os-icon-delivery-box-2"></i> Préparer
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

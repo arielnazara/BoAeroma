@@ -1,0 +1,15 @@
+{% extends 'back/production/lotNicotine/index.html.twig' %}
+
+
+{% block configuration %}
+
+    {% if id %}
+        <h5>Modification lot arome</h5>
+    {% else %}
+        <h5>Création lot arome</h5>
+    {% endif %}
+
+    {% include "back/production/lotNicotine/_form.html.twig" %}
+    <a href="{{path('back_production_liste_arome')}}" class="btn btn-link"><i class="os-icon os-icon-corner-down-left"></i> Revenir à la liste des lots actifs</a>
+
+{% endblock %}

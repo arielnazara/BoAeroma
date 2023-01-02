@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Bo Aeroma{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="TanaTeam" name="author">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="" rel="shortcut icon">
+    <link href="" rel="apple-touch-icon">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+    <link href="{{ asset('back/bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('back/bower_components/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
+    <link href="{{ asset('back/bower_components/dropzone/dist/dropzone.css') }}" rel="stylesheet">
+    <link href="{{ asset('back/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('back/bower_components/fullcalendar/dist/fullcalendar.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('back/bower_components/perfect-scrollbar/css/perfect-scrollbar.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('back/bower_components/slick-carousel/slick/slick.css') }}" rel="stylesheet">
+    <link href="{{ asset('back/css/main.css') }}?version=4.5.0" rel="stylesheet">
+    <link href="{{ asset('assets/custom.css') }}" rel="stylesheet">
+    
+    <style>
+        .select-link {
+            color: #0a7cf8 !important;
+        }
+        label {
+            margin-right: 5px !important;
+        }
+    </style>
+    {% block custom_css %}{% endblock %}
+
+     <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-KTR3ZSX');</script>
+    <!-- End Google Tag Manager -->
+
+</head>
+<body class="menu-position-top full-screen">
+    
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTR3ZSX"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+<div class="all-wrapper solid-bg-all">
+
+    <div class="layout-w">
+
+        {{ include('back/menu/main-menu.html.twig') }}
+
+        <div class="content-w">
+
+            {% block breadcrumb %}{% endblock %}
+            
+            <div class="content-i">
+                <div class="content-box">
+                    {% block content%}{% endblock %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="display-type"></div>
+</div>
+<!--<script src="https://js.stripe.com/v3/"></script>-->
+<script src="{{ asset('back/bower_components/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/popper.js/dist/umd/popper.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/moment/moment.js') }}"></script>
+<script src="{{ asset('back/bower_components/chart.js/dist/Chart.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/select2/dist/js/select2.full.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/jquery-bar-rating/dist/jquery.barrating.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/ckeditor/ckeditor.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap-validator/dist/validator.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+<script src="{{ asset('back/bower_components/ion.rangeSlider/js/ion.rangeSlider.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/dropzone/dist/dropzone.js') }}"></script>
+<script src="{{ asset('back/bower_components/editable-table/mindmup-editabletable.js') }}"></script>
+<script src="{{ asset('back/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/fullcalendar/dist/fullcalendar.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/perfect-scrollbar/js/perfect-scrollbar.jquery.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/tether/dist/js/tether.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/slick-carousel/slick/slick.min.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/util.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/alert.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/button.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/carousel.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/collapse.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/dropdown.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/modal.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/tab.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/tooltip.js') }}"></script>
+<script src="{{ asset('back/bower_components/bootstrap/js/dist/popover.js') }}"></script>
+<script type="text/javascript" src="{{ asset('front/assets/js/plugins/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('back/js/demo_customizer.js') }}?version=4.5.0"></script>
+<script src="{{ asset('back/js/main.js')}}?version=4.5.0"></script>
+{% block custom_js %}{% endblock %}
+<script>
+    
+    var refreshTime = 600000; // every 10 minutes in milliseconds
+    window.setInterval( function() {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: "{{ path('back_index') }}",
+            success: function(data) {
+            }
+        });
+    }, refreshTime );
+
+</script>
+</body>
+</html>

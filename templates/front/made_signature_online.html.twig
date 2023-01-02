@@ -1,0 +1,54 @@
+{% extends 'front-base.html.twig' %}
+
+{% block classBody %}bg-light{% endblock %}
+{% block content %}
+
+    <div class="container" >
+        <div class="row card pb-5" >
+            <div class="col-12">
+                {{ include('front/header.html.twig') }}
+            </div>
+
+            <div class="col-12 mt-5" style="min-height: calc(100vh - 380px);" >
+                <div class="row">
+                    <div class="col-12">
+                        <p style="color: black" class="text-left">
+                            Merci d’avoir validé votre bon de commande <strong>{{ devis.code }}</strong>, nous venons de vous en adresser une copie par e-mail.
+                        </p>
+                        <!--<p style="color: black" class="text-left">
+                            Nous procédons à la vérification de votre devis  Vous recevrez dans votre boite mail un bon de commande reprenant les éléments de votre devis. Vous pourrez y accéder également depuis votre compte client.
+                        </p>-->
+                        <p style="color: black" class="text-left">
+                            Votre commande sera traitée dans les meilleurs délais. Vous serez informé de la date d’expédition prochainement.<br> Votre facture vous sera adressée au moment de l’expédition de votre commande. 
+                            <br><br>
+                            Pour toute question, appelez nous au : 09 70 70 47 07
+
+                        </p>
+                        <p class="text-center">
+                            <!--
+                            <a href="#" class="btn btn-primary btn-lg">
+                                Accéder à mon compte client
+                            </a>
+                            -->
+                        </p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12 text-center">
+                        <a href="{{ path('front_index')}}" class="btn btn-primary ">Revenir à la page d'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+
+    {{ include('front/footer.html.twig', {style: 'position: absolute; bottom: 0; left: 0; right: 0'}) }}
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript">
+        $(function () {
+        });
+    </script>
+{% endblock %}

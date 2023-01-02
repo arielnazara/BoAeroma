@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <style>
+        div, p, h3, address, body, h2, th, td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 93%;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        table { page-break-inside:auto; }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        .tr:nth-child(even) {background-color: #f2f2f2;}
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+
+        .etiquette {
+            font-weight: bolder;
+            height: 35px;
+            vertical-align: bottom;
+            background-color: #ddf0f2;
+            padding: 5px;
+            border-top: #58b6c0 2px solid;
+        }
+
+     
+    </style>
+</head>
+<body>
+<div class="body" style="overflow: hidden;">
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: -35px; ">
+        <tr>
+            <td style="width: 55%;">
+                <div>
+                    <p style="margin-left: -22px; margin-bottom: 0; font-size: 125%">
+                        <img  style="width: 550px;" src="{{ app.request.schemeAndHttpHost ~ asset('assets/images/logoAeroma.jpg') }}"><br>
+                    </p>
+                </div>
+            </td>
+
+            <td>
+                <div>
+                    <h1 style="float: right;">FACTURE<br>
+                        <span style="color:gray;">
+                            {{invoiceOrder.date|date('d/m/Y')}}
+                            
+                            {% set increment = invoiceOrder.numero|slice(-4) %}
+                            
+                            {% set numero = invoiceOrder.numero|customInvoiceNumber %}
+                        </span> <br>
+
+                        <span style="color: gray;;">{{ numero }}-</span><span style="font-weight: bolder;font-size: 1.2em; color:black">{{ increment }}</span> <br>
+                        {% if invoiceOrder.estPayer == true %}
+                            <span style="color: #0d3b96">Acquittée</span>
+                        {% endif %}
+                    </h1> 
+                </div> 
+            </td>
+        </tr>
+    </table>
+
+    <br><br>
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <th>Adresse de livraison</th>
+            <th>Adresse de facturation</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                  
+                    {% if devis.boutique %}
+                        Client: {{devis.boutique.nomShop}} <br>
+                        Nom: {{devis.boutique.nom}} <br>
+                        Prénom(s): {{devis.boutique.prenom}} <br>
+
+                        {{devis.boutique.adresse}} <br>
+                        {{devis.boutique.codePostal}} <br>
+                        {{devis.boutique.ville}} <br>
+
+                        {% if devis.boutique.commune %}
+                            {{devis.boutique.commune}} <br>
+                        {% endif %}
+
+                        {{devis.client.pays}} <br>
+
+                        email: {{devis.boutique.email }} <br>
+                        Téléphone: {{devis.boutique.telephone }} <br>
+
+                    {% else %}
+                        {% if devis.client.raisonSocial %}
+                            Client: {{devis.client.raisonSocial}} <br>
+                        {% endif %}
+
+                        Nom: {{devis.client.lastName }} <br>
+                        Prénom(s): {{devis.client.firstname }}<br>
+
+                        {{devis.client.adresseServiceAchats }} <br>
+                        {{ devis.client.codePostalServiceAchat}} <br>
+                        {{devis.client.villeServiceAchat}} <br>
+                        {% if devis.client.communeServiceAchat %}
+                            {{devis.client.communeServiceAchat}} <br>
+                        {% endif %}
+                        {{devis.client.pays}}<br>
+                        email: {{devis.client.email }} <br>
+                        Téléphone: {{devis.client.telephone }} <br>
+                    {% endif %}
+                    Numéro TVA : {{ devis.client.noTva }}
+
+                    
+                </td>
+                <td>
+
+                    {% if adresseFacturation %}
+
+                        {% if devis.client.raisonSocial %}
+                            Client: {{adresseFacturation.raisonSocial}} <br>
+                        {% endif %}
+
+                        Nom: {{adresseFacturation.lastName }} <br>
+                        Prénom(s): {{adresseFacturation.firstname }}<br>
+                        
+                        {#{devis.client.villeFacturation }#} <br>
+                        {{adresseFacturation.adresseFacturation }} <br>
+                        {{ adresseFacturation.codePostalFacturation}} <br>
+                        {{adresseFacturation.villeFacturation}} <br>
+                        {% if adresseFacturation.communeFacturation %}
+                            {{adresseFacturation.communeFacturation}} <br>
+                        {% endif %}
+                        {{adresseFacturation.pays}}<br>
+                        email: {{adresseFacturation.email }} <br>
+                        Téléphone: {{adresseFacturation.telephone }} <br>
+                    
+                    {% else %}
+
+                        {% if devis.client.raisonSocial %}
+                            Client: {{devis.client.raisonSocial}} <br>
+                        {% endif %}
+                        Nom: {{devis.client.lastName }} <br>
+                        Prénom(s): {{devis.client.firstname }}<br>
+                        
+                        {#{devis.client.villeFacturation }#} <br>
+                        {{devis.client.adresseFacturation }} <br>
+                        {{ devis.client.codePostalFacturation}} <br>
+                        {{devis.client.villeFacturation}} <br>
+                        {% if devis.client.communeFacturation %}
+                            {{devis.client.communeFacturation}} <br>
+                        {% endif %}
+                        {{devis.client.pays}}<br>
+                        email: {{devis.client.email }} <br>
+                        Téléphone: {{devis.client.telephone }} <br>
+                  
+                        
+                    {% endif %}
+
+                    
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse; ">
+        <thead style="background-color: rgb(240,240,240); " >
+            <th style=" text-align: center;  padding: 7px;">Numéro de facture</th>
+            <th style=" text-align: center; padding: 7px;">Date de facturation</th>
+            <th style=" text-align: center; padding: 7px;">Réf. de commande</th>
+            <th style=" text-align: center; padding: 7px;">Date de commande</th>
+        </thead>
+
+        <tbody>
+            <tr  style=" border-bottom: 1pt solid #E0E0E0;">
+                <td style=" text-align: center;  padding: 5px;">
+                    {{invoiceOrder.numero}}
+                </td>
+
+                <td style=" text-align: center;">
+                    {{invoiceOrder.date|date('d/m/Y')}} 
+                </td>
+
+                <td style=" text-align: center;">
+                    {{purchaseOrder.code}}
+                </td>
+
+                <td style=" text-align: center;">
+                    {{purchaseOrder.date|date('d/m/Y')}}
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+    
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse;  ">
+        <thead style="background-color: rgb(240,240,240); border-top: red;" >
+            <th style=" text-align: center;  padding: 7px;">Référence</th>
+            <th style=" text-align: center; padding: 7px;">Produit</th>
+            <th style=" text-align: center; padding: 7px;">Prix unitaire <br>(HT)</th>
+            <th style=" text-align: center; padding: 7px;">Quantité</th>
+            <th style=" text-align: center; padding: 7px;">Total(HT)</th>
+        </thead>
+
+        <tbody>
+            {% for produit in produits %}
+                <tr style=" border-bottom: 1pt solid #E0E0E0;">
+                    <td style=" text-align: center;  padding: 5px;">
+                        {{produit.produit.reference}}
+                    </td>
+                    <td style=" text-align: center;  padding: 5px;">
+                        {{produit.produit.nom}}
+
+                        {% if produit.produit.principeActif %}
+                            {{produit.produit.principeActif.principeActif}} {{produit.declinaison}}
+                        {% endif %}
+                    </td>
+                    
+                    <td style=" text-align: center;  padding: 5px;">
+                        {% set prix = 0 %}
+
+                        {% set offert = false %}
+                        {% if produit.offert %}
+                            {% set offert = true %}
+                        {% endif %}
+
+                        {% if offert %}
+                            <span style="color: green;">Offert</span>
+                            {% set prix = 0 %}
+                        {% else %}
+                            
+                            {% if produit.prixSpecial %}
+                                {{produit.prixSpecial|number_format(2, '.', ',')}}€
+                                {% set prix = produit.prixSpecial %}
+                            {% else %}
+                                {{produit.prix|number_format(2, '.', ',')}}€
+                                {% set prix = produit.prix %}
+                            {% endif %}
+                        {% endif %}
+
+                    </td>
+                    <td style=" text-align: center;  padding: 5px;">
+                        {{produit.quantite}}
+                    </td>
+                    <td style=" text-align: center;  padding: 5px;">
+                        {% set totalPerProduct =  produit.quantite * prix %}
+                        
+                        {% if totalPerProduct %}
+                            {{totalPerProduct|number_format(2, ',', ' ')}}€
+                        {% endif %}
+                    </td>
+                </tr>
+                
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    
+    <table style=" width: 100%;">
+        <tr>
+            <td>
+                {% set dev = devis %}
+
+                {% if devis.montantFinal %}
+                    {% set dev = devis.montantFinal %}
+                {% endif %}
+
+
+                <table style=" width: 90%; border-collapse: collapse; float: left; margin-top: -60px">
+                    <thead style="background-color: rgb(240,240,240); ">
+                        <th style="padding: 5px;">Détail des taxes</th>
+                        <th style="padding: 5px;">Taux de taxe</th>
+                        <th style="padding: 5px;">Taxe total</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Produits</td>
+                            <td>20 % </td>
+                            <td>{{invoiceOrder.tva|number_format(2, ',', ' ') }}€</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+               
+                <table style="width: 90%; border-collapse: collapse; margin-top: 25px; float:right;">
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;">Montant total</td>
+                        <td style="text-align: right;">
+                            {{invoiceOrder.total|number_format(2, ',', ' ') }}€
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;">Frais de livraison </td>
+                        <td style="text-align: right;">
+                            {% if  devis.fraisExpedition and devis.fraisExpedition > 0 %}
+                                {{devis.fraisExpedition|number_format(2, ',', ' ')}}€
+                            {% else %}
+                                Livraison gratuite
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgb(240,240,240); padding: 10px; text-align: right; "> <strong>Total (HT)</strong> </td>
+                        <td style="text-align: right;"> <strong>{{invoiceOrder.totalHt|number_format(2, ',', ' ') }}€</strong> </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgb(240,240,240); padding: 10px;  text-align: right;"> <strong>Taxe total</strong> </td>
+                        <td style="text-align: right;"> <strong>{{invoiceOrder.tva|number_format(2, ',', ' ') }}€</strong> </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Total</strong>  </td>
+                        <td style="text-align: right;"> <strong>{{invoiceOrder.totalTtc|number_format(2, ',', ' ') }}€</strong> </td>
+                    </tr>
+                    {% if invoiceOrder.estPayer %}
+                        <tr>
+                            <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Montant réglé </strong>  </td>
+                            <td style="text-align: right;"> <strong>{{invoiceOrder.montantPayer|number_format(2, ',', ' ') }}€</strong> </td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <div style="width: 100%;">
+        {% if invoiceOrder.estPayer %}
+            <p style="width: 100%; text-align: right">
+                <strong>
+                    {% if invoiceOrder.balance %}
+                        {% if invoiceOrder.balance < 0 %}
+                            Reste de la derniere la prochaine facture : {{ invoiceOrder.balance|abs|number_format(2, ',', ' ') }}€
+                        {% elseif invoiceOrder.balance == 0 %}
+                        {% else %}
+                            Montant à déduire sur la prochaine facture : {{ invoiceOrder.balance|number_format(2, ',', ' ') }}€
+                        {% endif %}
+                    {% else %}
+                    SOLDE : 0,00€
+                    {% endif %}
+                </strong>
+            </p>
+            <h2>
+                <strong>
+                    Paiement reçu le {{ invoiceOrder.datePaiement|date('d-m-Y') }}
+                </strong>
+            </h2>
+        {% endif %}
+    </div>
+   
+</div>
+
+</body>
+</html>

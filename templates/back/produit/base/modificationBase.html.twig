@@ -1,0 +1,257 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+
+{% block title %}Modification support{% endblock %}
+
+{% block configuration %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% for message in app.flashes('erreurBase') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <h4 class="title">Modifier un support</h4>
+                    <div class="mt-4">
+                        <div class="col-md-12"> 
+                            {{ form_start(form) }}
+                                {{form_errors(form)}}
+
+                                <div class="form-group">
+                                    {{ form_row(form.nom, {'label': 'Nom', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.reference, {'label': 'Référence ', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+                                
+                                
+                                <div class="form-group row">
+                                    <div class="col-md-12">Composant</div>
+                                    <div class="col-md-7">
+                                        <select name="composant-1" class="form-control">
+                                            {% for baseCompo in baseComposants %}
+                                                {% if baseCompo.numComposant == "composant-1" %}
+                                                    {% for composant in composants %}
+                                                        {% if baseCompo.composant.id == composant.id %}
+                                                            <option value="{{composant.id}}" selected>{{composant.nom}}</option>
+                                                        {% else %}
+                                                            <option value="{{composant.id}}">{{composant.nom}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+
+                                        {% set comptCompo = 1 %}
+                                        {% if baseComposants|length > 1 %}
+                                            {% for baseCompo in baseComposants %}
+                                                {% if baseCompo.numComposant != "composant-1"%}
+                                                    {% set comptCompo = comptCompo + 1 %}
+                                                    <select name="composant-{{comptCompo}}" class="form-control mt-2 {{baseCompo.numComposant}}">
+                                        
+                                                        {% for composant in composants %}
+                                                            {% if baseCompo.composant.id == composant.id %}
+                                                                <option value="{{composant.id}}" selected>{{composant.nom}}</option>
+                                                            {% else %}
+                                                                <option value="{{composant.id}}">{{composant.nom}}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                            
+                                                    </select>
+                                                {% endif %}
+                                            {% endfor %}
+                                         
+                                        {% endif %}
+                                    </div>
+                                   
+                                    <div class="form-group col-md-5">
+                                        <div class="row">
+                                            <select name="ratio-1" id="ratio-1" class="form-control col-sm-12">
+                                                {% for baseCompo in baseComposants %}
+                                                    {% if baseCompo.numComposant == "composant-1" %}
+                                                        <option value="100%" {% if baseCompo.ratio == "100%" %}selected{% endif %}>100%</option>
+                                                        <option value="80%" {% if baseCompo.ratio == "80%" %}selected{% endif %}>80%</option>
+                                                        <option value="70%" {% if baseCompo.ratio == "70%" %}selected{% endif %}>70%</option>
+                                                        <option value="65%" {% if baseCompo.ratio == "65%" %}selected{% endif %}>65%</option>
+                                                        <option value="60%" {% if baseCompo.ratio == "60%" %}selected{% endif %}>60%</option>
+                                                        <option value="50%" {% if baseCompo.ratio == "50%" %}selected{% endif %}>50%</option>
+                                                        <option value="40%" {% if baseCompo.ratio == "40%" %}selected{% endif %}>40%</option>
+                                                        <option value="35%" {% if baseCompo.ratio == "35%" %}selected{% endif %}>35%</option>
+                                                        <option value="30%" {% if baseCompo.ratio == "30%" %}selected{% endif %}>30%</option>
+                                                        <option value="20%" {% if baseCompo.ratio == "20%" %}selected{% endif %}>20%</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                            
+                                            {% set comptRatio = 1 %}
+                                            {% if baseComposants|length > 1 %}
+                                                {% for baseCompo in baseComposants %}
+                                                    {% if baseCompo.numComposant != "composant-1"%}
+                                                        {% set comptRatio = comptRatio + 1  %}
+                                                            <select name="ratio-{{comptRatio}}" id="ratio-{{comptRatio}}" data-confirm="oui" class="form-control mt-2 col-sm-10 {{baseCompo.numComposant}}">
+                                                                <option value="100%" {% if baseCompo.ratio == "100%" %}selected{% endif %}>100%</option>
+                                                                <option value="80%" {% if baseCompo.ratio == "80%" %}selected{% endif %}>80%</option>
+                                                                <option value="70%" {% if baseCompo.ratio == "70%" %}selected{% endif %}>70%</option>
+                                                                <option value="65%" {% if baseCompo.ratio == "65%" %}selected{% endif %}>65%</option>
+                                                                <option value="60%" {% if baseCompo.ratio == "60%" %}selected{% endif %}>60%</option>
+                                                                <option value="50%" {% if baseCompo.ratio == "50%" %}selected{% endif %}>50%</option>
+                                                                <option value="40%" {% if baseCompo.ratio == "40%" %}selected{% endif %}>40%</option>
+                                                                <option value="35%" {% if baseCompo.ratio == "35%" %}selected{% endif %}>35%</option>
+                                                                <option value="30%" {% if baseCompo.ratio == "30%" %}selected{% endif %}>30%</option>
+                                                                <option value="20%" {% if baseCompo.ratio == "20%" %}selected{% endif %}>20%</option>
+                                                            </select>
+                                                
+                                                        <div class="col-sm-1 mt-2">
+                                                            <a href="{{path('back_produit_supprime_composant_supplementaire')}}" class="remove-ratio btn btn-danger {{baseCompo.numComposant}}"  data-id="{{baseCompo.base.id}}" data-numcompo="{{baseCompo.numComposant}}"><i class="os-icon os-icon-ui-15"></i></a>
+                                                        </div>
+                                                        
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="new-composant"></div>
+                                <h6 class="erreur text-center"></h6>
+                                <input type="hidden" id="somme" name="somme" value="100">
+                                <button class="btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+
+                                <a href="" class="add-composant btn btn-secondary btn-sm" data-comptcompo="{{comptCompo}}"> <i class="os-icon os-icon-plus-circle"></i> Ajouter un composant</a>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script>
+        $(function(){
+            let ratio1 = parseInt($('#ratio-1').val());
+            let ratio2 = parseInt($('#ratio-2').val());
+            let count = parseInt($('.add-composant').attr('data-comptcompo'));
+            
+            $('#ratio-1').change(function(){
+                
+                ratio1 = parseInt($(this).val());
+                if(isNaN(ratio2)){
+                    ratio2 = 0; 
+                }
+                calculRatio(ratio1, ratio2);
+                
+            });
+            if($('#ratio-2').attr('data-confirm') == "oui"){
+                $('.add-composant').hide();
+            }
+            
+            $(".add-composant").click(function(e){
+                e.preventDefault();
+                //alert('ok');
+                count += 1;
+                
+                console.log(ratio1);
+                $('.add-composant').hide('slow');
+                
+                let html = '';
+                html += '<div class=" row add-compo form-group">';
+                html += '<div class="col-sm-7 d-flex">';
+                html += '<select class="form-control" name="composant-2">';
+                html += '{% for composant in composants %}';
+                html += '<option value="{{composant.id}}">{{composant.nom}}</option>';
+                html += '{% endfor %}';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-md-4 d-flex">'
+                html += '<select class="form-control" id="ratio-2" name="ratio-2">';
+                html += '<option value="100%">100%</option>';
+                html += '<option value="80%">80%</option>';
+                html += '<option value="70%">70%</option>';
+                html += '<option value="65%">65%</option>';
+                html += '<option value="60%">60%</option>';
+                html += '<option value="50%">50%</option>';
+                html += '<option value="40%">40%</option>';
+                html += '<option value="35%">35%</option>';
+                html += '<option value="30%">30%</option>';
+                html += '<option value="20%">20%</option>';
+                html += '</select>';
+                html += '</div>';
+                html += '<div class="col-sm-1 d-flex">';
+                html += '<a href="" class="removeComposant btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>';
+                html += '</div>';
+                html += '</div>';
+                $(".new-composant").append(html);
+
+                calculRatio(ratio1, ratio2);
+
+                $('#ratio-2').change(function(){
+                    ratio2 = parseInt($(this).val());
+                    calculRatio(ratio1, ratio2);
+                });
+
+                $('#ratio-1').change(function(){
+                    ratio1 = parseInt($(this).val());
+                    calculRatio(ratio1, ratio2);
+                });
+            });
+
+            $(document).on('click', '.removeComposant', function(e){
+                e.preventDefault();
+                $('.erreur').html('');
+                $(".add-composant").show('slow');
+                $(this).closest('.add-compo').remove();
+                calculRatio(ratio1, ratio2);
+            });
+
+            $('.remove-ratio').click(function(e) {
+            
+                e.preventDefault();
+                
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('href'),
+                    data: {id: $(this).attr('data-id'), numComposant: $(this).attr('data-numcompo')},
+                    dataType: 'json',
+                    success: function(data) { 
+                        
+                        $('.'+data.supprimer+'').remove();
+                        $('.add-composant').show('slow');
+                        
+                    }
+                });
+            });
+
+            
+            function calculRatio(val1, val2){  
+                
+                if($("#ratio-2").is(':visible')){
+                    totalRatio = val1 + val2;
+                }else{
+                    totalRatio = val1;
+                }
+
+                if(totalRatio > 100 || totalRatio < 100 ){
+                    $('.erreur').html('la somme des ratios doit être égale à 100%').css('color', 'red');
+                
+                }else if(totalRatio == 100){
+                    $('.erreur').html('');
+                }
+                $("#somme").val(totalRatio);
+            }
+
+            $('#ratio-2').change(function(){
+                ratio2 = parseInt($(this).val());
+                calculRatio(ratio1, ratio2);
+            });
+
+            $('#ratio-1').change(function(){
+                ratio1 = parseInt($(this).val());
+                calculRatio(ratio1, ratio2);
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <style>
+        div, p, h3, address, body, h2, th, td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 95%;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        table { page-break-inside:auto; }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+
+        .etiquette {
+            font-weight: bolder;
+            height: 35px;
+            vertical-align: bottom;
+            background-color: #ddf0f2;
+            padding: 5px;
+            border-top: #58b6c0 2px solid;
+        }
+    </style>
+</head>
+<body>
+    <div style="overflow: hidden;">
+        <table style="width: 100%;  border-collapse: collapse; border-bottom: 2px solid rgb(121,165,52);">
+            <tr style="padding: 5px;">
+                <td >
+                    <img  style="margin-left: -22px; width: 550px;" src="{{ app.request.schemeAndHttpHost ~ asset('assets/images/logoAeroma.jpg') }}"><br>
+                </td>
+                <td>
+                    <h4 style="float: right;">
+                        76, rue des Frères Lumière <br>
+                        59560 Comines <br>
+                        Tél: 03.74.46.81.04 <br>
+                        Fax : 03.20.39.73.47 <br>
+                        Siret 80084720400016 <br>
+                        IBAN FR76 13507001003112021219110 
+                    </h4>
+
+                </td>
+                
+            </tr>
+        </table>
+
+        {% set client =  devis.client %} 
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; margin-top: 20px">
+            <tr>
+                <td colspan="2" style=" vertical-align: bottom; ">
+                    
+                    <address style="padding: 20px; font-style: normal; font-size: 100%; margin-top: 10px; font-weight: bold;">
+                        
+                        {% if devis.boutique %}
+                                     
+                            {% if client.raisonSocial %}
+                                Client: {{client.raisonSocial}} <br>
+                            {% endif %}
+
+                            Nom destinataire: {{devis.boutique.nomShop}} <br>
+                       
+                            Nom: {{devis.boutique.nom}} <br>
+                            Prénom(s): {{devis.boutique.prenom}} <br>
+
+                            {% if bl.adresseLivraison and not bl.adresseFacturation %}
+
+                                {{bl.adresseLivraison.adresse}} <br>
+                                {{bl.adresseLivraison.codePostal}} <br>
+                                {{bl.adresseLivraison.ville}} <br>
+                    
+                            {% else %}
+                                
+                                {{devis.boutique.adresse}} <br>
+                                {{devis.boutique.codePostal}} <br>
+                                {{devis.boutique.ville}} <br>
+
+                                {#% if devis.boutique.commune %}
+                                    {{devis.boutique.commune}} <br>
+                                {% endif %#}
+
+                                
+                            {% endif %}
+                            
+                            {% if client.pays %}
+                                {{ client.pays }}  <br>
+                            {% endif %}
+
+                            email: {{devis.boutique.email }} <br>
+                            Téléphone: {{devis.boutique.telephone }} <br>
+                                
+                            
+                        {% else %}
+
+                            {% if client.raisonSocial %}
+                                Client: {{client.raisonSocial}} <br>
+                            {% endif %}
+
+                            Nom destinataire: {{client.nomDestinataire}}<br>
+
+                            Nom: {{client.lastName }} <br>
+                            Prénom(s): {{client.firstname }}<br>
+
+                            
+                            {% if bl.adresseLivraison and not bl.adresseFacturation %}
+                                
+                                {{bl.adresseLivraison.adresse}} <br>
+                                {{bl.adresseLivraison.codePostal}} <br>
+                                {{bl.adresseLivraison.ville}} <br>
+                    
+                            {% elseif bl.adresseFacturation %}
+                                 
+                                {{client.adresseFacturation }} <br>
+                                {{ client.codePostalFacturation}} <br>
+                                {{client.villeFacturation}} <br>
+
+                            {% else %}
+                                
+                                {{client.adresseServiceAchats }} <br>
+                                {{ client.codePostalServiceAchat}} <br>
+                                {{client.villeServiceAchat}} <br>
+
+        
+                            {% endif %}
+
+                            {% if client.pays %}
+                                {{ client.pays }}  <br>
+                            {% endif %}
+
+                            email: {{client.email }} <br>
+                            Téléphone: {{client.telephone }} <br>
+                        {% endif %}
+                        
+                        {% if devis.bonDeCommande.codeInterneClient %}
+                            Code interne : {{ devis.bonDeCommande.codeInterneClient }}
+                        {% endif %}
+    
+                    </address>
+                   
+                </td>
+            </tr>
+            
+        </table>
+    
+        <h1 style="text-align: center"> 
+            BON DE LIVRAISON n°
+            {% if bl.code %}
+                {{bl.code}}
+            {% else %}
+                 {{devis.code}}-{{position}}
+            {% endif %}
+        </h1>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
+            <thead style="color: black; width: 100%; background-color: #DCDCDC; ">
+                <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">CODE</th>
+                <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">DESIGNATION</th>
+                <th style="text-align: center;  border: 1px solid #696969; padding: 10px">QTÉ</th>
+                <th style="text-align: center;  border: 1px solid #696969; padding: 10px">NOTA</th>
+            </thead>
+
+            <tbody style="border-bottom: 1px solid #696969;">
+                
+                {#% set exist = null %}
+                {% set count = 0 %#}
+                {% set quantiteTotal = 0 %}
+
+                {% set echantillons = [] %}
+
+                {% for lq in lotQuantity %}
+                   
+                    {% if not lq.echantillon %} 
+                        <tr style="padding: 5px; ">
+                            {% set prix = 0 %}
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969; text-align: center; width: 20%  ">
+                                {{lq.produit.reference}} {% if lq.declinaison %} {{lq.declinaison}} {% endif %} <br>
+                                
+                            </td>
+                            
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969; width: 40%  ">
+                            
+                                {% set nom = lq.produit.getNomMarqueBlanche(client) %}
+
+                                {{nom}}
+
+                                {% if lq.offert %}(Offert){% endif %}
+
+                            </td>
+
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969; text-align: center; width: 10%  ">{{lq.quantite}}</td>
+
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969;  ">
+
+                                {% if client.ajoutNumeroLot %} 
+                                    <p>   
+                                        {% if lq.lotCrf %}
+                                            LOT PF : {{lq.lotCrf}} <br>
+                                        {% endif %}
+
+                                        {% if lq.lotVegetol %}
+                                            LOT PDO : {{lq.lotVegetol.numero}} <br>
+                                        {% endif %}
+
+                                        {% if lq.lotNicotine %}
+                                            LOT NIC :  {{lq.lotNicotine.numero}}<br>
+                                        {% endif %}
+                                    
+                                        {% if lq.lotGlycerine %}
+                                            LOT Olivéine : {{lq.lotGlycerine.numero}}<br>
+                                        {% endif %}
+                                    
+                                        {% if lq.lotArome %}
+                                            LOT AROME : {{lq.lotArome.numero}}<br>
+                                        {% endif %}
+                                    </p>
+                                {% endif %}
+
+                            </td>
+                            {% set quantiteTotal = quantiteTotal +  lq.quantite %}
+                            
+                        </tr>
+                    {% else %}
+                        {% set echantillons = echantillons|merge([lq]) %}
+                    {% endif %}
+                   
+                {% endfor %}
+            
+            </tbody>
+        </table>
+
+        {% if echantillons|length > 0 %}
+
+            <h5 style="text-align: center"> ECHANTILLON{{ (echantillons|length > 1) ? 'S' : '' }}  DE  PRODUIT{{ echantillons|length > 1 ? 'S' : '' }}</h5>
+           
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
+                <thead style="color: black; width: 100%; background-color: #DCDCDC; ">
+                    <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">CODE</th>
+                    <th style="text-align: center;  border: 1px solid #696969;  padding: 10px">DESIGNATION</th>
+                    <th style="text-align: center;  border: 1px solid #696969; padding: 10px">QTÉ</th>
+                    <th style="text-align: center;  border: 1px solid #696969; padding: 10px">NOTA</th>
+                </thead>
+    
+                <tbody style="border-bottom: 1px solid #696969;">
+
+                    {% for lq in echantillons %}
+                        
+                        <tr style="padding: 5px; ">
+                            {% set prix = 0 %}
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969; text-align: center; width: 20%  ">
+                                {{lq.produit.reference}} {% if lq.declinaison %} {{lq.declinaison}} {% endif %} <br>
+                                
+                            </td>
+                            
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969; text-align: center; width: 40%  ">
+                            
+                                {{lq.produit.nom}}
+                                {% if lq.produit.base %}
+                                    {{lq.produit.base.reference}}
+                                {% endif %}
+
+                                {% if lq.produit.contenant %}
+                                    {{lq.produit.contenant.nom}}
+                                {% endif %}
+
+                                {% if lq.offert %}(Offert){% endif %}
+
+                            </td>
+
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969; text-align: center; width: 10%  ">{{lq.quantite}}</td>
+
+                            <td style="padding: 15px; border-left: 1px solid #696969; border-right: 1px solid #696969; text-align: center;  "></td>
+                            {% set quantiteTotal = quantiteTotal +  lq.quantite %}
+                            
+                        </tr>
+
+                    {% endfor %}
+            
+                </tbody>
+            </table>
+
+        {% endif %}
+
+        <div class="message" style="margin-top: 20px;">
+            <h3 style="text-decoration: underline;">Remarques</h3>
+            <h3>Commande du {{devis.date|date('d/m/Y')}}</h3> 
+
+            <h3>Expédié le {{bl.dateExpedition|date('d/m/Y')}}</h3>
+
+            {% if bl.nombreColis > 0 %}
+                <h3>Nombre de colis: {{bl.nombreColis}}</h3>
+            {% endif %}
+            
+            {% if bl.expresse > 0 %}
+                <h3>Livraison express: {{bl.expresse}}</h3>
+            {% endif %}
+
+            {% if bl. affretement  > 0 %}
+                <h3>Affrêtement: {{bl.affretement}}</h3>
+            {% endif %}
+
+        </div>
+    </div>
+</body>
+</html>

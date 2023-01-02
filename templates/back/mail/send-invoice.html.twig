@@ -1,0 +1,26 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+
+{% block title %}Laboratoires Aeroma – validation bon de Commande n°{{devis.code}} {% endblock %}
+{% block content %}
+    <p style="margin-top: 0px;">
+        {% if devis.client.civility == 'M.' %}Monsieur{% else %}Madame{% endif %},
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        Nous venons de valider votre devis et avons le plaisir de vous adresser le bon de commande <strong>{{ purchaseOrder.codeNumber }}</strong>  relatif à l’achat de  :
+
+        <ul>
+            {% for i in 1..n %}
+                <li>{{ products[i]['unit'] }} {{ products[i]['designation'] }}</li>
+            {% endfor %}
+        </ul>
+
+        Vous y trouverez les instructions pour verser votre acompte de 35% nécessaire pour la prise en compte de votre commande. Nous vous adresserons une facture d’acompte une fois votre paiement reçu.
+        <br>
+        {#<p>
+            Pour faciliter votre paiement, vous trouverez ci-dessous le lien permettant de payer par carte bancaire. <br>
+            <a href="">https://liendepaiement</a>
+        </p>#}
+        Nous sommes à votre disposition pour toute information complémentaire.<br><br>
+        Bien cordialement,
+    </div>
+{% endblock %}

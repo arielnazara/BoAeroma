@@ -1,0 +1,56 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+
+{% block configuration %}
+
+    {% for message in app.flashes('successFournisseur') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <h6 class="element-header">Liste des fournisseurs</h6>
+
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+        <a href="{{path('back_produit_creation_fournisseur')}}" class="btn btn-sm mb-4 btn-primary"><i class="os-icon os-icon-plus-circle"></i> Créer un fournisseur</a>
+
+        <table class="table table-striped table-lightfont table-hover dataTable1">
+            <thead>
+                <tr>
+                    <th> Nom </th>
+                    <th> Prénom(s)</th>
+                    <th> Email </th>
+                    <th>Adresse</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if fournisseurs %}
+                    {% for fournisseur in fournisseurs %}
+                        <tr>
+                            <td>{{fournisseur.nom}}</td>
+                            <td>{{fournisseur.Prenom}}</td>
+                            <td>{{fournisseur.email}}</td>
+                            <td>
+                                {{fournisseur.adresse}} <br>
+                                {{fournisseur.codePostal}} <br>
+                                {{fournisseur.ville}}
+                            </td>
+                            <td>
+                                <a href="{{path('back_produit_modification_fournisseur', {id: fournisseur.id})}}" class="btn btn-sm btn-success"><i class="os-icon os-icon-edit"></i></a>  
+                                <form class="d-inline" method="post" action="{{ path('back_produit_supprime_fournisseur', {'id': fournisseur.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet fournisseur?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ fournisseur.id) }}">
+                                    <button style="padding-top: 0;" class="btn btn-sm btn-danger"><i class="os-icon os-icon-ui-15"></i></button>
+                                </form> 
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        
+    </div>
+
+{% endblock %}
+

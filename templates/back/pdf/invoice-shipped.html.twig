@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <style>
+        div, p, h3, address, body, h2, th, td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 93%;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        table { page-break-inside:auto; }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        .tr:nth-child(even) {background-color: #f2f2f2;}
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+
+        .etiquette {
+            font-weight: bolder;
+            height: 35px;
+            vertical-align: bottom;
+            background-color: #ddf0f2;
+            padding: 5px;
+            border-top: #58b6c0 2px solid;
+        }
+
+     
+    </style>
+</head>
+<body>
+<div class="body" style="overflow: hidden;">
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="width: 55%;">
+                <div>
+                    <p style="margin-left: -22px; margin-bottom: 0; font-size: 125%">
+                        <img  style="width: 550px;" src="{{ app.request.schemeAndHttpHost ~ asset('assets/images/logoAeroma.jpg') }}"><br>
+                    </p>
+                </div>
+            </td>
+
+            <td>
+                <div>
+                    <h1 style="float: right;">FACTURE<br>
+                        <span style="color:gray;">
+                            {{invoiceOrder.date|date('d/m/Y')}}
+                            
+                            {% set increment = invoiceOrder.numero|slice(-4) %}
+                            
+                            {% set numero = invoiceOrder.numero|customInvoiceNumber %}
+                        </span> <br>
+
+                        <span style="color: gray;;">{{ numero }}-</span><span style="font-weight: bolder;font-size: 1.2em; color:black">{{ increment }}</span> <br>
+
+                        {% if invoiceOrder.estPayer == true %}
+                            <span style="color: #0d3b96">Acquittée</span>
+                        {% endif %}
+                    </h1> 
+                </div> 
+            </td>
+        </tr>
+    </table>
+
+    <br><br>
+
+    {% set client = devis.client %}
+    {% set bonDeCommande = devis.bonDeCommande %}
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <th>Adresse de livraison</th>
+            <th>Adresse de facturation</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    
+                    {% if devis.boutique %}
+                        
+                        Client: {{devis.boutique.nomShop}} <br>
+                        Nom: {{devis.boutique.nom}} <br>
+                        Prénom(s): {{devis.boutique.prenom}} <br>
+                        {{devis.boutique.adresse}} <br>
+                        {{devis.boutique.codePostal}} <br>
+                        {{devis.boutique.ville}} <br>
+                        {% if devis.boutique.commune %}
+                            {{devis.boutique.commune}} <br>
+                        {% endif %}
+                        {{client.pays}} <br>
+                        email: {{devis.boutique.email }} <br>
+                        Téléphone: {{devis.boutique.telephone }} <br>
+
+                    {% else %}
+                        
+                        {% if devis.shop == "grossiste_greendot" %}
+                            {% set client = bonDeCommande.client %}
+                        {% endif %}
+                        {% if client.raisonSocial %}
+                                Client: {{client.raisonSocial}} <br>
+                            {% endif %}
+                                Nom: {{client.lastName }} <br>
+                                Prénom(s): {{client.firstname }}<br>
+                                {{client.adresseServiceAchats }} <br>
+                                {{ client.codePostalServiceAchat}} <br>
+                                {{client.villeServiceAchat}} <br>
+                            {% if client.communeServiceAchat %}
+                                {{client.communeServiceAchat}} <br>
+                            {% endif %}
+                                {{client.pays}}<br>
+                                email: {{client.email }} <br>
+                                Téléphone: {{client.telephone }} <br>
+                        {% endif %}
+                    
+                        
+                        {#{% if client.raisonSocial %}
+                            Client: {{client.raisonSocial}} <br>
+                        {% endif %}
+                        Nom: {{client.lastName }} <br>
+                        Prénom(s): {{client.firstname }}<br>
+                        {{client.adresseServiceAchats }} <br>
+                        {{ client.codePostalServiceAchat}} <br>
+                        {{client.villeServiceAchat}} <br>
+                        {% if client.communeServiceAchat %}
+                            {{client.communeServiceAchat}} <br>
+                        {% endif %}
+                        {{client.pays}}<br>
+                        email: {{client.email }} <br>
+                        Téléphone: {{client.telephone }} <br>
+
+                    {% endif %}#}{# originale script #}
+
+                    {% if bonDeCommande.codeInterneClient %}
+                        Code interne : {{ bonDeCommande.codeInterneClient }} <br>
+                    {% endif %}
+                    Numéro TVA : {{ client.noTva }}
+                    
+                    
+                </td>
+                <td>
+
+                    {% if adresseFacturation %}
+
+                        {% if adresseFacturation.raisonSocial %}
+                            Client: {{adresseFacturation.raisonSocial}} <br>
+                        {% endif %}
+                        Nom: {{adresseFacturation.lastName }} <br>
+                        Prénom(s): {{adresseFacturation.firstname }}<br>
+                        {{adresseFacturation.adresseFacturation }} <br>
+                        {{ adresseFacturation.codePostalFacturation}} <br>
+                        {{adresseFacturation.villeFacturation}} <br>
+                        {% if adresseFacturation.communeFacturation %}
+                            {{adresseFacturation.communeFacturation}} <br>
+                        {% endif %}
+                        {{adresseFacturation.pays}}<br>
+                        email: {{adresseFacturation.email }} <br>
+                        Téléphone: {{adresseFacturation.telephone }} <br>
+
+                    
+                    {% else %}
+                    
+                        {% if client.raisonSocial %}
+                            Client: {{client.raisonSocial}} <br>
+                        {% endif %}
+                        
+                        Nom: {{client.lastName }} <br>
+                        Prénom(s): {{client.firstname }}<br>
+                        {{client.adresseFacturation }} <br>
+                        {{ client.codePostalFacturation}} <br>
+                        {{client.villeFacturation}} <br>
+                        {% if client.communeFacturation %}
+                            {{client.communeFacturation}} <br>
+                        {% endif %}
+                        {{client.pays}}<br>
+                        email: {{client.email }} <br>
+                        Téléphone: {{client.telephone }} <br>
+
+                    {% endif %}
+
+                    
+                  
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse; ">
+        <thead style="background-color: rgb(240,240,240); " >
+            <th style=" text-align: center;  padding: 7px;">Numéro de facture</th>
+            <th style=" text-align: center; padding: 7px;">Date de facturation</th>
+            <th style=" text-align: center; padding: 7px;">Réf. de commande</th>
+            <th style=" text-align: center; padding: 7px;">Date de commande</th>
+        </thead>
+
+        <tbody>
+            <tr  style=" border-bottom: 1pt solid #E0E0E0;">
+                <td style=" text-align: center;  padding: 5px;">
+                    {{invoiceOrder.numero}}
+                </td>
+
+                <td style=" text-align: center;">
+                    {{invoiceOrder.date|date('d/m/Y')}} 
+                </td>
+
+                <td style=" text-align: center;">
+                    {{purchaseOrder.code}}
+                </td>
+
+                <td style=" text-align: center;">
+                    {{purchaseOrder.date|date('d/m/Y')}}
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+    
+    <table style="margin-top: 50px; width: 100%; border-collapse: collapse;  ">
+        <thead style="background-color: rgb(240,240,240); border-top: red;" >
+            <th style=" text-align: center;  padding: 7px;">Référence</th>
+            <th style=" text-align: center; padding: 7px;">Produit</th>
+            <th style=" text-align: center; padding: 7px;">Prix unitaire <br>(HT)</th>
+            <th style=" text-align: center; padding: 7px;">Quantité</th>
+            <th style=" text-align: center; padding: 7px;">Total(HT)</th>
+        </thead>
+
+        <tbody>
+
+            {% set final = false %}
+            {% for lot in lotOrders %}
+                {% if lot.dernierLot %} {% set final = true %} {% endif %}
+                <tr>
+                    <td style="background-color: lightgrey; padding-top: 5px; border-bottom: 2px solid grey;" colspan="6">
+                        <span style="text-transform: uppercase">{{ lot.nom }} </span>  expédiée le {{ lot.dateExpedition|date('d.m.Y') }}
+                    </td>
+                </tr>
+                {% set commandeTrier = lot.lotQuantites|trier(client) %}
+                {% for lq in commandeTrier %}
+                    {% if not lq.echantillon %}
+                        <tr style=" border-bottom: 1pt solid #E0E0E0;">
+                            <td style=" text-align: center;  padding: 5px;">
+                                {{lq.produit.reference}}
+                            </td>
+                            <td style=" text-align: center;  padding: 5px;">
+                                
+                                {% set nom = lq.produit.getNomMarqueBlanche(client) %}
+
+                                {{nom}}
+                                
+                                {% if lq.produit.principeActif %}
+                                    {{lq.produit.principeActif.principeActif}} {{lq.declinaison}}
+                                {% endif %}
+                            </td>
+                        
+                            <td style=" text-align: center;  padding: 5px;">
+                                {% set prix = 0 %}
+
+                                {% set offert = false %}
+                                {% if lq.offert %}
+                                    {% set offert = true %}
+                                {% endif %}
+
+                                {% if offert %}
+                                    <span style="color: green;">Offert</span>
+                                    {% set prix = 0 %}
+                                {% else %}
+                                    
+                                    {% if lq.prixSpecial %}
+                                        {{lq.prixSpecial|number_format(2, '.', ',')}}€
+                                        {% set prix = lq.prixSpecial %}
+                                    {% else %}
+                                        {{lq.prix|number_format(2, '.', ',')}}€
+                                        {% set prix = lq.prix %}
+                                    {% endif %}
+                                {% endif %}
+
+                            </td>
+                            <td style=" text-align: center;  padding: 5px;">
+                                {{lq.quantite}}
+                            </td>
+                            <td style=" text-align: center;  padding: 5px;">
+                                {% set totalPerProduct =  lq.quantite * prix %}
+                                
+                                {% if totalPerProduct %}
+                                    {{totalPerProduct|number_format(2, ',', ' ')}}€
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    
+    <table style=" width: 100%; font-size: 100%;">
+        <tr>
+            <td>
+                {% set dev = devis %}
+
+                {% if devis.montantFinal %}
+                    {% set dev = devis.montantFinal %}
+                {% endif %}
+
+                {% if devisFinal is defined and devisFinal %}
+                    {% set dev = devisFinal %}
+                {% endif %}
+
+                <table style=" width: 90%; border-collapse: collapse; float: left; margin-top: -60px">
+                    <thead style="background-color: rgb(240,240,240); ">
+                        <th style="padding: 5px;">Détail des taxes</th>
+                        <th style="padding: 5px;">Taux de taxe</th>
+                        <th style="padding: 5px;">Taxe total</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Produits</td>
+                            <td>
+                                {% if invoiceOrder.tva == 0 %}
+                                    <h2>AUTOLIQUIDATION DE LA TVA</h2>
+                                {% else %}
+                                    20 % 
+                                {% endif %}
+                            </td>
+                            <td>{{invoiceOrder.tva|number_format(2, ',', ' ') }}€</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+               
+                <table style="width: 90%; border-collapse: collapse; margin-top: 25px; float:right;">
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;">Montant total</td>
+                        <td style="text-align: right;">
+                            {{invoiceOrder.total|number_format(2, ',', ' ') }}€
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;">Frais de livraison </td>
+                        <td style="text-align: right;">
+                            {% if  devis.fraisExpedition and devis.fraisExpedition > 0 %}
+                                {{devis.fraisExpedition|number_format(2, ',', ' ')}}€
+                            {% else %}
+                                Livraison gratuite
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgb(240,240,240); padding: 10px; text-align: right; "> <strong>Total (HT)</strong> </td>
+                        <td style="text-align: right;"> <strong>{{invoiceOrder.totalHt|number_format(2, ',', ' ') }}€</strong> </td>
+                    </tr>
+
+                    {% if invoiceOrder.escompte and invoiceOrder.escompte > 0 and invoiceOrder.netFinancier %}
+                    
+                        <tr>
+                            <td style="background-color: rgb(240,240,240); padding: 10px; text-align: right; "> <strong>Escompte {{ invoiceOrder.pourcentageEscompte|round(2) }} % </strong> </td>
+                            <td style="text-align: right;"> <strong>{{invoiceOrder.escompte|number_format(2, ',', ' ') }}€</strong> </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: rgb(240,240,240); padding: 10px; text-align: right; "> <strong>Net financier </strong> </td>
+                            <td style="text-align: right;"> <strong>{{invoiceOrder.netFinancier|number_format(2, ',', ' ') }}€</strong> </td>
+                        </tr>
+                    {% endif %}
+
+                    {% if invoiceOrder.tva != 0 %}
+                        <tr>
+                            <td style="background-color: rgb(240,240,240); padding: 10px;  text-align: right;"> <strong>Taxe total</strong> </td>
+                            <td style="text-align: right;"> <strong>{{invoiceOrder.tva|number_format(2, ',', ' ') }}€</strong> </td>
+                        </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Total TTC </strong>  </td>
+                        <td style="text-align: right;"> <strong>{{invoiceOrder.totalTtc|number_format(2, ',', ' ') }}€</strong> </td>
+                    </tr>
+                       
+                    <tr>
+                        {% set bonDeCommande = devis.bonDeCommande %}
+                        {% if bonDeCommande.acompte %}
+                            <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> 
+                                <strong>Acompte déjà payé</strong> <br>
+                            </td>
+                            <td style="text-align: right;"> <strong>{{bonDeCommande.acompte|number_format(2, ',', ' ') }}€</strong> </td>
+                        {% endif %}
+                    </tr>
+                    {#% set lastInvoice = invoiceOrder.client.id | getLastInvoiceByClient %}
+                    {% if lastInvoice is not null %}
+                        {% if lastInvoice.balance < 0 %}
+                            {% set balance = lastInvoice.balance | abs %}
+                            <tr>
+                                <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Reste à payer du dernier facture </strong>  </td>
+                                <td style="text-align: right;"> <strong>{{balance|number_format(2, ',', ' ') }}€</strong> </td>
+                            </tr>
+                            <tr>
+                                {% set totalTtc  =  invoiceOrder.totalTtc %}
+                                {% set  totalTtc  = 0 + totalTtc %}
+                                {% set totalTtc = totalTtc + balance %}
+                                
+                                <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Total à payer </strong>  </td>
+                                <td style="text-align: right;"> <strong>{{ invoiceOrder.totalTtc|number_format(2, ',', ' ') }}€</strong> </td>
+                            </tr>
+                        {% endif %}
+                    {% endif %#}
+                    
+                    {% if invoiceOrder.estPayer %}
+                        <tr>
+                            <td style="background-color: rgb(240,240,240);  padding: 10px; text-align: right;"> <strong>Montant réglé </strong>  </td>
+                            <td style="text-align: right;"> <strong>{{invoiceOrder.montantPayer|number_format(2, ',', ' ') }}€</strong> </td>
+                        </tr>
+                    {% endif %}
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <div style="width: 100%;">
+        {% if invoiceOrder.estPayer %}
+            <p style="width: 100%; text-align: right">
+                <strong>
+                    {% if invoiceOrder.balance %}
+                        {% if invoiceOrder.balance < 0 %}
+                            SOLDE : {{ invoiceOrder.balance|number_format(2, ',', ' ') }}€
+                        {% elseif invoiceOrder.balance == 0 %}
+                        {% else %}
+                            Montant à déduire sur la prochaine facture : {{ invoiceOrder.balance|number_format(2, ',', ' ') }}€
+                        {% endif %}
+                    {% else %}
+                    SOLDE : 0,00€
+                    {% endif %}
+                </strong>
+            </p>
+            <h2>
+                <strong>
+                    Paiement reçu le {{ invoiceOrder.datePaiement|date('d-m-Y') }}
+                </strong>
+            </h2>
+        {% endif %}
+    </div>
+   
+</div>
+
+</body>
+</html>

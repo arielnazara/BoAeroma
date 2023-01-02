@@ -1,0 +1,22 @@
+{# templates/bundles/TwigBundle/Exception/error404.html.twig #}
+{% extends 'front-base.html.twig' %}
+
+{% block title "Page not found" %}
+{% block classBody "error-page" %}
+
+{% block content %}
+    <div class="wrapper">
+        <div class="page-header error-page">
+            <div class="page-header-image" style="background-image: url('{{ asset('assets/images/404.svg') }}');"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h1 class="title">404</h1>
+                        <p class="lead">Page not found :(</p>
+                        <h4 class="description text-default">Ooooups! Looks like you got lost.</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

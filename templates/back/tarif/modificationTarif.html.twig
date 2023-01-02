@@ -1,0 +1,328 @@
+{% extends 'back/tarif/creationTarif.html.twig' %}
+
+{% block title %}Modification Tarif{% endblock %}
+
+{% block tarifs %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <div class="row d-flex align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="title">Modification tarif {% if tarif.client %}client {% elseif tarif.marque %} marque {% endif %}</h4>
+                            
+                            
+                            {% if listeProduits|length > 0 %}
+                            
+                                <div class="alert row border-warning mt-3 " role="alert">
+                                    {% set nbr = listeProduits|length %}
+                                    <div class="col-md-9 d-flex align-items-center ">
+
+                                        <i class="os-icon text-warning  os-icon-alert-triangle mr-3" style="font-size: 2.50em; color: #fdd96f !important"></i> 
+                                        
+                                        <h6 class="d-inline " style="font-weight: bold;">
+                                            {% if nbr > 1 %}
+                                                {{ nbr }} produits utilisent cet tarif
+                                            {% else %}
+                                                {{ nbr }} produit utilise cet tarif
+                                            {% endif %}
+                                        </h6>
+                                        
+
+                                    </div>
+
+                                    <div class="col d-flex align-items-center ">
+                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target=".bd-example-modal-lg"><i class="os-icon os-icon-eye"></i> Voir</button>
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
+                           
+
+                            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content p-3">
+                                        <table class="table dataTable1  table-hover">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Reference</th>
+                                                    <th scope="col">Nom</th>
+                                                    <th scope="col">decliner avec</th>
+                                                    <th scope="col">contenant</th>
+                                                    <th scope="col">support</th>
+                                                    <th scope="col">Catégorie</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for produit in listeProduits %}
+                                                    
+                                                    <tr>
+                                                        <th scope="row">{% if produit.reference is defined and produit.reference is not null %}{{ produit.reference }} {% endif %}</th>
+                                                        <td>
+                                                            {% if tarif.client %}
+                                                                {% if produit.getNomMarqueBlanche(tarif.client) is defined and produit.getNomMarqueBlanche(tarif.client) is not null %}
+                                                                    {{ produit.getNomMarqueBlanche(tarif.client) }}
+                                                                {%  endif %}
+                                                                
+
+                                                            {% else %}
+                                                                
+                                                                {{ produit.nom }}
+                                                                
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if produit.principeActif is defined and produit.principeActif is not null %}
+                                                                {{ produit.principeActif }}
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if produit.contenant is defined and produit.contenant is not null %}
+                                                                {{ produit.contenant }}
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if produit.base is defined and produit.base is not null %}
+                                                                {{ produit.base }}
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if produit.categorie is defined and produit.categorie is not null %}
+                                                                {{ produit.categorie }}
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+
+                                                {% endfor %}
+                                            </tbody>
+                                          </table>
+                                          
+                                         
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 " style="margin-top: 26px;">
+                            <div class="border shadow p-2 bg-light rounded text-center">
+                                <p>
+                                    <h4>{{tarif.categorie}} - {{tarif.base}} - {{tarif.contenance}} - {{tarif.declineAvec}} </h4>
+                                    Prix de référence détaillant: {{tarif.prixDeReferenceDetaillant}}€ du {{tarif.dateAjout|date('d M Y')}} <br>
+                                    Prix de référence grossiste: {{tarif.prixDeReferenceGrossiste}}€ du {{tarif.dateAjout|date('d M Y')}} <br>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="mt-4 row">
+                        <div class="col-md-12"> 
+                            {{ form_start(form,  {'action': path('back_ajout_tarif', {id: tarif.id}), 'method': 'POST'}) }}
+                                {{form_errors(form)}}
+
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.nom, {'label': 'Nom ', 'attr':{'class': 'form-control'}}) }}
+                                    </div>
+    
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.categorie, {'label': 'Categorie', 'attr':{'class': 'form-control search'}}) }}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.contenance, {'label': 'Contenant', 'attr':{'class': 'form-control search'}}) }}
+                                    </div>
+    
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.base, {'label': 'Support', 'attr':{'class': 'form-control search'}}) }}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="">Meme tarif toute déclinaison :</label>
+                                        {{ form_row(form.memeTarif, { 'attr':{'class': 'form-check form-check-inline ', 'required': true}}) }}
+                                    </div>
+                                    <div class="form-group col-md-6 ">
+                                        {{ form_row(form.declineAvec, {'label': 'Choisir un additif', 'attr':{'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md-6" {% if not tarif.client %} style="display: none;" {% endif %}>
+                                        {{ form_row(form.client, { 'label': 'Client', 'attr':{'class': 'form-control ', 'disabled': true}}) }}
+                                    </div>
+    
+                                    <div class="form-group col-md-6" {% if not tarif.marque %} style="display: none;" {% endif %}>
+                                        {{ form_row(form.marque, { 'label': 'Marque', 'attr':{'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.prixDeReferenceDetaillant, {'label': 'Prix de référence détaillant', 'attr':{'class': 'form-control modifier', 'required': true}}) }}
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        {{ form_row(form.prixDeReferenceGrossiste, {'label': 'Prix de référence grossiste', 'attr':{'class': 'form-control modifier', 'required': true}}) }}
+                                    </div>
+                                   
+                                    
+                                </div>
+
+                                <div class="row">
+                                    {% set actif =  tarif.getActivePrice %}
+
+                                    {% set tarifPrincipeActif = null %}
+
+                                    {% for type in types %}
+                                    
+                                        {% if tarif.declineAvec %}
+                                            <div class="form-group col-md-6 p-4">
+
+                                                {% if type.nom|lower in actif|keys %}
+                                                    {% set prices =  tarif.getAllDecl[type.nom|lower] %}
+
+                                                    {% set tarifPrincipeActif = tarif.declineAvec.principeActif %}
+                                                    
+                                                    <div class="declinaison " data-principe="{{tarifPrincipeActif}}" style="display: none;">
+                                                        <div class="text-center ">
+                                                            <h4 class="text-primary">{{type.nom}}</h4>
+                                                        </div>
+
+                                                        {% for key, pri in prices %}
+                                                            <div class="row mt-2">
+                                                                <div class="col-md-5">
+                                                                    <label for="{{key}}">Prix pour {{key}}</label>
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <input class="form-control" type="number" min="0"  step=".01" name="{{tarifPrincipeActif|replace({' ': '', ',': '_', '%': '_'})}}{{key|replace({' ': '', ',': '_', '%': '_'})}}{{type.nom}}" value="{{pri}}">
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                      
+                                                    </div>
+                                                {% endif %}
+
+                                            </div>
+                                        {% endif %}
+                                    
+                                    {% endfor %}
+
+                                </div>
+
+                                <div class="row">
+                                    {% for type in types %}
+                                        
+                                        {% for principe in principes %}
+                                            {% if tarifPrincipeActif != principe.principeActif %}
+                                                <div class="declinaison col-md-6 p-4 " data-principe="{{principe.principeActif}}" style="display: none;">
+                                                    <h4 class="text-center text-primary">{{type.nom}}</h4>
+                                                    {% for decl in principe.declinaisons %}
+                                                        <div class="row mt-2">
+                                                            <div class="col-md-5">
+                                                                <label for="{{decl.declinaison}}">Prix pour {{decl.declinaison}}</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input class="form-control"  type="number" min="0" step=".01" name="{{principe.principeActif|replace({' ': '', ',': '_', '%': '_'}) }}{{decl.declinaison|replace({' ': '', ',': '_', '%': '_'}) }}{{type.nom}}" value="">
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="col-md-6 ">
+                                    <button class="btn btn-{{ info|default('primary') }} float-right">{{ button_label|default('Enregistrer') }}</button>
+                                </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script>
+            $(function(){
+                $('.modifier').attr('type', 'number');
+                if($('#tarif_memeTarif_0:checked')){
+                    $('.declinaison').hide();
+                }
+
+                if($('#tarif_memeTarif_1').prop('checked')){
+                
+                    $('.declinaison').each(function(){
+                        if($('#tarif_declineAvec option:selected').text() == $(this).attr('data-principe')){
+                            $(this).show('slow');
+                        }else{
+                            $(this).hide();
+                        }
+                    })
+                        
+                }
+
+                $('input[type=radio]').change(function() {
+                    let val = $(this);
+                    if( val.val() == 0 ){
+                        
+                        $('.declinaison').each(function(){
+                            if($('#tarif_declineAvec option:selected').text() == $(this).attr('data-principe')){
+                                $(this).show('slow');
+                            }else{
+                                $(this).hide();
+                            }
+                        })
+                        
+                    }else{
+                        
+                        $('.declinaison').hide('slow');
+
+                    }
+                });
+
+                $('#tarif_declineAvec').change(function(){
+                   
+                    if($('#tarif_memeTarif_1').is(':checked'))
+                    {
+                    
+                        $('.declinaison').each(function(){
+                            if($('#tarif_declineAvec option:selected').text() == $(this).attr('data-principe')){
+                                $(this).show('slow');
+                            }else{
+                                $(this).hide('slow');
+                            }
+                        })
+                    }
+                    
+                    
+                });
+
+                $('#tarif_declineAvec').change(function(){
+                    if($('#tarif_memeTarif_1').is(':checked')){
+                        $('.declinaison').each(function(){
+                            if($('#tarif_declineAvec option:selected').text() == $(this).attr('data-principe')){
+                                $(this).show('slow');
+                            }else{
+                                $(this).hide('slow');
+                            }
+                        })
+                    }  
+                });
+
+                $(".search").select2( {
+                    allowClear: true
+                } );
+                
+            });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="">
+    <link rel="icon" type="image/png" href="">
+    <title>{% block title %}Laboratoire Aeroma{% endblock %}</title>
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <!-- Nucleo Icons -->
+    <link href="{{ asset('front/assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+    <link href="{{ asset('front/assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <link href="{{ asset('front/assets/css/font-awesome.css') }}" rel="stylesheet" />
+        <!-- CSS Files -->
+    <link href="{{ asset('front/assets/css/main.css') }}?v=1.0.2" rel="stylesheet" />
+    <link href="{{ asset('front/assets/css/custom.css') }}" rel="stylesheet" />
+    {% block custom_css %}{% endblock %}
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .bg-light {
+            background-color: #f2f4f8 !important;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+    <script src="{{asset('assets/js/tarteaucitron/tarteaucitron.js')}}"></script>
+    <script type="text/javascript">
+        tarteaucitron.init({
+    	  "privacyUrl": "", /* Privacy policy url */
+
+    	  "hashtag": "#laboratoire_aeroma", /* Open the panel with this hashtag */
+    	  "cookieName": "laboratoire_aeroma", /* Cookie name */
+    
+    	  "orientation": "bottom", /* Banner position (top - bottom) */
+       
+          "groupServices": false, /* Group services by category */
+                           
+    	  "showAlertSmall": false, /* Show the small banner on bottom right */
+    	  "cookieslist": false, /* Show the cookie list */
+                           
+          "closePopup": true, /* Show a close X on the banner */
+
+          "showIcon": false, /* Show cookie icon to manage cookies */
+          //"iconSrc": "", /* Optionnal: URL or base64 encoded image */
+          "iconPosition": "BottomRight", /* BottomRight, BottomLeft, TopRight and TopLeft */
+
+    	  "adblocker": false, /* Show a Warning if an adblocker is detected */
+                           
+          "DenyAllCta" : true, /* Show the deny all button */
+          "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
+          "highPrivacy": true, /* HIGHLY RECOMMANDED Disable auto consent */
+                           
+    	  "handleBrowserDNTRequest": false, /* If Do Not Track == 1, disallow all */
+
+    	  "removeCredit": true, /* Remove credit link */
+    	  "moreInfoLink": false, /* Show more info link */
+
+          "useExternalCss": false, /* If false, the tarteaucitron.css file will be loaded */
+          "useExternalJs": false, /* If false, the tarteaucitron.js file will be loaded */
+
+    	  //"cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
+                          
+          "readmoreLink": "", /* Change the default readmore link */
+          
+
+          "mandatory": true, /* Show a message about mandatory cookies */
+        });
+        </script>
+
+
+        <script>
+            tarteaucitron.user.gtagUa = 'GTM-KTR3ZSX';
+            (tarteaucitron.job = tarteaucitron.job || []).push('googletagmanager');
+        </script>
+
+    
+</head>
+{% block stylesheet %}{% endblock %}
+<body class="{% block classBody %}{% endblock %}">
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTR3ZSX"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+{% block content %}
+{% endblock %}
+
+<!--   Core JS Files   -->
+{#<script src="https://js.stripe.com/v3/"></script>#}
+<script src="{{ asset('front/assets/js/core/jquery.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('front/assets/js/core/popper.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('front/assets/js/core/bootstrap.min.js')}}" type="text/javascript"></script>
+
+<!--
+<script src="{{ asset('front/assets/js/argon-design-system.min.js') }}?v=1.0.2" type="text/javascript"></script>
+-->
+{% block custom_js %}{% endblock %}
+</body>
+
+</html>

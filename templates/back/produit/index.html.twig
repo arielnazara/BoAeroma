@@ -1,0 +1,232 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-2">
+            <div class="element-box-tp">
+                <div class="el-buttons-list full-width">
+                    <a class="btn btn-white btn-sm {% if product is defined %}active{% endif %}" href="{{path('back_produit_list')}}"><i class="os-icon os-icon-box"></i> Produits</a>
+                    {#<a class="btn btn-white btn-sm {% if declinaisons is defined %}active{% endif %}" href="{{path('back_produit_declinaison')}}"><i class="os-icon os-icon-window-content"></i> Declinaisons</a>#}
+                    {#<a class="btn btn-white btn-sm {% if aromes is defined %}active{% endif %}" href="{{path('back_produit_list_arome')}}"><i class="os-icon os-icon-aperture"></i> Arome Mat1</a>#}
+                    {#<a class="btn btn-white btn-sm {% if contenants is defined %}active{% endif %}" href="{{path('back_produit_list_contenant')}}"><i class="os-icon os-icon-circle"></i> Contenants</a>#}
+                    {#<a class="btn btn-white btn-sm {% if fournisseurs is defined %}active{% endif %}" href="{{path('back_produit_list_fournisseur')}}"><i class="os-icon os-icon-package"></i> Fournisseurs</a>#}
+                    <a class="btn btn-white btn-sm {% if marques is defined %}active{% endif %}" href="{{path('back_produit_list_marque')}}"><i class="os-icon os-icon-codepen"></i> Marques</a>
+                    <a class="btn btn-white btn-sm {% if gammes is defined %}active{% endif %}" href="{{path('back_produit_list_gamme')}}"><i class="os-icon os-icon-documents-17"></i> Gammes</a>
+                    <a class="btn btn-white btn-sm {% if catalogue is defined %}active{% endif %}" href="{{path('back_liste_gamme_client')}}"><i class="os-icon os-icon-book-open"></i> Catalogue client</a>
+                    <a class="btn btn-white btn-sm {% if categories is defined %}active{% endif %}" href="{{path('back_produit_list_categorie')}}"><i class="os-icon os-icon-cast"></i> Catégories</a>
+                    {#<a class="btn btn-white btn-sm {% if bases is defined %}active{% endif %}" href="{{path('back_produit_list_base')}}"><i class="os-icon os-icon-percent"></i> Support</a>#}
+                    {#<a class="btn btn-white btn-sm {% if references is defined %}active{% endif %}" href="{{path('back_produit_list_reference')}}">Référence</a>#}
+                    <a href="{{ path('back_import_prix') }}" style="display: none ;" >Exporter</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    {% block produits %}
+                    
+                        {% for message in app.flashes('successProduit') %}
+                            <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                        <h6 class="element-header">Liste des produits</h6>
+                        <div id="tablecontent" class="table-responsive">
+                            <div style="margin: auto; display: none" class="loader"></div>
+
+                            <a href="{{path('back_produit_creation')}}" class="btn btn-sm btn-primary mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer un produit</a>
+                            
+                            <table class="table table-striped table-lightfont table-hover dataTable1">
+                                <thead>
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th> Nom commercial interne </th>
+                                        <th>Gamme</th>
+                                        <th>Catégorie</th>
+                                        <th>Tarif <br> détaillant</th>
+                                        <th>Tarif <br> grossiste</th>
+                                        <th> Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if produits %}
+                                        {% for produit in produits %}
+                                            <tr>
+                                                <td>
+                                                    {{produit.reference}}
+                                                </td>
+                                                <td>
+                                                    {{produit.nom}}
+                                                </td>
+                                                {#<td class="text-center">
+                                                    {% if produit.marqueBlanche %}
+                            
+                                                        <button type="button" class="btn badge badge-info-inverted text-left">OUI</button>
+
+                                                    {% else %}
+                                                        <button type="button" class="btn badge badge-danger-inverted text-left">NON</button>
+                                                    {% endif %}
+                                                </td>#}
+
+                                                <td>
+                                                    {{produit.gamme}}
+                                                </td>
+
+                                                <td>
+                                                    {{produit.categorie}}
+                                                </td>
+
+                                                <td>
+                                                    {% if produit.tarif %}
+                                                        
+                                                        {% if produit.tarif.memeTarif %}
+                                                            <span class="badge badge-light"> {{produit.tarif.prixDeReferenceDetaillant}}€</span>
+                                                        {% else %}
+                                                            <span class="badge badge-light"> Par déclinaison</span>
+                                                        {% endif %}
+
+                                                    {% elseif produit.marqueBlanches|length > 0 %}
+                                                        {# amboarina #}
+                                                        <a href="#" class="btn-link" data-toggle="modal" data-target="#Modal{{ produit.id }}">
+                                                            <i class="os-icon os-icon-eye"></i> Tarif client
+                                                        </a>
+
+                                                        <div class="modal fade" id="Modal{{ produit.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog" role="document">
+                                                                <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="exampleModalLabel">Tarif client</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    {% for mb in produit.marqueBlanches %}
+                                                                    
+                                                                        {% set tarif = mb.tarif %}
+                                                                        
+                                                                        {% if tarif %}
+                                                                            {% set client = tarif.client %}
+                                                                            {% set type  = client.typeDeClient %}
+            
+                                                                            <h5> {{ client.raisonSocial }} </h5>
+                                                                            
+                                                                            {% if tarif.memeTarif %}
+            
+                                                                                <table class="table">
+                                                                                <thead class="thead-light">
+                                                                                    <tr>
+                                                                                        <th scope="col">Type de tarif</th>
+                                                                                        <th scope="col">prix</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {% if tarif.prixDeReferenceDetaillant and tarif.prixDeReferenceDetaillant > 0 %}
+                                                                                        <tr>
+                                                                                            <th scope="row">Tarif détaillant</th>
+                                                                                            <td>{{ tarif.prixDeReferenceDetaillant }}</td>
+                                                                                        </tr>
+                                                                                    {% endif %}
+            
+                                                                                    {% if tarif.prixDeReferenceGrossiste and tarif.prixDeReferenceGrossiste > 0 %}
+                                                                                        <tr>
+                                                                                            <th scope="row">Tarif grossiste</th>
+                                                                                            <td>{{ tarif.prixDeReferenceGrossiste }}</td>
+                                                                                        </tr>
+                                                                                    {% endif %}
+                                                                                </tbody>
+                                                                                </table>
+            
+                                                                            {% else %}
+            
+                                                                                <table class="table table-striped">
+            
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th scope="col">Declinaison
+                                                                                                {{produit.principeActif}}
+                                                                                                {{type.nom}}</th>
+                                                                                            <th scope="col">Prix</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        {% for prix in tarif.prixDeclinaisons %}
+                                                                                            {% if prix.actif %}
+                                                                                                {% if prix.typeDeClient.id == type.id %}
+                                    
+                                                                                                    {% for declinaison in produit.declinaison %}
+                                                                                                        {% if prix.declinaison == declinaison %}
+                                            
+                                                                                                            <tr>
+                                                                                                                <th scope="row">{{prix.declinaison}}</th>
+                                                                                                                <td>
+                                                                                                                    {{prix.prix}}€
+                                                                                                                </td>
+                                                                                                            </tr>
+            
+                                                                                                        {% endif %}
+                                                                                                    {% endfor %}
+            
+                                                                                                {% endif %}
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+                                                                                    </tbody>
+                                                                                </table>
+            
+                                                                            {% endif %}
+                                                                        {% endif %}
+
+                                                                    {% endfor %}
+                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    {% endif %}
+    
+                                                </td>
+
+                                                  <!-- Modal -->
+                                              
+                                                <td>
+                                                    {% if produit.tarif %}
+                                                        
+                                                        {% if produit.tarif.memeTarif %}
+                                                            <span class="badge badge-light"> {{produit.tarif.prixDeReferenceGrossiste}}€</span>
+                                                        {% else %}
+                                                            <span class="badge badge-light"> Par déclinaison</span>
+                                                        {% endif %}
+                                        
+                                                    {% elseif produit.marqueBlanches|length > 0 %}
+                                                        
+                                                        <a href="#" class="btn-link" data-toggle="modal" data-target="#Modal{{ produit.id }}">
+                                                            <i class="os-icon os-icon-eye"></i> Tarif client
+                                                        </a>
+                                                        
+                                                    
+                                                    {% endif %}
+                                                    
+                                                </td>
+                                                <td>
+                                                    <form method="post" class="d-inline mb-1" action="{{ path('back_produit_supprime', {'id': produit.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet produit?');">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ produit.id) }}">
+                                                        <button style="padding-top: 0;" class="btn btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></button>
+                                                    </form> 
+                                                    <a href="{{path('back_produit_affichage', {id: produit.id})}}" class="btn btn-primary btn-sm mb-1"><i class="os-icon os-icon-eye"></i></a>  
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

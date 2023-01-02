@@ -1,0 +1,34 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+{% block title %}Laboratoires Aeroma {% endblock %}
+
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+        Veuillez trouvez si joint la facture numéro {{invoice.numero}} 
+
+        {% if invoice.lotCommandes|length == 1 %}
+
+            liée au livraison numéro : <br>
+
+            {% for lot in invoice.lotCommandes %}
+                {{lot.bonLivraison.code}}
+            {% endfor %}
+
+        {% else %}
+
+            liée aux livraisons numéro :
+            <ul>
+                {% for lot in invoice.lotCommandes %}
+                    <li>{{lot.bonLivraison.code}}</li>
+                {% endfor %}
+            </ul>
+            
+        {% endif %}
+
+        <br><br>
+        Nous sommes à votre disposition pour toute information complémentaire.<br><br>
+        Bien cordialement,
+    </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'front-base.html.twig' %}
+
+{% block classBody %}bg-light{% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div class="row card pb-5 mb-3" >
+            <div class="col-12">
+                {{ include('front/header.html.twig') }}
+            </div>
+
+            <div class="col-12 mt-5" style="min-height: calc(100vh - 350px);">
+                <div class="row">
+                    <div class="col-12">
+                        <p style="color: black" class="text-left">Votre document est prêt. Vous pouvez le visualiser dès à présent et le signer, ou le recevoir par e-mail. Auquel cas, vous devrez nous le retourner
+                            signé par e-mail. <br><br> <span class="font-weight-bold">Le devis est indicatif et ne vous engage pas. Signer le devis équivaut à bon de commande.</span>
+                        </p>
+                    </div>
+                    <div class="col-12 d-flex justify-content-around">
+
+                        <a href="{{ path('front_send_code') }}" class="btn btn-primary btn-lg">
+                            Visualiser mon devis <br> et le signer en ligne
+                        </a>
+
+                        <a href="{{ path('front_signature_devis_mail_sending') }}" type="button" class="btn {% if email_send is defined %} btn-warning {% else %} btn-primary {% endif%} btn-lg">
+                            Je préfère le signer <br> manuellement
+                        </a>
+        
+                    </div>
+                </div>
+                {% if email_send is defined %}
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <p>Nous venons de vous adresser votre bon de commande à l’adresse : <strong>{{ devis.client.email }}</strong></p>
+                        <p>Vous devez le signer, le tamponner avec le cachet de votre entreprise et nous le retourner signé par e-mail à <a href="mailto:gestion@aeroma.fr">gestion@aeroma.fr</a> ou depuis l’espace de suivi de votre commande.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% if email_send is defined %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <a href="{{ path('front_index')}}" class="btn btn-primary ">Revenir à la page d'accueil</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+       
+    </div>
+    
+    {{ include('front/footer.html.twig', {style: 'position: absolute; bottom: 0; left: 0; right: 0'}) }}
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript">
+        $(function () {
+        });
+    </script>
+{% endblock %}

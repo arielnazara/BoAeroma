@@ -1,0 +1,43 @@
+{% extends 'back/client/voir.html.twig' %}
+
+{% block edit_order %}
+    <div class="order-items-table">
+        <div class="table-responsive">
+            <table class="table table-lightborder">
+                <thead>
+                <tr>
+                    <th>Entreprise</th>
+                    <th>Client</th>
+                    <th>Contact</th>
+                    <th>Adresse de livraison</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {% if client.company %}
+                                <h6>{{client.company}}</h6>
+                            {% endif %}
+                            {% if client.siret %}
+                                Siret: {{client.siret}}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{client.lastname}}
+                            {{client.firstname}} <br>
+                            {{client.email}}
+                            
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

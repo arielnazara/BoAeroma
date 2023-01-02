@@ -1,0 +1,118 @@
+{% extends 'back/order/edit-order.html.twig' %}
+
+{% block edit_order %}
+<hr>
+    <div class="row">
+        <div class="col-md-8">
+            {% for message in app.flashes('success') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <form method="post" action="" autocomplete="off">
+                <h5 class="form-header">
+                    Créer une livraison prioritaire
+                </h5>
+                <div class="form-desc">
+                    {% for o in orders %}
+                        {{ o.product.image }} : {{ o.quantity }} commandée - {{ o.prepare }} préparée <br>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-form-label col-sm-6" for=""> Nom de la livraison </label>
+                    <div class="col-sm-6">
+                        <input autocomplete="off" required name="name" class="form-control" placeholder="Nom" type="text">
+                    </div>
+                </div>
+
+                {% for o in orders %}
+                    {% set max = o.quantity - o.prepare - o.priority %}
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-6" for=""> {{ o.product.image}} ({{ max }} Max)</label>
+                        <div class="col-sm-6">
+                            <input autocomplete="off" required name="{{ o.product.image }}" class="form-control" placeholder="Quantité" type="number" max="{{ max }}" min="1">
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="form-group row">
+                    <label class="col-form-label col-sm-6" for="">Date d’expédition souhaitée</label>
+                    <div class="col-sm-6">
+                        <div class="date-input">
+                            <input autocomplete="off" required name="date_shipped" class="single-daterange form-control" placeholder="" type="text">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-form-label col-sm-6" for="">Choisir l’adresse de livraison</label>
+                    <div class="col-sm-6">
+                        {% if customer.deliveryAddresses|length > 0 %}
+                            <select class="form-control" name="adresse_livraison">
+                                {% for d in customer.deliveryAddresses %}
+                                    <option value="{{ d.id }}">{{ d.name }}</option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            Le siège
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-form-label col-sm-6" for="">Frais de port additionnel</label>
+                    <div class="col-sm-6">
+                        <input autocomplete="off" name="aditional_fee" class="form-control" type="number" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-form-label col-sm-6" for="">Commentaire pour le gestionnaire</label>
+                    <div class="col-sm-6">
+                        <textarea autocomplete="off"  name="message" class="form-control" placeholder="message"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-buttons-w">
+                    <button class="btn btn-success btn-block" type="submit">Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <h5 class="title">Liste des lots prioritaires</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Nom</th>
+                            <th>Date</th>
+                            <th>Quantités prioritaires</th>
+                            <th>Statut</th>
+                            <th>Date expédition prévue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for lot in lots %}
+                        <tr>
+                            <td>{{ lot.name }}</td>
+                            <td>{{ lot.date|date('d/m/Y') }}</td>
+                            <td>
+                                {% for lq in lot.lotQuantities %}
+                                    {{ lq.product.image  }} : {{ lq.quantity }} <br>
+                                {% endfor %}
+                            </td>
+                            <td>{{ lot.status }}</td>
+                            <td>{{ lot.desiredShippingDate|date('d/m/Y') }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

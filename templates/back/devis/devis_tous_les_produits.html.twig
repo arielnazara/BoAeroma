@@ -1,0 +1,75 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10">
+            <div class="element-wrapper">
+                <div class="element-box ">
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <h6 class="mb-3">Etape 2/3 : Tous les produits </h6>
+
+                    <table class="table table-hover" id="liste">
+                        <thead>
+                            <tr>
+                                <th scope="col">Reference</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Cocher</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for produit in produitListe %}
+                                {% set checked = false %}
+
+                                {% if produit.id in produitsId %}
+                                    {% set checked = true %}
+                                {% endif %}
+                                <tr>
+                                    <th scope="row"> 
+                                        <label class="form-check-label" for="check_{{ produit.id }}"> {{ produit.reference }} </label>
+                                    </th> 
+                                    <td>
+                                        <label class="form-check-label" for="check_{{ produit.id }}"> {{produit.getNomMarqueBlanche(client)}} </label>
+                                    </td>
+                                    <td>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" value="{{ produit.id }}" id="check_{{ produit.id }}" {% if checked %} checked {% endif %}
+                                            >
+                                            <div style=" display: none; margin-top: -4px;margin-left: -23px" class="loader2 js-spin-{{ produit.id }}"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class="col">
+
+            <div class="text-center mt-2 position-fixed">
+                <a href="{{ path('back_capture_declinaison_devis', {id: client.id, all: true}) }}" class="btn text-center btn-success btn-block" id="valider" data-target="{{ path('back_devis_ajax_products_action', {id: client.id}) }}">Créer une commande</a>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+<script type="text/javascript" src="{{ asset('assets/js/choixProduit.js') }}"></script>
+
+<script>
+    $('#liste').DataTable({
+        "ordering": false,
+        "lengthMenu": [
+            [10, 25, 50, -1],
+            [10, 25, 50, 'Tous'],
+        ],
+        "iDisplayLength": -1
+    });
+</script>
+
+{% endblock %}

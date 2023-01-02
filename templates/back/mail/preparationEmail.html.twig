@@ -1,0 +1,30 @@
+{% extends 'front/mail/base-mail.html.twig' %}
+
+{% block title %} Laboratoires Aeroma  {% endblock %}
+
+{% block content %}
+    <p style="margin-top: 0px;">
+        Bonjour,
+    </p>
+    <div style="color: #636363; font-size: 14px;">
+
+    {% set client = devis.client %}
+
+    Nous vous informons que la commande relative au bon de commande n° {{devis.code}}
+    
+    {% if client.extravape %}
+        {% if devis.boutique %}
+            pour la boutique {{ devis.boutique.nomShop }} 
+        {% endif %}
+    {% endif %}
+
+    est en cours de préparation. Vous nous indiquerons son expédition sous peu.<br> <br>
+
+    Nous sommes à votre disposition au 03 74 46 81 04 pour tout renseignement complémentaire<br>
+    Bien cordialement, <br>
+
+    Océane<br>
+    Laboratoire Aeroma<br><br>
+
+    </div>
+{% endblock %}

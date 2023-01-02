@@ -1,0 +1,213 @@
+<table class="table table-padded animate-bottom " id="factures">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>No</th>
+            <th class="text-right">Client</th>
+            <th style="padding: 0 10px 0 10px; width: 10%;">Type</th>
+            <th>Total HT</th>
+            <th>Taxe</th>
+            <th class="text-center">Montant à regler</th>
+            <th class="text-center">Montant payé</th>
+            <th>Etat</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    
+    {% for i in invoices %}
+
+        {% set extravape = false %}
+        {% set factureMaitre = false %}
+        {% set empty = false %}
+
+        {% if i.devis is defined  %}
+
+            {% set client  =  i.client %}
+
+            {% set devis = i.devis %}
+
+        {% else %}
+
+            {% if i.bonDeCommandes is defined %}
+                {% if i.bonDeCommandes|length > 0 %}
+                
+                {% set client  =  i.bonDeCommandes[0].client %}
+
+                {% set devis = i.bonDeCommandes[0].devis %}
+
+                {% set extravape = true %}
+                
+                {% set factureMaitre = true %}
+
+                {% else %}
+                    {% set empty = true %}
+                {% endif %}
+
+            {% endif %}
+            
+            
+
+        {% endif %}
+
+        {#% if not empty %#}
+        {% if i.devis is defined or i.bonDeCommandes is defined %}
+            
+            <tr>
+                <td data-source="acompte solde {{ i.numero }} {{ client.raisonSocial }} {{ client.lastname }} {{ client.firstname }} {{ i.date|date('d.m.Y') }}">{{ i.date|date('d.m.Y') }}</td>
+                <td>
+                    {{ i.numero }} <br>
+                    {% if extravape %}
+                        {% set excelPath = path('back_facture_excel', {id: i.id, extravape: 1}) %}
+                    {% else %}
+                        {% set excelPath = path('back_facture_excel', {id: i.id}) %}
+                    {% endif %}
+
+                    {% if client.id == 1 %}
+                        <a href="{{ excelPath }}" class="btn mt-2 btn-primary btn-sm">
+                            <i class="os-icon os-icon-download"></i>
+                            Facture Excel
+                        </a>
+                    {% endif %}
+                </td>
+
+                <td class="text-right">
+                    
+                    {% if extravape %}
+                        {{ client.lastname ~ ' ' ~ client.firstname }} <br>
+                    
+                        {{ client.raisonSocial }}
+                    {% else %}
+                        
+                        {% if devis.shop == "grossiste_greendot" %}
+                            {#{ devis.client.lastname ~ ' ' ~ devis.client.firstname }#} <br>
+                                
+                            {{ devis.client.raisonSocial }}
+                        {% else %}
+                            {% if devis.boutique %}
+                                {{ devis.boutique.prenom ~ ' ' ~ devis.boutique.nom }} <br>
+                                
+                                {{ devis.boutique.nomShop }}
+                            {% else %}    
+                                {{ client.lastname ~ ' ' ~ client.firstname }} <br>
+                            
+                                {{ client.raisonSocial }}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </td>
+
+                <td>
+                    {#% if i.client is not null %}
+                        {% set lastInvoice = i.client.id | getLastInvoiceByClient %}
+                        {% if lastInvoice is not null %}
+                            {% if lastInvoice.id != i.id %}
+                                {{ dump(lastInvoice.balance) }}
+                                {{ dump(lastInvoice.id) }}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %#}
+                    
+                    
+                    {% if i.soldeFinal %}
+                        {% if i.estPayer %}
+                            {% if i.balance < 0 %}
+                                <span class="text-center" style="color: #FF7733;"><small>RESTE À PAYER</small></span>
+                                {% set balance = i.balance | abs %}
+                                <br>
+                                <small class="text-danger">
+                                    {{ balance|number_format(2, ',', ' ') }}€
+                                </small>
+                            {% else %}
+                                <span class="text-success text-center"><small>PAYÉ</small></span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-info text-center"><small>NON PAYÉ</small></span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+
+                <td>
+                    {{ i.totalHt }}
+                </td>
+
+                <td>
+                    {{ i.tva }}
+                </td>
+
+                <td class="text-center">
+                    <span class="{% if i.balance < 0 %}text-danger{% else %}text-success{% endif %}">
+                        {{ i.montantAPayer|number_format(2, ',', ' ')  }}€
+                    </span><br />
+
+                    {#% if i.client is not null %}
+                        {% set lastInvoice = i.client.id | getLastInvoiceByClient %}
+                        {% if lastInvoice %}
+                            {% if lastInvoice.id < i.id %}
+                                {% if lastInvoice.balance < 0 %}
+                                    {% set balance = lastInvoice.balance | abs %}
+                                    <small class="text-secondary">Reste à payer du derniere facture</small><br />
+                                    <span class="text-danger">
+                                        {{ balance|number_format(2, ',', ' ')  }}€
+                                    </span><br />
+                                    <small class="text-primary">TOTAL A PAYER</small><br />
+                                    {% set total = i.montantAPayer + balance %}
+                                    <span class="text-danger">{{ total|number_format(2, ',', ' ') }}</span>
+                                    
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        
+                    {% endif %#}
+                    
+                    
+                </td>
+                <td>
+                    {% if i.montantPayer != i.montantAPayer %}
+                        <span class="text-danger">
+                            {{ i.montantPayer|number_format(2, ',', ' ') }}€
+                        </span>
+                    {% else %}
+                        <span class="text-success">
+                            {{ i.montantPayer|number_format(2, ',', ' ') }}€
+                        </span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="text-center">
+                        {% if i.estPayer %}
+                            <a class="badge badge-success-inverted" href="">Payé le {{ i.datePaiement|date('d/m/Y') }}</a>
+                        {% else %}
+                            <a class="badge badge-danger-inverted" href="">Non Payé</a>
+                        {% endif %}
+                    </div>
+
+                    {% include "back/commande/_paiement.html.twig" %}
+                </td>
+                <td>
+                    
+                    {% set filename = "Facture-" %}
+                    
+                    <a target="_blank" href="{{ asset('pdf/order/' ~ filename ~  i.numero ~ '.pdf' ) }}" class="btn btn-link"><i class="os-icon os-icon-eye"></i> Voir</a>
+                
+                    {% if extravape %}
+                    
+                        <a href="{{ path('back_invoice_regenerate_invoice_extravape', {id:i.id}) }}" class="btn btn-link"><i class="os-icon os-icon-refresh-cw"></i>  Régénérer </a>
+                    
+                    {% else %}
+                        
+                        {% if devis.payerParCarte %}
+                            <a href="{{ path('back_prestashop_invoice_regenerate_invoice', {id:i.id}) }}" class="btn btn-link"><i class="os-icon os-icon-refresh-cw"></i>  Régénérer </a>
+                        {% else %}
+                            <a href="{{ path('back_invoice_regenerate_invoice', {id:i.id}) }}" class="btn btn-link"><i class="os-icon os-icon-refresh-cw"></i>  Régénérer </a>
+                        {% endif %}
+
+                    {% endif %}
+
+                </td>
+            </tr>
+        
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>

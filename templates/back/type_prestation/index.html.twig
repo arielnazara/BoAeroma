@@ -1,0 +1,47 @@
+{% extends 'back-base.html.twig' %}
+
+{% block title %}TypePrestation index{% endblock %}
+
+{% block content %}
+
+<div class="element-wrapper">
+    <div class="element-box">
+        <h6 class="element-header">Type de préstations</h6>
+
+        <div id="tablecontent" class="table-responsive">
+            <div style="margin: auto; display: none" class="loader"></div>
+
+            <a href="{{path('type_prestation_new')}}" class="btn btn-sm btn-primary mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer un type de prestation</a>
+    
+            <table class="table table-striped table-lightfont table-hover dataTable1">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom</th>
+                        <th>Prix</th>
+                        <th>actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for type_prestation in type_prestations %}
+                    <tr>
+                        <td>{{ type_prestation.id }}</td>
+                        <td>{{ type_prestation.nom }}</td>
+                        <td>{{ type_prestation.prix }}</td>
+                        <td>
+                            <a href="{{ path('type_prestation_show', {'id': type_prestation.id}) }}">show</a>
+                            <a href="{{ path('type_prestation_edit', {'id': type_prestation.id}) }}">edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">no records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

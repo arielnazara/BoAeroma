@@ -1,0 +1,119 @@
+{% extends 'back-base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% for message in app.flashes('success') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('codeInterneSuccess') %}
+                <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="element-wrapper">
+                <h6 class="element-header">Bon de préparation</h6>
+
+                <div class="element-box">
+                
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover dataTable1">
+                            <thead>
+                                <tr>
+                                    <th scope="col" >Code interne</th>
+                                    <th scope="col">Code client</th>
+                                    <th scope="col" class="text-center">Client</th>
+                                    <th scope="col" class="text-center">Voir</th>
+                                    <th scope="col" class="text-center">Satut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bon in bonDeCommande %} 
+                                    <tr>
+                                        <th scope="row" class="font-weight-bold" >
+                                            {% if bon.codeInterne %}
+                                                <h6 class="badge badge-light">
+                                                    <a href="" class="btn btn-link" data-toggle="modal" data-target="#modal{{bon.id}}">{{bon.codeInterne}}</a> 
+                                                </h6> 
+                                            {% else %}
+                                                {% if bon.devis.status == "Devis annuler" %}
+                                                {% else %}
+                                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal{{bon.id}}">
+                                                        Ajouter code
+                                                    </button>
+                                                {% endif %}
+                                            {% endif %}
+                                            <div class="modal fade" id="modal{{bon.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLongTitle">
+                                                                {% if bon.codeInterne %}
+                                                                    Modifier code interne
+                                                                {% else %}
+                                                                    Ajouter code interne
+                                                                {% endif %}
+                                                            </h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{path('back_commande_code_interne', {id: bon.id, number: bon.code, preparation: true})}}" method="POST">
+                                                                <div class="form-group">
+                                                                  <label for="" class="col-form-label">Code interne:</label>
+                                                                  <input type="text" class="form-control" name="numCommandeInterne" {% if bon.codeInterne %}value="{{bon.codeInterne}}"{% endif %}required>
+                                                                </div>
+                                                                <button class="btn btn-primary">Enregistrer</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <td>
+                                            <h6 class="badge badge-light">{{bon.code}}</h6> 
+                                        </td>
+                                        <td class="text-center">
+                                            {% if bon.client.raisonSocial %}
+                                                {% if bon.devis.boutique %}
+                                                    <span class="badge badge-pill badge-primary">{{ bon.devis.boutique.nomShop }} </span> <br>
+                                                {% else %}
+                                                    <span class="badge badge-pill badge-primary">{{bon.client.raisonSocial }} </span> <br>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% if bon.devis.boutique %}
+                                                {{bon.devis.boutique.nom}} {{bon.devis.boutique.prenom}} 
+                                            {% else %}
+                                                {{bon.client.lastName}} {{bon.client.firstName}}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{path('back_logistique_generation_xl', {id: bon.id})}}" class="btn btn-link"> <i class="os-icon os-icon-download"></i> Téléchager</a>
+                                        </td>
+                                        <td class="text-center"> 
+                                            {% if bon.toutEstExpedier %}
+                                                <span class="badge badge-pill badge-success">Expédier</span>
+                                            {% else %}
+                                                {% if bon.devis.status == "Devis annuler" %}
+                                                    <span class="badge badge-danger-inverted text-left">Annuler</span> 
+                                                {% else %}
+                                                    <span class="badge badge-primary-inverted text-left">En cours de traitement</span> 
+                                                {% endif %}
+                                            {% endif %}
+
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

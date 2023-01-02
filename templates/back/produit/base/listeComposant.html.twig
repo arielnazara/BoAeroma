@@ -1,0 +1,49 @@
+{% extends 'back/produit/base/listeBase.html.twig' %}
+{% block title %} Liste des categories{% endblock %}
+{% block configuration %}
+    {% for message in app.flashes('successComposant') %}
+        <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h6 class="element-header">Liste des composants</h6>
+
+    <div id="tablecontent" class="table-responsive">
+        <div style="margin: auto; display: none" class="loader"></div>
+        
+        <a href="{{path('back_produit_list_base')}}" class="btn btn-sm btn-success mb-3"><i class="os-icon os-icon-corner-down-left"></i> Revenir à la liste des bases</a>
+        <a href="{{path('back_produit_creation_base')}}" class="btn btn-sm btn-primary mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer un support</a>
+        <a href="{{path('back_produit_creation_composant')}}" class="btn btn-sm btn-primary mb-3"><i class="os-icon os-icon-plus-circle"></i> Créer un composant</a>
+        
+        <table class="table table-striped table-lightfont table-hover dataTable1">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if composants %}
+                    {% for composant in composants %}
+                        <tr>
+                            <td>
+                                {{composant.Nom}}
+                            </td>
+                            <td>
+                                <a href="{{path('back_produit_modification_composant', {id: composant.id})}}" class="btn btn-success btn-sm"><i class="os-icon os-icon-edit"></i></a>  
+                                <form method="post" class="d-inline" action="{{ path('back_produit_supprime_composant', {'id': composant.id}) }}" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cette composant?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ composant.id) }}">
+                                    <button style="padding-top: 0;" class="btn btn-danger btn-sm"><i class="os-icon os-icon-ui-15"></i></button>
+                                </form> 
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        
+    </div>
+
+{% endblock %}
+                

@@ -1,0 +1,320 @@
+{% extends 'back/tarif/index.html.twig' %}
+
+{% block title %}Modification Tarif client{% endblock %}
+
+{% block tarifs %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <h4 class="title">Modification tarif client</h4>
+                    <div class="mt-4 row">
+                        <div class="col-md-6"> 
+                            {{ form_start(form,  {'action': path('back_ajout_tarif_client', {id: tarif.id}), 'method': 'POST'}) }}
+                                {{form_errors(form)}}
+
+                                <div class="form-group">
+                                    <label for="marque">Choisir un client</label>
+                                    <select class="form-control" name="client">
+                                        {% for client in listeClients %}
+                                            {% if client.id == tarif.tarifParClient.client %}
+                                                <option value="{{client.id}}" selected>{{client.lastname}}</option>
+                                            {% else %}
+                                                <option value="{{client.id}}">{{client.lastname}}</option>
+                                            {% endif %}
+                                            
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_row(form.nom, {'label': 'Nom ', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.categorie, {'label': 'Categorie', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.contenance, {'label': 'Contenant', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.base, {'label': 'Base', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="marque">Marque</label>
+                                    <select class="form-control" name="marque">
+                                        {% for marque in marques %}
+                                            {% if tarif.tarifParClient.marque == marque.id %}
+                                                <option value="{{marque.id}}" selected>{{marque.nom}}</option>
+                                            {% else %}
+                                                <option value="{{marque.id}}">{{marque.nom}}</option>
+                                            {% endif %}
+                                            
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.prixDeReference, {'label': 'Prix de référence', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_row(form.declineAvec, {'label': 'Choisir un additif', 'attr':{'class': 'form-control'}}) }}
+                                </div>
+
+                                <div>
+                                    {{ form_row(form.memeTarif, {'label': 'Meme tarif toute déclinaison :', 'attr':{'class': 'form-check form-check-inline'}}) }}
+                                </div>
+
+                                <div class="Nicotine">
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="00mg">Prix pour 00mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="00mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="3mg">Prix pour 3mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="3mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="6mg">Prix pour 6mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="6mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="9mg">Prix pour 9mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="9mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="12mg">Prix pour 12mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="12mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="15mg">Prix pour 15mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="15mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="18mg">Prix pour 18mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="18mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="19,9mg">Prix pour 19,9mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="19mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                
+                                <div class="CBD">
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="00mg">Prix pour 00mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="0mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="50mg">Prix pour 50mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="50mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="100mg">Prix pour 100mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="100mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="250mg">Prix pour 250mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="250mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="300mg">Prix pour 300mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="300mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="500mg">Prix pour 500mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="500mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="1000mg">Prix pour 1000mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="1000mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-5">
+                                            <label for="1500mg">Prix pour 1500mg</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="1500mg" class="form-control" placeholder="Prix...">
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-{{ info|default('primary') }}">{{ button_label|default('Enregistrer') }}</button>
+
+                                
+                            {{ form_end(form) }}
+                        </div>
+                        <div class="col-md-6 " style="margin-top: 26px;">
+                            <div class="border p-2 bg-light rounded text-center">
+                                <p>
+                                    <h4>{{tarif.categorie}} - {{tarif.base}} - {{tarif.contenance}} - {{tarif.declineAvec}} </h4>
+                                    Prix de référence: {{tarif.prixDeReference}}€ du {{tarif.dateAjout|date('d M Y')}} <br>
+                                    <a href="{{path('back_tarif_historique')}}" class="mt-2 btn btn-success btn-sm"><i class="os-icon os-icon-eye"></i> Voir historique des prix</a>
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}
+{% block custom_js %}
+      <script>
+        $(function(){
+            $('.Nicotine, .CBD').hide();
+
+            if($('#tarif_memeTarif_0').is(':checked')) {
+                $('.Nicotine, .CBD').hide();
+            }
+
+            /*if($('#tarif_memeTarif_1').is(':checked')) {
+                if($('#tarif_declineAvec').val() == "Nicotine"){
+                    $('.Nicotine').show();
+                    $('.CBD').hide();
+                }
+
+                if($('#tarif_declineAvec').val() == "CBD"){
+                    $('.Nicotine').hide();
+                    $('.CBD').show();
+                }
+            }*/
+
+            $('#tarif_memeTarif').click(function(){
+                
+                if($('#tarif_memeTarif_0').is(':checked')) {
+                    $('.Nicotine, .CBD').hide();
+                }
+                if($('#tarif_memeTarif_1').is(':checked')){
+                    
+                    if($('#tarif_declineAvec').val() == "Nicotine"){
+                        $('.Nicotine').show();
+                        $('.CBD').hide();
+                    }else{
+                        
+                        $('.Nicotine').hide();
+                        $('.CBD').show();
+                    }
+                }
+            });
+
+            $('#tarif_declineAvec').change(function(){
+                
+                if($('#tarif_memeTarif_1').is(':checked') && $(this).val() == "Nicotine") {
+                    $('.Nicotine').show();
+                    $('.CBD').hide();
+                   
+                }
+
+                if($('#tarif_memeTarif_1').is(':checked') && $(this).val() == "CBD") {
+                    $('.CBD').show();
+                    $('.Nicotine').hide();
+                    
+                }
+                
+            });
+
+            if($('#tarif_memeTarif_0').is(':checked')) {
+                console.log($('#tari_declineAvec').val());
+            }
+
+            
+        });
+    </script>
+{% endblock %}

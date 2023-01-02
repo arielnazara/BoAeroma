@@ -1,0 +1,145 @@
+{% extends 'back-base.html.twig' %}
+
+{% block custom_css %}
+
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-9 mx-auto">
+
+    <div class="element-wrapper">
+        <h6 class="element-header">Création facture à partir de plusieurs commande</h6>
+    
+        <div class="element-box-tp">
+    
+            <form method="POST" id="form">
+                {#<div class="row">
+                    <div class=" col-md-12 retour"></div>
+                    <div class="form-group col-md-12">
+                        <select class="form-control search" data-path="{{ path('back_logistique_ifo_extravape') }}" required name="bon-1">
+                            <option value=""></option>
+                            {% for bon in bonDeCommandes %}
+                                <option value="{{ bon.id }}">{{ bon.code }} ( {{ bon.client.raisonSocial }} {{ bon.devis.boutique.nomShop }} )</option>
+                            {% endfor %} 
+                        </select>
+                    </div>
+                </div>
+                <div class="nouveau"></div>
+                <div class="row p-2">
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" type="submit">Créer</button>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="" class="btn ajouterBon btn-secondary float-right btn-sm">Ajouter</a>
+                    </div>
+                </div>#}
+                {{ include('back/facture/_selectOrder.html.twig') }}
+    
+                <div class="text-center mt-5">
+                    <button class="btn btn-primary btn-lg" type="submit">Créer facture</button>
+                    <br>
+                    <small>(A partir des commandes que vous avez cocher)</small>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>
+
+    
+  
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    $(function(){
+
+        search()
+        change()
+
+        let count = 2;
+
+        $(".ajouterBon").click(function(e){
+
+            e.preventDefault()
+            let html = ''
+            html += '<div class=" row add-bon form-group">'
+            html += '<div class="retour col-md-12"></div>'
+            html += '<div class="col-sm-11">'
+            html += '<select class="form-control search" required name="bon-'+ count +'">'
+            html += '<option value=""></option>'
+            html += '{% for bon in bonDeCommandes %}'
+            html += '<option value="{{ bon.id }}">{{ bon.code }} ( {{ bon.client.raisonSocial }} {{ bon.devis.boutique ? bon.devis.boutique.nomShop : ""  }} )</option>'
+            html += '{% endfor %}'
+            html += '</select>'
+            html += '</div>'
+            html += '<div class="col-sm-1">'
+            html += '<a href="" class="remove btn btn-danger"><i class="os-icon os-icon-ui-15"></i></a>'
+            html += '</div>'
+            html += '</div>'
+
+            $(".nouveau").append(html);
+
+            search()
+            change()
+
+            count++
+
+        });
+
+        $(document).on('click', '.remove', function(e){
+            e.preventDefault()
+            count -= 1
+            $(this).closest('.add-bon').remove()
+        })
+
+        function search()
+        {
+            $(".search").select2( {
+                allowClear: true
+            } )
+        }
+
+        function change()
+        {
+            $('.search').change(function(){
+                
+                const that = $(this)
+
+                const url = $('select[name="bon-1"]').data('path')
+
+                const id = that.val()
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {id},
+                    dataType: 'json',
+                    success: function (data) {
+                        const info = data.info
+                        
+                        if(info > 0)
+                        {
+                            that.closest('.row').find('.retour').html('<p> Il reste '+ info + ' produits à livrer pour cette commande </p>').css('color', 'red')
+                        }
+                        else
+                        {
+                            that.closest('.row').find('.retour').html('')
+                        }
+                    },
+                    error: function(data){
+                        alert(data)
+                    }
+
+                })
+            })
+        }
+    })
+</script>
+{% endblock %}

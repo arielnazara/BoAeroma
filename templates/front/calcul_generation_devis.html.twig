@@ -1,0 +1,158 @@
+{% extends 'front-base.html.twig' %}
+
+{% block title "Calcul et génération du devis"%}
+{% block classBody "bg-light"%}
+{% block custom_css %}
+    <style>
+        .bareme:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class=" centerSpinner text-center" style=" display:none; position:fixed; top:325px; left:0 ; right: 0; bottom:0; z-index: 99999;" >
+        <div class="spinner-grow text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-danger" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-success" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div class="container">
+       
+        <div class="row card">
+            <div class="col-12">
+                {{ include('front/header.html.twig') }}
+            </div>
+            
+            <div class="col-12 mt-4" style="min-height: calc(100vh - 150px);">
+                <div class="col-md-12">
+                    {% include 'front/customnav.html.twig' %}
+                </div>
+                <div class="col-md-12">
+                    <h2 class="display-4 mb-4">Etape 2/2 : Choix des produits</h2> 
+                    <p>
+                        ( {{nombreDeProduits}} références disponibles, scroller pour les afficher ou appliquez des filtres)
+                    </p>
+                </div>
+                <input type="hidden" class="image" data-route="{{asset('images/products/')}}">
+                <div class="co-md-12 mb-2">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-7 search mb-2 col-ms-12">
+                            <h6>Filtrer: </h6>
+                            {#% for principe in declinaisons %}
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input input-rounded shadow-sm declinaison" data-route="{{path('front_filtre_produit')}}" type="checkbox" value="{{principe.id}}" id="{{principe.id}}">
+                                    <label class="form-check-label" for="principe.id">
+                                        {{principe.principeActif}}
+                                    </label>
+                                </div>
+                            {% endfor %#}
+
+                            {% for nom, gamme in gammes %}
+                                {#<div class="form-check form-check-inline">
+                                    <input class="form-check-input input-rounded shadow-sm declinaison" name="" data-route="{{path('front_filtre_produit')}}" type="checkbox" value="{{gamme}}" id="{{gamme}}">
+                                    <label class="form-check-label" for="{{gamme}}">
+                                        {{nom}}
+                                    </label>
+                                </div>#}
+
+                                <a class="btn gamme btn-sm btn-outline-info mt-2" data-val="{{gamme}}" href="{{path('front_filtre_produit')}}">{{nom}} <i class="fa fa-times-circle" style="display: none;"></i></a>
+                            {% endfor %}
+
+                        </div>
+                        <div class="col-lg-4 col-md-5  mb-2 col-ms-12">
+                            <div class=" search">
+                            
+                                <form class="form-inline search-form my-2 my-lg-0" action="{{path('front_search_produit')}}">
+                                    <input class="form-control form-search form-control-sm mr-sm-2" type="search" placeholder="Rechercher" id="search" aria-label="Search">
+                                    <button class="btn btn-success btn-search btn-sm" id="chercher" type="submit"><i class="fa fa-search"></i></button>
+                                </form>
+                                <div class=" result spin" style="display: none; min-height:50px;">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class=" shadow-sm rounded" id="entitiesNav" data-route="{{path('front_produit_trouver')}}" style="display:none; max-height: 150px; min-height:50px; overflow-y: auto;">
+                                    
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row produitCart mt-2 text-center">
+
+                    <input type="hidden" id="cartRoute" value="{{path('front_ajout_panier')}}">
+                        
+                    {% for produit in produits %}
+                
+                        <div class="col-md-4 produitCart cart d-flex ">
+                            <div class="card shadow " style="width: 20rem;">
+                                {% if vich_uploader_asset(produit, 'imageFile') %}
+                                    <div class=" col-md-4 mt-1 ">
+                                        <img class='card-img-top rounded mx-auto image' data-route="{{asset('images/products/')}}" style='width: 290px' src='{{ vich_uploader_asset(produit, 'imageFile') }}' alt='{{ produit.nom }}'>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body align-items-center mb-4">
+                                    <p>{{produit.nom}}</p>
+                                    
+                                    <a data-toggle="modal" href="#" data-target=".modal{{produit.id}}" class="apercu" data-id="{{produit.id}}" data-route="{{path('front_ajout_panier', {id: 0, idC: 1})}}"><i class='fas fa-search'></i> Detail</a>
+
+                                    <div class="modal fade modal{{produit.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                
+                                                {{ include("front/_choixDeclinaison.html.twig")}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    
+                    {% endfor %}
+                
+                </div>
+              
+                <div class="newProduct row" data-info="{{client.id}}" data-route="{{path('front_ajax_list_produit')}}"></div>
+                <div class="resultat row"></div>
+                <div class="produitTrouver row"></div>
+                <div class="searchResult row"></div>
+                
+                <div class=" spinner text-center mb-2" style="display: none;">
+                    <div class="spinner-border text-primary" style="width: 2rem; height: 2rem;" role="status">
+                        <span class="sr-only ">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success" style="width: 2rem; height: 2rem;" role="status">
+                        <span class="sr-only ">Loading...</span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="">
+
+            <a href="" title="Retour en haut de la page" class=" hautPage" ><i class="fas fa-chevron-circle-up fa-2x"></i></a>
+        </div>
+    </div>
+
+    {{ include('front/footer.html.twig') }}
+{% endblock %}
+
+{% block custom_js %} 
+    <script src="{{asset('assets/js/loadOnScroll.js')}}"></script>
+    <script>
+        $(function(){
+            
+        })
+   </script>
+{% endblock %}

@@ -1,0 +1,151 @@
+back_devis_list:
+    path: /
+    defaults:
+        _controller: App\Controller\Back\DevisController::liste
+
+back_capture_devis_client:
+    path: /capture/client
+    defaults:
+        _controller: App\Controller\Back\DevisController::choixClient
+
+back_capture_devis:
+    path: /capture/devis-{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::captureDevis
+        requirements:
+            id: \d+
+
+back_capture_from_liste:
+    path: /capture/commande-{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::captureFromListe
+        requirements:
+            id: \d+
+
+back_capture_declinaison_devis:
+    path: /capture/declinaison/devis-{id}/{idDevis}
+    defaults:
+        idDevis: null
+        _controller: App\Controller\Back\DevisController::captureDeclinaison
+        requirements:
+            id: \d+
+            idDevis: \d+
+
+back_devis_edit:
+    path: /edit-{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::edit
+        requirements:
+            id: \d+
+
+back_devis_capture_devis_change_state:
+    path: /capture/devis/status-{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::devisChangeState
+        requirements:
+            id: \d+
+
+back_devis_change_shipping_fee:
+    path: /devis/modification/frais_de_port/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::modificationFraisDePort
+        requirements:
+            id: \d+
+
+back_devis_state_processing:
+    path: /capture/devis/processing-{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::captureProcessing
+        requirements:
+            id: \d+
+
+back_devis_handler_validate:
+    path: /validate-{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::validate
+        requirements:
+            id: \d+
+
+back_devis_envoie_bdc:
+    path: /envoie_bdc/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::evoieBonDeCommande
+        requirements:
+            id: \d+
+
+back_devis_signature:
+    path: /signature-{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::signature
+        requirements:
+            id: \d+
+
+
+back_devis_handler_send_signature_link:
+    path: /signature/link/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::sendLinkSignature
+        requirements:
+            id: \d+
+
+back_supprime_devis:
+    path: /supprimer/devis/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::supprimerDevis
+        requirements:
+            id: \d+
+
+delete_product:
+    path: /supprimer/produit
+    defaults:
+        _controller: App\Controller\Back\DevisController::delete
+        requirements:
+            id: \d+
+
+add_missing_products:
+    path: /manquant/produit
+    defaults:
+        _controller: App\Controller\Back\DevisController::ajoutProduitManquant
+        requirements:
+            id: \d+
+
+add_pr_products:
+    path: /add/produit/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::manque
+        requirements:
+            id: \d+
+            
+edit_devis_add_new_products:
+    path: /ajout/produit
+    defaults:
+        _controller: App\Controller\Back\DevisController::ajoutProduit
+
+add_to_session:
+    path: /ajouter/au_session
+    defaults:
+        _controller: App\Controller\Back\DevisController::addToSession
+
+
+back_devis_change_taxe:
+    path: /devis/modification/taxe/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::modificationTaxe
+        requirements:
+            id: \d+
+            
+
+back_tous_les_produits:
+    path: /devis/produits/liste/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::tousLesProduits
+        requirements:
+            id: \d+
+
+
+back_devis_ajax_products_action:
+    path: /devis/produits/ajout/{id}
+    defaults:
+        _controller: App\Controller\Back\DevisController::ajaxAddProduct
+        requirements:
+            id: \d+
