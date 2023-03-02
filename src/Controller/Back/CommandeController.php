@@ -68,6 +68,7 @@ class CommandeController extends AbstractController
                 $result = $bonDeCommandeRepo->findBy([], ['id' => 'desc']);
             }
 
+
             $content = $this->renderView('back/commande/tab_list.html.twig', [
                 'commandes' => $result
             ]);
@@ -408,6 +409,39 @@ class CommandeController extends AbstractController
             'client' => $client,
             'boutique'=> $boutique
         ]);
+    }
+
+
+    public function modificationClientNonFacture($idClient,$idCommande,ClientRepository $clientRepo)
+    {
+        $clientSelect=$clientRepo->find($idClient);
+        $clientData=$clientRepo->findAll();
+        
+        return $this->render('back/commande/modifClientNonFacture.html.twig', [
+            'idCommande' => $idCommande,
+            'idClient' => $idClient,
+            'clientSelect' => $clientSelect,
+            'clientData' => $clientData,
+        ]);
+        
+    }
+
+    public function valideModificationClientNonFacture(Request $request,ClientRepository $clientRepo, BonDeCommandeRepository $bonDeCommandeRepo,EntityManagerInterface $em)
+    {
+        if ($request->isMethod('post')) {
+            $idCommande= $request->request->get('idCommande');
+            $idClient= $request->request->get('_client_');
+             
+            $client=$clientRepo->find($idClient);
+            $commande=$bonDeCommandeRepo->find($idCommande);
+            $commande->setClient($client);
+            $em->persist($commande);
+            $em->flush();
+
+            $this->addFlash('success', 'Modification du client de la commande avec success');
+
+            return $this->redirectToRoute('back_commande');
+        }
     }
 
     public function paiementFacture(Request $request, FactureMaitreRepository $factureMaitreRepo, Mailer $mailer, EntityManagerInterface $em, FactureCommandeRepository $factureRepo)

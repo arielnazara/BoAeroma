@@ -26,11 +26,13 @@
                                     <th scope="col" >Code interne</th>
                                     <th scope="col">Code client</th>
                                     <th scope="col" class="text-center">Client</th>
+                                    <th scope="col" class="text-center">Pays</th>
                                     <th scope="col" class="text-center">Voir</th>
                                     <th scope="col" class="text-center">Satut</th>
                                 </tr>
                             </thead>
                             <tbody>
+                               
                                 {% for bon in bonDeCommande %} 
                                     <tr>
                                         <th scope="row" class="font-weight-bold" >
@@ -91,6 +93,9 @@
                                             {% else %}
                                                 {{bon.client.lastName}} {{bon.client.firstName}}
                                             {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <h6>{{bon.client.pays}}</h6>
                                         </td>
                                         <td class="text-center">
                                             <a href="{{path('back_logistique_generation_xl', {id: bon.id})}}" class="btn btn-link"> <i class="os-icon os-icon-download"></i> Téléchager</a>
