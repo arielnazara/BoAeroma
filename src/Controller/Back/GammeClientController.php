@@ -106,6 +106,8 @@ class GammeClientController extends AbstractController
 
         dd($do);*/
 
+        // dd($positionRepo->findWhereCLientExist());
+
         return $this->render('back/gammeClient/liste_catalogue.html.twig', [
             'catalogue' => true,
             'produits' => true,

@@ -1,4 +1,5 @@
 {% set client = commande.client %}
+{# {{ dump(commandes) }} #}
 <div class="row">
     <div class="col-6 table-responsive">
         {% set total = 0 %}
@@ -28,7 +29,7 @@
                 {% endif %}                
                 <tr>
                     <td>
-                        
+                       
                         {% set nomProduit = c.produit.getNomMarqueBlanche(client) %}
 
                         {% set prixSpecifique = false %}
@@ -44,6 +45,8 @@
                         {% if c.declineAvec %}
                             {{c.declineAvec.principeActif}} {{c.declinaison}}
                         {% endif %}
+
+                        {# {{ dump(nomProduit) }} #}
                     </td>
                     <td>
                         {% if offert %}
