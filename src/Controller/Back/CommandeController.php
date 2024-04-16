@@ -44,6 +44,7 @@ use App\Repository\PositionGammeClientRepository;
 use App\Service\DevisServices;
 use App\Service\LogistiqueServices;
 use App\Service\TrieProduit;
+use App\Service\UtilService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Bic;
@@ -51,6 +52,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Exception\TokenNotFoundException;
+use League\Csv\Writer;
 
 class CommandeController extends AbstractController
 {
@@ -700,5 +702,89 @@ class CommandeController extends AbstractController
 
             return $this->redirectToRoute('back_modification_commande', ['number' => $bonDeCommande->getCode(), 'id' => $bonDeCommande->getId()]);
         }
+    }
+
+    public function exportCommandes(BonDeCommandeRepository $bonDeCommandeRepo, UtilService $utilService, $exportRoot)
+    {
+        $headers = ['Numéro *', 'Date de la facture *', 'Numéro du devis', 'Nom du projet', 'Rue du client', 'Code postal du client', 'Ville du client', 'Responsable commercial', 'Montant HT *', 'Montant TTC *', 'Montant TTC du *', 'Montant taxe 20.00000%', 'Montant taxe 10.00000%', 'Montant taxe 5.50000%', 'Montant taxe 0.00000%'];
+
+        $objects = $bonDeCommandeRepo->findAll();
+
+        $columns = [];
+
+        foreach ($objects as $obj) {
+            $devis = $obj->getDevis() ? $obj->getDevis() : '';
+            $facture = $obj->getFactureCommandes() ? $obj->getFactureCommandes()[0] : '';
+            $client = $obj->getClient() ? $obj->getClient() : '';
+            $project_name = '';
+            if (!empty($devis)) {
+                switch($devis->getShop()) {
+                    case 'aeroma_prostore':
+                        $project_name = 'Aeroma prostore';
+                        break;
+                    case 'grossiste_greendot':
+                        $project_name = 'Greendot';
+                        break;
+                    case 'yzy_vape':
+                        $project_name = 'Yzyvape store';
+                        break;
+                    default:
+                        $project_name = '';
+                }
+            }
+            if (!empty($facture)) {
+                $pourcent_tva = (($facture->getTotalTtc() / $facture->getTotalHt()) - 1) * 100;
+                $tax_amount_20 = '';
+                $tax_amount_10 = '';
+                $tax_amount_5 = '';
+                $tax_amount_0 = '';
+                switch ($utilService->getClosestTo($pourcent_tva, [0, 5, 10, 20])) {
+                    case 0:
+                        $tax_amount_0 = $facture->getTva();
+                        break;
+                    case 5:
+                        $tax_amount_5 = $facture->getTva();
+                        break;
+                    case 10:
+                        $tax_amount_10 = $facture->getTva();
+                        break;
+                    case 20:
+                        $tax_amount_20 = $facture->getTva();
+                        break;
+                }
+            }
+
+            $columns[] = [
+                $obj->getCode(), // Numéro *
+                !empty($facture) ? $facture->getDate()->format('d/m/Y') : '', // Date de la facture *
+                !empty($devis) ? $devis->getCode() : '', // Numéro du devis
+                $project_name, // Nom du projet
+                !empty($client) ? $client->getAdresseFacturation() : '', // Rue du client
+                !empty($client) ? $client->getCodePostalFacturation() : '', // Code postal du client
+                !empty($client) ? $client->getVilleFacturation() : '', // Ville du client
+                !empty($client) ? $client->getRaisonSocial() : '', // Responsable commercial
+                !empty($facture) ? $facture->getTotalHT() : '', // Montant HT *
+                !empty($facture) ? $facture->getTotalTtc() : '', // Montant TTC *
+                !empty($facture) ? ($facture->getDejaPayer() ? 'payé le ' . $facture->getDatePaiement()->format('d/m/Y') : 'Non payé') : '', // Montant TTC du *
+                !empty($facture) ? $tax_amount_20 : '', // Montant taxe 20.00000%
+                !empty($facture) ? $tax_amount_10 : '', // Montant taxe 10.00000%
+                !empty($facture) ? $tax_amount_5 : '', // Montant taxe 5.50000%
+                !empty($facture) ? $tax_amount_0 : '', // Montant taxe 0.00000%
+            ];
+        }
+
+        $data = array_merge([$headers], $columns);
+        
+        $filename = 'commandes_aeroma_' . (new \DateTime())->format('Y-m-d') . '.csv';
+        $csvWriter = Writer::createFromPath($exportRoot . '/csv/' . $filename, 'w+');
+        $csvWriter->setDelimiter(';');
+        $csvWriter->insertAll($data);
+        
+        $response = new Response($csvWriter->getContent(), 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+
+        return $response;
     }
 }

@@ -12,6 +12,7 @@
 /public/excel/
 /public/images/
 /public/bpco/
+/public/export/
 /var/
 /vendor/
 /tests/
@@ -31,3 +32,5 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+public.zip
