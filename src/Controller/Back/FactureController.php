@@ -25,6 +25,7 @@ use App\Repository\FactureMaitreRepository;
 use App\Repository\MarqueBlancheRepository;
 use App\Repository\FactureCommandeRepository;
 use App\Repository\PrestationRepository;
+use App\Service\UtilService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -33,6 +34,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Exception\TokenNotFoundException;
+use League\Csv\Writer;
 
 class FactureController extends AbstractController
 {
@@ -561,5 +563,184 @@ class FactureController extends AbstractController
 
         return $this->file($reponse['temp_file'], $reponse['fileName'], ResponseHeaderBag::DISPOSITION_INLINE);
        
+    }
+
+    public function exportFactures(InvoiceProcessing $invoiceProcessing, UtilService $utilService, $exportRoot)
+    {
+        $headers = ['Numéro *', 'Date de la facture *', 'Numéro du devis', 'Nom du projet', 'Rue du client', 'Code postal du client', 'Ville du client', 'Responsable commercial', 'Montant HT *', 'Montant TTC *', 'Montant TTC du *', 'Montant taxe 20.00000%', 'Montant taxe 10.00000%', 'Montant taxe 5.50000%', 'Montant taxe 0.00000%'];
+
+        $objects = $invoiceProcessing->getAllInvoices();
+
+        $columns = [];
+
+        foreach ($objects as $obj) {
+            $facture = $obj;
+            $devis = null;
+            $totalHt = '';
+            if ($facture instanceof FactureCommande) {
+                $devis = $facture->getBonDeCommande() ? $facture->getBonDeCommande()->getDevis() : '';
+                $totalHt = $facture->getTotalHt();
+                $dateFacture = $facture->getDate();
+                $dejaPaye = $facture->getDejaPayer();
+            } elseif ($facture instanceof FactureMaitre) {
+                $devis = $facture->getBonDeCommandes()[0] ? $facture->getBonDeCommandes()[0]->getDevis() : '';
+                $totalHt = $facture->getTotalHt();
+                $dateFacture = $facture->getDate();
+                $dejaPaye = $facture->getDejaPayer();
+            } elseif ($facture instanceof Prestation) {
+                $dateFacture = $facture->getCreatedAt();
+                $dejaPaye = $facture->getEstPayer();
+            }
+            $client = $facture->getClient() ? $facture->getClient() : '';
+            $project_name = '';
+            if (!empty($devis)) {
+                switch($devis->getShop()) {
+                    case 'aeroma_prostore':
+                        $project_name = 'Aeroma prostore';
+                        break;
+                    case 'grossiste_greendot':
+                        $project_name = 'Greendot';
+                        break;
+                    case 'yzy_vape':
+                        $project_name = 'Yzyvape store';
+                        break;
+                    default:
+                        $project_name = '';
+                }
+            }
+            if (!empty($facture) && $totalHt !== '') {
+                $pourcent_tva = (($facture->getTotalTtc() / $facture->getTotalHt()) - 1) * 100;
+                $tax_amount_20 = '';
+                $tax_amount_10 = '';
+                $tax_amount_5 = '';
+                $tax_amount_0 = '';
+                switch ($utilService->getClosestTo($pourcent_tva, [0, 5, 10, 20])) {
+                    case 0:
+                        $tax_amount_0 = $facture->getTva();
+                        break;
+                    case 5:
+                        $tax_amount_5 = $facture->getTva();
+                        break;
+                    case 10:
+                        $tax_amount_10 = $facture->getTva();
+                        break;
+                    case 20:
+                        $tax_amount_20 = $facture->getTva();
+                        break;
+                }
+            }
+
+            $columns[] = [
+                $facture->getNumero(), // Numéro *
+                $dateFacture->format('d/m/Y'), // Date de la facture *
+                !empty($devis) ? $devis->getCode() : '', // Numéro du devis
+                $project_name, // Nom du projet
+                !empty($client) ? $client->getAdresseFacturation() : '', // Rue du client
+                !empty($client) ? $client->getCodePostalFacturation() : '', // Code postal du client
+                !empty($client) ? $client->getVilleFacturation() : '', // Ville du client
+                !empty($client) ? $client->getRaisonSocial() : '', // Responsable commercial
+                $totalHt, // Montant HT *
+                $facture->getTotalTtc(), // Montant TTC *
+                !empty($facture) ? ($dejaPaye ? 'payé le ' . $facture->getDatePaiement()->format('d/m/Y') : 'Non payé') : '', // Montant TTC du *
+                !empty($facture) ? $tax_amount_20 : '', // Montant taxe 20.00000%
+                !empty($facture) ? $tax_amount_10 : '', // Montant taxe 10.00000%
+                !empty($facture) ? $tax_amount_5 : '', // Montant taxe 5.50000%
+                !empty($facture) ? $tax_amount_0 : '', // Montant taxe 0.00000%
+            ];
+        }
+
+        $data = array_merge([$headers], $columns);
+        
+        $filename = 'factures_aeroma_' . (new \DateTime())->format('Y-m-d') . '.csv';
+        $csvWriter = Writer::createFromPath($exportRoot . '/csv/' . $filename, 'w+');
+        $csvWriter->setDelimiter(';');
+        $csvWriter->insertAll($data);
+        
+        $response = new Response($csvWriter->getContent(), 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+
+        return $response;
+    }
+
+    public function exportFacturesAvoir(FactureAvoirRepository $factureAvoirRepo, $exportRoot)
+    {
+        $headers = ['DATE', 'NO', 'CLIENT', 'MONTANT A REGLER (EN EURO)', 'MONTANT PAYE (EN EURO)', 'ETAT'];
+
+        $objects = $factureAvoirRepo->findBy([], ['increment' => 'desc']);
+
+        $columns = [];
+
+        foreach ($objects as $obj) {
+            $avoir = $obj;
+
+            $createdAt = $avoir->getCreatedAt() ? $avoir->getCreatedAt()->format('d/m/Y') : '';
+            $extravape = false;
+            $factLie = null;
+            $devis = null;
+
+            if (!empty($avoir->getFacture())) {
+                $factLie = $avoir->getFacture();
+                $devis = $factLie->getDevis();
+            } elseif (!empty($avoir->getFactureMaitre())) {
+                $factLie = $avoir->getFactureMaitre();
+                $extravape = true;
+            } elseif (!empty($avoir->getPrestation())) {
+                $factLie = $avoir->getPrestation();
+            }
+
+            $client = $factLie->getClient();
+            $clientAvoir = '';
+            
+            if (!empty($extravape)) {
+                $clientAvoir = $client->getLastName() . ' ' . $client->getFirstName() . ' - ' . $client->getRaisonSocial();
+            } else {
+                if (!empty($devis)) {
+                    if (!empty($devis->getBoutique())) {
+                        $clientAvoir = $devis->getBoutique()->getPrenom() . ' ' . $devis->getBoutique()->getNom() . ' - ' . $devis->getBoutique()->getNomShop();
+                    } else {
+                        $clientAvoir = $client->getLastName() . ' ' . $client->getFirstName() . ' - ' . $client->getRaisonSocial();
+                    }
+                } else {
+                    $clientAvoir = $client->getLastName() . ' ' . $client->getFirstName() . ' - ' . $client->getRaisonSocial();
+                }
+            }
+
+            $paid = '';
+
+            if ($avoir->getPayer()) {
+                $paid = 'PAYE LE ' . $avoir->getDatePaiement()->format('d/m/Y');
+            } else {
+                $paid = 'NON PAYE';
+            }
+
+            if ($avoir->getBalance() != 0 && $avoir->getBalance() != null) {
+                $paid .= ' - ' . $avoir->getBalance() . 'euro';
+            }
+
+            $columns[] = [
+                $createdAt, // Date de création
+                $avoir->getNumero(), // Numéro
+                $clientAvoir, // Client
+                round($avoir->getTotalTtc(), 2), // Montant à régler
+                round($avoir->getMontantPayer(), 2), // Montant payé
+                $paid, // Etat
+            ];
+        }
+
+        $data = array_merge([$headers], $columns);
+        
+        $filename = 'factures_avoir_aeroma_' . (new \DateTime())->format('Y-m-d') . '.csv';
+        $csvWriter = Writer::createFromPath($exportRoot . '/csv/' . $filename, 'w+');
+        $csvWriter->setDelimiter(';');
+        $csvWriter->insertAll($data);
+        
+        $response = new Response($csvWriter->getContent(), 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+
+        return $response;
     }
 }

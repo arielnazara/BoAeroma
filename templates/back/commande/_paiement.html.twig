@@ -37,7 +37,7 @@
                             <label for="amoun_paid"> Montant payé </label>
                             <input required id="amoun_paid" autocomplete="off" class="form-control" name="amount_paid" type="number" step="0.01">
                         </div>
-                    {% elseif i.estPayer and i.balance < 0 %}
+                    {% elseif i.bonDeCommande is defined and i.estPayer and i.balance < 0 %}
                     
                         <p class="alert alert-info text-center" >Montant à payer : {{ i.bonDeCommande.resteAPayer|number_format(2, ',', ' ') }} €</p>                        
                         <div class="form-group">
