@@ -12,6 +12,8 @@
     </thead>
     <tbody>
 
+    {# {{ dump(commandes) }} #}
+
     {% for bdc in commandes %}
     
         <tr id="tr-{{ bdc.id }}">
@@ -101,6 +103,10 @@
             </td>
 
             <td class="row-actions text-right" style="width: 150px">
+
+                {% if bdc.factureCommandes | length == 0 %}
+                   <a data-placement="top" data-toggle="tooltip" title="Editer le client" href="{{ path('back_commande_edit_client_non_facture', {idClient:bdc.client.id, idCommande:bdc.id}) }}"><i class="os-icon os-icon-user"></i></a>
+                {% endif %}
                
                 
                 {% if bdc.devis.abandonner  %}

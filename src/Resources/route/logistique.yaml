@@ -92,6 +92,15 @@ back_logistique_generate_invoice:
         requirements:
             id: \d+
 
+
+back_logistique_delete_non_facturer:
+    path: /delete/non_facture/{id}/{idBonCommande}
+    defaults:
+        _controller: App\Controller\Back\LogistiqueController::deleteNonFacture
+        requirements:
+            id: \d+
+            idBonCommande: \d+
+
 back_logistique_show_invoice:
     path: /show/invoice/{idB}/{id}
     defaults:

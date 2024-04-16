@@ -9,6 +9,7 @@
     {% endfor %}
 {% endfor %}
 
+
 {% for lp in lps %}
 
     <tr>
@@ -355,6 +356,15 @@
                     <button type="submit" class="btn btn-primary btn-sm text-center mr-1"> Générer le bon de livraison </button>
                 </form>
 
+
+                {% if lp.factureCommande == null and lp.factureMaitre == null %}
+                    <div class="text-center">
+                        <a class="badge badge-pill badge-danger" href="{{ path('back_logistique_delete_non_facturer', {id: lp.id,idBonCommande:bonDeCommande.id}) }}">suprimer</a>
+                    </div>
+
+                {% endif %}
+
+
             {% else %}
                 
                 {% if lp.estExpedier %}
@@ -402,7 +412,11 @@
                         </div>
                     </div>
                 </div>
-
+                {% if lp.factureCommande == null and lp.factureMaitre == null %}
+                    <div class="text-center">
+                        <a class="badge badge-pill badge-danger" href="{{ path('back_logistique_delete_non_facturer', {id: lp.id,idBonCommande:bonDeCommande.id}) }}">suprimer</a>
+                    </div>
+                {% endif %}
             {% endif %}
             
             <div class="d-block mt-2">

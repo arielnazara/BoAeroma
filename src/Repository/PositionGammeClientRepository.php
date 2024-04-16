@@ -64,7 +64,7 @@ class PositionGammeClientRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.client IS NOT null')
-            ->groupBy('p.client')
+            // ->groupBy('p.client')
             ->orderBy('p.id', 'desc')
             ->getQuery()
             ->getResult()

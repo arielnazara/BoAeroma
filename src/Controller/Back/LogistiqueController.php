@@ -802,6 +802,18 @@ class LogistiqueController extends AbstractController
         ]);
     }
 
+
+    public function deleteNonFacture($id,$idBonCommande, LotCommandeRepository $lotCommandeRepo, EntityManagerInterface $em)
+    {
+        $lot=$lotCommandeRepo->find($id);
+
+        $em->remove($lot);
+        $em->flush($lot);
+
+        return  $this->redirectToRoute('back_modification_logistique', ['id' => $idBonCommande]);
+        
+    }
+
     public function dernierLot(BonDeCommande $bonDeCommande, Request $request, EntityManagerInterface $em)
     {
         
@@ -1270,9 +1282,7 @@ class LogistiqueController extends AbstractController
             $bonDeCommande->setDownloadDate(new DateTime());
             $em->flush();
         }
-        
         $reponse = $useful->createExcel($bonDeCommande);
-        
         return $this->file($reponse['temp_file'], $reponse['fileName'], ResponseHeaderBag::DISPOSITION_INLINE);
     }
 

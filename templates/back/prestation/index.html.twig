@@ -11,6 +11,11 @@
                 {{ message }}
             </div>
         {% endfor %}
+
+        <div class="my-3">
+            <a class="btn btn-sm btn-dark" href="{{ path('prestation_export_divers') }}">Exporter</a>
+        </div>
+
         <div id="tablecontent" class="table-responsive">
             <div style="margin: auto; display: none" class="loader"></div>
 

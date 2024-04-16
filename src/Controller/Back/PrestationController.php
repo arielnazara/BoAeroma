@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
-
+use League\Csv\Writer;
 
 class PrestationController extends AbstractController
 {
@@ -158,5 +158,62 @@ class PrestationController extends AbstractController
         } else {
             throw new TokenNotFoundException('Token invalide');
         }
+    }
+
+    public function exportDivers(PrestationRepository $prestationRepository, $exportRoot)
+    {
+        $headers = ['CODE', 'CLIENT', 'MONTANT (EN EURO)', 'TAXE (EN EURO)', 'MONTANT A REGLER (EN EURO)', 'MONTANT PAYE (EN EURO)', 'ETAT'];
+
+        $objects = $prestationRepository->findBy([], ['id' => 'desc']);
+
+        $columns = [];
+
+        foreach ($objects as $obj) {
+            $prestation = $obj;
+            $client = '';
+
+            if (!empty($prestation->getClient())) {
+                if (!empty($prestation->getClient()->getRaisonSocial())) {
+                    $client = $prestation->getClient()->getRaisonSocial();
+                } else {
+                    $client = $prestation->getClient();
+                }
+            }
+
+            $etat = '';
+
+            if (!empty($prestation->getEstPayer())) {
+                $etat = 'PAYE';
+                if ($prestation->getBalance() != 0) {
+                    $etat .= ' ' . $prestation->getBalance() . 'euro';
+                }
+            } else {
+                $etat = 'NON PAYE';
+            }
+
+            $columns[] = [
+                $prestation->getNumero(), // Numéro
+                $client, // Client
+                $prestation->getMontant(), // Montant
+                $prestation->getTva(), // Taxe
+                round($prestation->getTotalTtc(), 2), // Montant à régler
+                round($prestation->getMontantPayer(), 2), // Montant payé
+                $etat, // Etat
+            ];
+        }
+
+        $data = array_merge([$headers], $columns);
+        
+        $filename = 'prestations_aeroma_' . (new \DateTime())->format('Y-m-d') . '.csv';
+        $csvWriter = Writer::createFromPath($exportRoot . '/csv/' . $filename, 'w+');
+        $csvWriter->setDelimiter(';');
+        $csvWriter->insertAll($data);
+        
+        $response = new Response($csvWriter->getContent(), 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+
+        return $response;
     }
 }

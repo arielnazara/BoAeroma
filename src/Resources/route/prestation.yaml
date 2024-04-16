@@ -39,3 +39,8 @@ prestation_send_invoice:
         _controller: App\Controller\Back\PrestationController::sendInvoice
         requirements:
             id: \d+
+
+prestation_export_divers:
+    path: /export/divers
+    defaults:
+        _controller: App\Controller\Back\PrestationController::exportDivers

@@ -1,0 +1,54 @@
+{% extends 'back-base.html.twig' %}
+{% block content %}
+
+    <div class="row">
+        {% for message in app.flashes('success') %}
+            <div style="background-color: #d4edda" class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <div class="col-sm-12">
+            <div class="element-wrapper">
+                <div class="element-box">
+                    <div class="d-flex justify-content-between">
+                        <h6>Modification du client de la commande</h6>
+                        <a href="{{ path('back_commande') }}" class="btn btn-primary"><i class="os-icon os-icon-corner-down-left"></i> Revenir a la liste</a>
+                    </div>
+                    <hr>
+                    <form method="post" action="{{ path('back_valide_commande_edit_client_non_facture')}}">
+                        <div class="form-group row">
+                            <label class="col-form-label col-sm-2" for="_client_"> Choisir un client existant </label>
+                            <div class="col-sm-7">
+                                <input type="hidden" name="idCommande" value="{{idCommande}}">
+                                <select id="_client_" name="_client_" class="form-control select2">
+                                    
+                                    <option value="value="{{ clientSelect.id }}""> {{ clientSelect.raisonSocial ~ ' - ' ~ clientSelect.lastname ~ ' ' ~ clientSelect.firstname }} </option>
+
+                                    {% for c in clientData %}
+
+                                        {% if c.id != 1 %}
+                                            <option value="{{ c.id }}"> {{ c.raisonSocial ~ ' - ' ~ c.lastname ~ ' ' ~ c.firstname }} </option>
+                                        {% endif %}
+
+                                        {% if c.shops|length > 0 %}
+
+                                            {% for shop in c.shops %}
+                                                <option value="{{ c.id }}">{{ c.raisonSocial ~ ' - ' ~ c.lastname ~ ' ' ~ c.firstname ~ ' ( shop : ' ~ shop.nomShop ~ ' ) ' }}</option>
+                                            {% endfor %}
+                                            
+                                        {% endif %}
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="submit" class="btn btn-secondary">Valider</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
