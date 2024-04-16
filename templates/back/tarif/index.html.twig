@@ -47,6 +47,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {# {{ dump(tarifs) }} #}
                                 {% if tarifs %}
                                     {% for tarif in tarifs %}
                                         <tr>
@@ -82,6 +83,7 @@
 
                                             <td>
                                                 {% if tarif.declineAvec %}
+                                                   
                                                     {{tarif.declineAvec}}
                                                 {% else %}
                                                     Sans déclinaison

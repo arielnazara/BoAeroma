@@ -76,9 +76,9 @@ class FrontController extends AbstractController
 
         $client = null;
         $nouveau = null;
-        if ($em->getRepository('App:Client')->findOneBy(['email' => $request->query->get('email')])) {
+        if ($em->getRepository(Client::class)->findOneBy(['email' => $request->query->get('email')])) {
 
-            $client = $em->getRepository('App:Client')->findOneBy(['email' => $request->query->get('email')]);
+            $client = $em->getRepository(Client::class)->findOneBy(['email' => $request->query->get('email')]);
 
             if( strtolower($client->getTypeDeClient()->getNom()) == "grossiste" and !$client->getIsValid())
             {

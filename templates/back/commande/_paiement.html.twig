@@ -1,3 +1,4 @@
+{# {{ dump(i) }} #}
 {% if i.balance < 0 %}
     <a href="#paiement_{{ i.id }}" data-toggle="modal" class="btn payer btn-link"><i class="os-icon os-icon-checkmark"></i>  Marquer comme payé</a>
 {% else %}
@@ -7,7 +8,6 @@
         <a href="#paiement_{{ i.id }}" data-toggle="modal" class="btn payer btn-link"><i class="os-icon os-icon-checkmark"></i>  Marquer comme payé</a>
     {% endif %}
 {% endif %}
-
 <div aria-hidden="true" aria-labelledby="paiement_" class="modal fade" id="paiement_{{ i.id }}" role="dialog" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

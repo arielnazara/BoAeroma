@@ -22,8 +22,8 @@
             </tr>
             </thead>
             <tbody>
-            {% for i in invoices %}
-            
+            {# {{ dump(invoices) }} #}
+            {% for i in invoices %}  
                 <tr>
                     <td>{{ i.numero }}</td>
                     <td class="text-right">{{ i.montantAPayer|number_format(2, ',', ' ')  }}€</td>

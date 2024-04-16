@@ -10,6 +10,19 @@ back_modification_commande:
         requirements:
             id: \d+
 
+back_commande_edit_client_non_facture:
+    path: /bc/edit/client/{idClient}/{idCommande}
+    defaults:
+        _controller: App\Controller\Back\CommandeController::modificationClientNonFacture
+        requirements:
+            idClient: \d+
+            idCommande: \d+  
+
+back_valide_commande_edit_client_non_facture:
+    path: /bc/edit/client/valide
+    defaults:
+        _controller: App\Controller\Back\CommandeController::valideModificationClientNonFacture       
+
 back_commande_edit_client:
     path: /bc/client/{number}/{id}
     defaults:

@@ -1,3 +1,4 @@
+
 <table class="table table-padded animate-bottom " id="factures">
     <thead>
         <tr>
@@ -14,6 +15,8 @@
         </tr>
     </thead>
     <tbody>
+
+
     
     {% for i in invoices %}
 
@@ -82,12 +85,18 @@
                         {% if devis.shop == "grossiste_greendot" %}
                             {#{ devis.client.lastname ~ ' ' ~ devis.client.firstname }#} <br>
                                 
-                            {{ devis.client.raisonSocial }}
+                            {{ devis.client.raisonSocial }} 
+                          
                         {% else %}
                             {% if devis.boutique %}
                                 {{ devis.boutique.prenom ~ ' ' ~ devis.boutique.nom }} <br>
                                 
-                                {{ devis.boutique.nomShop }}
+                                {# 
+                                Changement 
+                                {{ devis.boutique.nomShop }} #}
+
+                                {{ client.lastname ~ ' ' ~ client.firstname }} 
+                                                                        
                             {% else %}    
                                 {{ client.lastname ~ ' ' ~ client.firstname }} <br>
                             
