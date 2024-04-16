@@ -12,7 +12,7 @@
 /public/excel/
 /public/images/
 /public/bpco/
-/public/export/
+/public/export/*
 /var/
 /vendor/
 /tests/
